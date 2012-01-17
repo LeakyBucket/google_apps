@@ -28,6 +28,6 @@ describe "GoogleApps::Transport" do
   end
 
   describe '#add_user' do
-    it "sends the provided document to the user endpoint"
+    it "POSTs the provided document to the user endpoint"
   end
 end

@@ -33,8 +33,8 @@ module GoogleApps
 			"&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
 		end
 
-		def add(target, document)
-			uri = URI(instance_variable_get("@#{target}"))
+		def add(endpoint, document)
+			uri = URI(instance_variable_get("@#{endpoint.to_s}"))
 			@request = Net::HTTP::Post.new(uri.path)
 			@request.body = document
 			set_headers :user
@@ -42,9 +42,17 @@ module GoogleApps
 			@response = request(uri)
 		end
 
-    def update(target, document)
+    def update(endpoint, document)
     	# TODO: Username needs to come from somewhere for uri
-      uri = URI(instance_variable_get("@#{target}"))
+      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/")
+    end
+
+    def delete(endpoint, id)
+      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
+      @request = Net::HTTP::Delete.new(uri.path)
+      set_headers :user
+      
+      @response = request(uri)
     end
 
     def method_missing(name, *args)
@@ -53,6 +61,8 @@ module GoogleApps
       case $1
       when "new"
       	self.send(:add, $2, *args)
+      when "delete"
+        self.send(:delete, $2, *args)
       else
       	super
       end
