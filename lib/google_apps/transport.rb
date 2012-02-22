@@ -10,8 +10,10 @@ module GoogleApps
 		def initialize(domain, targets = {})
 			@auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
 			@user = targets[:user] || "https://apps-apis.google.com/a/feeds/#{domain}/user/2.0"
+      @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
 			@group = targets[:group]
 			@nickname = targets[:nickname]
+      @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}/"
 			@token = nil
 			@response = nil
 			@request = nil
@@ -32,6 +34,15 @@ module GoogleApps
 		def auth_body(account, pass)
 			"&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
 		end
+
+    def export(mailbox, document)
+      uri = URI(@export + "/#{mailbox}")
+      @request = Net::HTTP::Post.new uri.path
+      @request.body = document
+      set_headers :user
+
+      @response = request(uri)
+    end
 
 		def add(endpoint, document)
 			uri = URI(instance_variable_get("@#{endpoint.to_s}"))
@@ -71,6 +82,7 @@ module GoogleApps
 
     private
 
+    # TODO: Clashes with @request reader
 		def request(uri)
 			Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 				http.request(@request)

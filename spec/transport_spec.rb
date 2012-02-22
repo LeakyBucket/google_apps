@@ -16,8 +16,8 @@ describe "GoogleApps::Transport" do
     it "gets the Auth token from the ClientLogin endpoint" do
       transporter.authenticate("lholcomb2@cnm.edu", "CNMtr4cksth3m")
 
-      transporter.response.should be_a(Net::HTTPOK)
-      transporter.instance_eval { @token }.should be_a(String)
+      transporter.response.should be_a Net::HTTPOK
+      transporter.instance_eval { @token }.should be_a String
     end
   end
 
