@@ -1,6 +1,7 @@
 require 'net/http'
 require 'cgi'
 require 'openssl'
+require 'rexml/document'
 
 module GoogleApps
 	class Transport
@@ -13,7 +14,7 @@ module GoogleApps
       @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
 			@group = targets[:group]
 			@nickname = targets[:nickname]
-      @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}/"
+      @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
 			@token = nil
 			@response = nil
 			@request = nil
@@ -35,8 +36,8 @@ module GoogleApps
 			"&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
 		end
 
-    def export(mailbox, document)
-      uri = URI(@export + "/#{mailbox}")
+    def request_export(username, document)
+      uri = URI(@export + "/#{username}")
       @request = Net::HTTP::Post.new uri.path
       @request.body = document
       set_headers :user
@@ -44,12 +45,35 @@ module GoogleApps
       @response = request(uri)
     end
 
-    def export_status(mailbox, req_id)
-      uri = URI(@export + "/#{mailbox}/#{req_id}")
-      @request = Net::HTTP::Post.new uri.path
+    def export_status(username, req_id)
+      uri = URI(@export + "/#{username}/#{req_id}")
+      @request = Net::HTTP::Get.new uri.path
       set_headers :user
 
-      @response = request(uri)
+      (@response = request(uri)).body
+    end
+
+    # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
+    def fetch_export(flename)
+      doc = REXML::Document.new(@response.body)
+      urls = []
+      doc.elements.each('entry/apps:property') do |property|
+        urls << property.attributes['value'] if property.attributes['name'].match 'fileUrl'
+      end
+
+      urls.each do |url|
+        download(url, filename)
+      end
+    end
+
+    def download(url, filename)
+      uri = URI(url)
+      @request = Net::HTTP::Get.new uri.path
+      set_headers :user
+
+      File.new(filename, "w") do |file|
+        file.puts request(uri).body
+      end
     end
 
 		def add(endpoint, document)

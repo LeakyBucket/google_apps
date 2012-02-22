@@ -44,9 +44,9 @@ describe "GoogleApps::Atom::Export" do
     end
   end
 
-  describe "#search_deleted" do
+  describe "#include_deleted" do
     it "should add an includeDeleted property to the document" do
-      export.search_deleted(true)
+      export.include_deleted
 
       export.to_s.should include 'name="includeDeleted"'
     end

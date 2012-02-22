@@ -18,8 +18,8 @@ module GoogleApps
         add_prop('endDate', date)
       end
 
-      def search_deleted(flag)
-        add_prop('includeDeleted', (flag ? 'true' : 'false'))
+      def include_deleted
+        add_prop('includeDeleted', 'true')
       end
 
       def query(query_string)
