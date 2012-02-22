@@ -44,6 +44,14 @@ module GoogleApps
       @response = request(uri)
     end
 
+    def export_status(mailbox, req_id)
+      uri = URI(@export + "/#{mailbox}/#{req_id}")
+      @request = Net::HTTP::Post.new uri.path
+      set_headers :user
+
+      @response = request(uri)
+    end
+
 		def add(endpoint, document)
 			uri = URI(instance_variable_get("@#{endpoint.to_s}"))
 			@request = Net::HTTP::Post.new(uri.path)
