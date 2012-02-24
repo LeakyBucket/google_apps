@@ -20,6 +20,15 @@ module GoogleApps
 			@request = nil
 		end
 		
+
+    # authenticate will take the provided account and
+    # password and attempt to authenticate them with
+    # Google
+    #
+    # authenticate 'username@domain', 'password'
+    #
+    # authenticate returns the HTTP response received
+    # from Google
 		def authenticate(account, pass)
 			uri = URI(@auth)
 			@request = Net::HTTP::Post.new(uri.path)
@@ -30,12 +39,30 @@ module GoogleApps
 			@response.body.split("\n").grep(/auth=(.*)/i)
 
 			@token = $1
+
+      @response
 		end
 
+    # auth_body generates the body for the authentication
+    # request made by authenticate.
+    #
+    # auth_body 'username@domain', 'password'
+    #
+    # auth_body returns a string in the form of HTTP
+    # query parameters.
 		def auth_body(account, pass)
 			"&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
 		end
 
+    # request_export performs the GoogleApps API call to
+    # generate a mailbox export.  It takes the username
+    # and an GoogleApps::Atom::Export instance as
+    # arguments
+    #
+    # request_export 'username', document
+    #
+    # request_export returns the HTTP response received
+    # from Google.
     def request_export(username, document)
       uri = URI(@export + "/#{username}")
       @request = Net::HTTP::Post.new uri.path
@@ -45,16 +72,25 @@ module GoogleApps
       @response = request(uri)
     end
 
+    # export_status checks the status of a mailbox export
+    # request.  It takes the username and the request_id
+    # as arguments
+    #
+    # export_status 'username', 847576
+    #
+    # export_status will return the body of the HTTP
+    # response from Google
     def export_status(username, req_id)
       uri = URI(@export + "/#{username}/#{req_id}")
       @request = Net::HTTP::Get.new uri.path
       set_headers :user
 
+      # TODO: Return actual status not whole body.
       (@response = request(uri)).body
     end
 
-    # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
-    def fetch_export(flename)
+    def fetch_export(flename) # :nodoc:
+      # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
       doc = REXML::Document.new(@response.body)
       urls = []
       doc.elements.each('entry/apps:property') do |property|
@@ -66,6 +102,10 @@ module GoogleApps
       end
     end
 
+    # download makes a get request of the provided url
+    # and writes the body to the provided filename.
+    #
+    # download 'url', 'save_file'
     def download(url, filename)
       uri = URI(url)
       @request = Net::HTTP::Get.new uri.path
@@ -76,6 +116,14 @@ module GoogleApps
       end
     end
 
+    # add is a generic target for method_missing.  It is
+    # intended to handle the general case of adding
+    # to the GoogleApps Domain.  It takes an API endpoint
+    # and a GoogleApps::Atom document as arguments.
+    #
+    # add 'endpoint', document
+    #
+    # add returns the HTTP response received from Google.
 		def add(endpoint, document)
 			uri = URI(instance_variable_get("@#{endpoint.to_s}"))
 			@request = Net::HTTP::Post.new(uri.path)
@@ -85,11 +133,28 @@ module GoogleApps
 			@response = request(uri)
 		end
 
+    # update is a generic target for method_missing.  It is
+    # intended to handle the general case of updating an
+    # item that already exists in your GoogleApps Domain.
+    # It takes an API endpoint and a GoogleApps::Atom document
+    # as arguments.
+    #
+    # update 'endpoint', document
+    #
+    # update returns the HTTP response received from Google
     def update(endpoint, document)
     	# TODO: Username needs to come from somewhere for uri
       uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/")
     end
 
+    # delete is a generic target for method_missing.  It is
+    # intended to handle the general case of deleting an
+    # item from your GoogleApps Domain.  delete takes an
+    # API endpoint and an item identifier as argumets.
+    #
+    # delete 'endpoint', 'id'
+    #
+    # delete returns the HTTP response received from Google.
     def delete(endpoint, id)
       uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
       @request = Net::HTTP::Delete.new(uri.path)
