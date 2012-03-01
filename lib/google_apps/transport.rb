@@ -8,10 +8,13 @@ module GoogleApps
 		attr_reader :request, :response
 		attr_accessor :auth, :user, :group, :nickname
 
+    BOUNDARY = "=AaB03xDFHT8xgg"
+
 		def initialize(domain, targets = {})
 			@auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
 			@user = targets[:user] || "https://apps-apis.google.com/a/feeds/#{domain}/user/2.0"
       @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
+      @migration = targets[:migration] || "https://apps-apis.google.com/a/feeds/migration/2.0/#{domain}"
 			@group = targets[:group]
 			@nickname = targets[:nickname]
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
@@ -41,17 +44,6 @@ module GoogleApps
 			@token = $1
 
       @response
-		end
-
-    # auth_body generates the body for the authentication
-    # request made by authenticate.
-    #
-    # auth_body 'username@domain', 'password'
-    #
-    # auth_body returns a string in the form of HTTP
-    # query parameters.
-		def auth_body(account, pass)
-			"&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
 		end
 
     # request_export performs the GoogleApps API call to
@@ -163,6 +155,23 @@ module GoogleApps
       @response = request(uri)
     end
 
+    # migration performs mail migration from a local
+    # mail environment to GoogleApps.  migrate takes a
+    # username a GoogleApps::Atom::Properties dcoument 
+    # and the message as plain text (String) as arguments.
+    #
+    # migrate 'user', properties, message
+    #
+    # migrate returns the HTTP response received from Google.
+    def migrate(username, properties, message)
+      uri = URI(@migration + "/#{username}/mail")
+      @request = Net::HTTP::Post.new(uri.path)
+      @request.body = multi_part(properties, message)
+      set_headers :migrate
+
+      @response = request(uri)
+    end
+
     def method_missing(name, *args)
     	super unless name.match /([a-z]*)_([a-z]*)/
 
@@ -179,20 +188,48 @@ module GoogleApps
 
     private
 
-    # TODO: Clashes with @request reader
+    # auth_body generates the body for the authentication
+    # request made by authenticate.
+    #
+    # auth_body 'username@domain', 'password'
+    #
+    # auth_body returns a string in the form of HTTP
+    # query parameters.
+    def auth_body(account, pass)
+      "&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
+    end
+
 		def request(uri)
+      # TODO: Clashes with @request reader
 			Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 				http.request(@request)
 			end
 		end
 
 		def set_headers(request_type)
-			if request_type.to_sym == :auth
-				@request['content-type'] = "application/x-www-form-urlencoded"
-			else
-				@request['content-type'] = "application/atom+xml"
-				@request['authorization'] = "GoogleLogin auth=#{@token}"
-			end
+      case request_type
+      when :auth
+        @request['content-type'] = "application/x-www-form-urlencoded"
+      when :migrate
+        @request['content-type'] = "multipart/related; boundary=\"#{BOUNDARY}\""
+        @request['authorization'] = "GoogleLogin auth=#{@token}"
+      else
+        @request['content-type'] = "application/atom+xml"
+        @request['authorization'] = "GoogleLogin auth=#{@token}"
+      end
 		end
+
+    def multi_part(properties, message)
+      post_body = []
+      post_body << "--#{BOUNDARY}\n"
+      post_body << "Content-Type: application/atom+xml\n\n"
+      post_body << properties.to_s
+      post_body << "\n--#{BOUNDARY}\n"
+      post_body << "Content-Type: message/rfc822\n\n"
+      post_body << message.to_s
+      post_body << "--#{BOUNDARY}--}"
+
+      post_body.join
+    end
 	end
 end
