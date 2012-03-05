@@ -81,8 +81,9 @@ module GoogleApps
       (@response = request(uri)).body
     end
 
-    def fetch_export(flename) # :nodoc:
+    def fetch_export(username, req_id, filename) # :nodoc:
       # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
+      export_status(username, req_id)
       doc = REXML::Document.new(@response.body)
       urls = []
       doc.elements.each('entry/apps:property') do |property|
@@ -90,7 +91,7 @@ module GoogleApps
       end
 
       urls.each do |url|
-        download(url, filename)
+        download(url, filename + "#{urls.index[url]}")
       end
     end
 
