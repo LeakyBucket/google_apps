@@ -8,11 +8,11 @@ module GoogleApps
   			add_header
   		end
 
-  		def new_user(user_name, first, last, password, quota)
+  		def new_user(user_name, first, last, password, quota=nil)
         new_doc
         add_header
   			@document.root << login_node(user_name, password)
-  			@document.root << quota_node(quota)
+  			@document.root << quota_node(quota) if quota
   			@document.root << name_node(first, last)
 
         @document

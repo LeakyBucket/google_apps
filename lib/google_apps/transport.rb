@@ -15,7 +15,7 @@ module GoogleApps
 			@user = targets[:user] || "https://apps-apis.google.com/a/feeds/#{domain}/user/2.0"
       @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
       @migration = targets[:migration] || "https://apps-apis.google.com/a/feeds/migration/2.0/#{domain}"
-			@group = targets[:group]
+			@group = targets[:group] || "https://apps-apis.google.com/a/feeds/group/2.0/#{domain}"
 			@nickname = targets[:nickname]
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
 			@token = nil
@@ -58,7 +58,7 @@ module GoogleApps
     def request_export(username, document)
       uri = URI(@export + "/#{username}")
       @request = Net::HTTP::Post.new uri.path
-      @request.body = document
+      @request.body = document.to_s
       set_headers :user
 
       @response = request(uri)
@@ -119,7 +119,7 @@ module GoogleApps
 		def add(endpoint, document)
 			uri = URI(instance_variable_get("@#{endpoint.to_s}"))
 			@request = Net::HTTP::Post.new(uri.path)
-			@request.body = document
+			@request.body = document.to_s
 			set_headers :user
 
 			@response = request(uri)
@@ -166,7 +166,7 @@ module GoogleApps
     def migrate(username, properties, message)
       uri = URI(@migration + "/#{username}/mail")
       @request = Net::HTTP::Post.new(uri.path)
-      @request.body = multi_part(properties, message)
+      @request.body = multi_part(properties.to_s, message)
       set_headers :migrate
 
       @response = request(uri)
