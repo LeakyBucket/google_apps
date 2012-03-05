@@ -52,12 +52,7 @@ __Application__
   * Spreadsheets Data
   * Tasks
 
-----
-
 ## Short How
 
-
-
-----
 
 ## Long How
