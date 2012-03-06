@@ -23,7 +23,7 @@ describe "GoogleApps::Transport" do
 
   describe '#auth_body' do
     it "builds the POST body for the authenticate request" do
-      transporter.auth_body("lholcomb2@cnm.edu", "CNMtr4cksth3m").should be_a(String)
+      transporter.send(:auth_body, "lholcomb2@cnm.edu", "CNMtr4cksth3m").should be_a(String)
     end
   end
 

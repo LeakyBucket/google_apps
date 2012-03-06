@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "GoogleApps::Atom::PublicKey" do
   let (:pub_key) { GoogleApps::Atom::PublicKey.new }
-  let (:key) { `cat ../pub_key` }
+  let (:key) { 'not really a key' }
 
   describe "#add_header" do
     it "should ad the proper header to @document" do
