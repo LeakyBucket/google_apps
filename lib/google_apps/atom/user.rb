@@ -25,7 +25,7 @@ module GoogleApps
   		def login_node(user_name, password)
   			login = Atom::XML::Node.new('apps:login')
   			login['userName'] = user_name
-  			login['password'] = Digest::SHA1.hexdigest password
+  			login['password'] = OpenSSL::Digest::SHA1.hexdigest password
   			login['hashFunctionName'] = Atom::HASH_FUNCTION
   			login['suspended'] = "false"
 

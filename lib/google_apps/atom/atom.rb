@@ -1,5 +1,5 @@
 require 'libxml'
-require 'digest/sha1'
+require 'openssl'
 require 'base64'
 
 module GoogleApps
