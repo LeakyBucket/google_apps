@@ -109,6 +109,22 @@ module GoogleApps
       end
     end
 
+    # get is a generic target for method_missing.  It is
+    # intended to handle the general case of retrieving a
+    # record from the Google Apps Domain.  It takes an API
+    # endpoint and an id as arguments.
+    #
+    # get 'endpoint', 'username'
+    #
+    # get returns the HTTP response received from Google.
+    def get(endpoint, id)
+      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
+      @request = Net::HTTP::Get.new(uri.path)
+      set_headers :user
+
+      @response = request(uri)
+    end
+
     # add is a generic target for method_missing.  It is
     # intended to handle the general case of adding
     # to the GoogleApps Domain.  It takes an API endpoint
