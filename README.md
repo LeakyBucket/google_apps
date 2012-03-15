@@ -15,9 +15,11 @@ __Domain API__
     * Users
       * User Creation
       * User Deletion
+      * User Record Retrieval
     * Groups
       * Group Creation
       * Group Deletion
+      * Group Record Retrieval
   * Public Key Upload
   * Email Audit
     * Mailbox Export Request
@@ -79,6 +81,12 @@ transporter.new_user user
 transporter.delete_user 'bob'
 
 
+# Retrieving a User
+transporter.get_user 'bob'
+
+transporter.response.body
+
+
 # Creating a Group
 group = GoogleApps::Atom::Group.new
 group.new_group id: 'ID', name: 'TestGroup', description: 'Simple Test Group', perms: 'Domain'
@@ -89,6 +97,11 @@ transporter.new_group group
 # Deleting a Group
 transporter.delete_group 'ID'
 
+
+# Retrieving a User
+transporter.get_group 'ID'
+
+transporter.response.body
 
 # Uploading Public Key
 pub_key = GoogleApps::Atom::PublicKey.new
