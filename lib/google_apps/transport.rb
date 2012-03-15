@@ -197,6 +197,8 @@ module GoogleApps
       	self.send(:add, $2, *args)
       when "delete"
         self.send(:delete, $2, *args)
+      when "get"
+        self.send(:get, $2, *args)
       else
       	super
       end
