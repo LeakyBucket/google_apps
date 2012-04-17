@@ -91,7 +91,7 @@ module GoogleApps
       end
 
       urls.each do |url|
-        download(url, filename + "#{urls.index[url]}")
+        download(url, filename + "#{urls.index(url)}")
       end
     end
 
@@ -104,7 +104,7 @@ module GoogleApps
       @request = Net::HTTP::Get.new uri.path
       set_headers :user
 
-      File.new(filename, "w") do |file|
+      File.open(filename, "w") do |file|
         file.puts request(uri).body
       end
     end
