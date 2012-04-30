@@ -117,8 +117,9 @@ module GoogleApps
     # get 'endpoint', 'username'
     #
     # get returns the HTTP response received from Google.
-    def get(endpoint, id)
-      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
+    def get(endpoint, id = nil)
+      id ? uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}") : uri = URI(instance_variable_get("@#{endpoint.to_s}"))
+      #uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
       @request = Net::HTTP::Get.new(uri.path)
       set_headers :user
 
