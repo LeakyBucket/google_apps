@@ -52,6 +52,17 @@ module GoogleApps
   		end
 
 
+      def update_node(user_name = nil, password = nil, suspended = nil)
+        login = Atom::XML::Node.new('apps:login')
+        login['userName'] = user_name unless user_name.nil?
+        login['password'] = password unless password.nil?
+        login['suspended'] = suspended unless suspended.nil?
+
+        @document.root << login
+        login
+      end
+
+
       # quota_node adds an apps:quota attribute to @document.  
       # quota_node takes an integer value as an argument.  This
       # argument translates to the number of megabytes available

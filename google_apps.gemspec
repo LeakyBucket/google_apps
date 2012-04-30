@@ -1,6 +1,6 @@
 Gem::Specification.new do |ga|
   ga.name = 'google_apps'
-  ga.version = '0.3.6'
+  ga.version = '0.3.7'
   ga.date = '2012-04-30'
   ga.summary = 'Google Apps APIs'
   ga.description = 'Library for interfacing with Google Apps\' Domain and Application APIs'

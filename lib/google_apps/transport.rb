@@ -118,6 +118,7 @@ module GoogleApps
     #
     # get returns the HTTP response received from Google.
     def get(endpoint, id = nil)
+      # TODO:  Need to handle <link rel='next' for pagination if wanting all users
       id ? uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}") : uri = URI(instance_variable_get("@#{endpoint.to_s}"))
       #uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
       @request = Net::HTTP::Get.new(uri.path)
@@ -152,9 +153,14 @@ module GoogleApps
     # update 'endpoint', document
     #
     # update returns the HTTP response received from Google
-    def update(endpoint, document)
+    def update(endpoint, target, document)
     	# TODO: Username needs to come from somewhere for uri
-      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/")
+      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{target}")
+      @request = Net::HTTP::Put.new(uri.path)
+      @request.body = document.to_s
+      set_headers :user
+
+      @response = request(uri)
     end
 
     # delete is a generic target for method_missing.  It is
@@ -198,6 +204,8 @@ module GoogleApps
       	self.send(:add, $2, *args)
       when "delete"
         self.send(:delete, $2, *args)
+      when "update"
+        self.send(:update, $2, *args)
       when "get"
         self.send(:get, $2, *args)
       else
