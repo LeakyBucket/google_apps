@@ -33,6 +33,12 @@ describe "GoogleApps::Atom::User" do
 		end
 	end
 
+  describe "#update_node" do
+    it "should create a login node with attributes to be updated" do
+      
+    end
+  end
+
   describe '#login_node' do
     it "creates a google apps api node for the user_name and password" do
       login_node = gapp.login_node("test", "db64e604690686663821888f20373a3941ed7e95")

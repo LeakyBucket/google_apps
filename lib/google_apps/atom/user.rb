@@ -51,7 +51,7 @@ module GoogleApps
   			login
   		end
 
-
+      # TODO: This needs to be cleaned and documented.
       def update_node(user_name = nil, password = nil, suspended = nil)
         login = Atom::XML::Node.new('apps:login')
         login['userName'] = user_name unless user_name.nil?

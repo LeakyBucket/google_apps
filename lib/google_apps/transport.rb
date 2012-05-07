@@ -229,7 +229,7 @@ module GoogleApps
 
 		def request(uri)
       # TODO: Clashes with @request reader
-			Net::HTTP.start(uri.hostname, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+			Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
 				http.request(@request)
 			end
 		end
@@ -255,7 +255,7 @@ module GoogleApps
       post_body << "\n--#{BOUNDARY}\n"
       post_body << "Content-Type: message/rfc822\n\n"
       post_body << message.to_s
-      post_body << "--#{BOUNDARY}--}"
+      post_body << "\n--#{BOUNDARY}--}"
 
       post_body.join
     end
