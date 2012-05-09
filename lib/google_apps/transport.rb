@@ -119,7 +119,7 @@ module GoogleApps
     # get returns the HTTP response received from Google.
     def get(endpoint, id = nil)
       # TODO:  Need to handle <link rel='next' for pagination if wanting all users
-      id ? uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}") : uri = URI(instance_variable_get("@#{endpoint.to_s}"))
+      id ? uri = URI(endpoint + "/#{id}") : uri = URI(endpoint)
       #uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
       @request = Net::HTTP::Get.new(uri.path)
       set_headers :user
@@ -136,7 +136,7 @@ module GoogleApps
     #
     # add returns the HTTP response received from Google.
 		def add(endpoint, document)
-			uri = URI(instance_variable_get("@#{endpoint.to_s}"))
+			uri = URI(endpoint)
 			@request = Net::HTTP::Post.new(uri.path)
 			@request.body = document.to_s
 			set_headers :user
@@ -155,7 +155,7 @@ module GoogleApps
     # update returns the HTTP response received from Google
     def update(endpoint, target, document)
     	# TODO: Username needs to come from somewhere for uri
-      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{target}")
+      uri = URI(endpoint + "/#{target}")
       @request = Net::HTTP::Put.new(uri.path)
       @request.body = document.to_s
       set_headers :user
@@ -172,7 +172,7 @@ module GoogleApps
     #
     # delete returns the HTTP response received from Google.
     def delete(endpoint, id)
-      uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
+      uri = URI(endpoint + "/#{id}")
       @request = Net::HTTP::Delete.new(uri.path)
       set_headers :user
       
@@ -196,18 +196,20 @@ module GoogleApps
       @response = request(uri)
     end
 
+
+    # TODO: This should perform the instance_variable_get and pass the value to the appropriate method.
     def method_missing(name, *args)
     	super unless name.match /([a-z]*)_([a-z]*)/
 
       case $1
       when "new"
-      	self.send(:add, $2, *args)
+      	self.send(:add, instance_variable_get("@#{$2}"), *args)
       when "delete"
-        self.send(:delete, $2, *args)
+        self.send(:delete, instance_variable_get("@#{$2}"), *args)
       when "update"
-        self.send(:update, $2, *args)
+        self.send(:update, instance_variable_get("@#{$2}"), *args)
       when "get"
-        self.send(:get, $2, *args)
+        self.send(:get, instance_variable_get("@#{$2}"), *args)
       else
       	super
       end
