@@ -36,21 +36,9 @@ module GoogleApps
       # it is also possible to specify that the account be 
       # suspended.
       #
-      # login_node 'username', 'password', suspended
+      # login_node suspended, 'username', 'password'
       #
       # login_node returns an 'apps:login' LibXML::XML::Node
-  		def old_login_node(user_name, password, suspended="false")
-        suspended = "true" unless suspended == "false"
-  			login = Atom::XML::Node.new('apps:login')
-  			login['userName'] = user_name
-  			login['password'] = OpenSSL::Digest::SHA1.hexdigest password
-  			login['hashFunctionName'] = Atom::HASH_FUNCTION
-  			login['suspended'] = suspended
-
-  			login
-  		end
-
-      # TODO: This needs to be cleaned and documented.
       def login_node(suspended = "false", user_name = nil, password = nil)
         login = Atom::XML::Node.new('apps:login')
         login['userName'] = user_name unless user_name.nil?
