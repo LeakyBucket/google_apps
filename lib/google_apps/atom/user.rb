@@ -4,7 +4,7 @@ module GoogleApps
       attr_reader :document
       
   		def initialize
-  			@document = Atom::XML::Document.new
+        new_doc
   			add_header
   		end
 
@@ -18,18 +18,12 @@ module GoogleApps
       #
       # new_user returns the full XML document.
   		def new_user(user_name, first, last, password, quota=nil)
-        new_doc
-        add_header
-  			@document.root << login_node(user_name, password)
-  			@document.root << quota_node(quota) if quota
-  			@document.root << name_node(first, last)
-
-        @document
+        populate_with suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: quota
   		end
 
-      # TODO: Document and replace new_user
+      # TODO: Document
       def populate_with(values = {})
-        @document.root << update_node(values[:suspended], values[:username], values[:password])
+        @document.root << login_node(values[:suspended], values[:username], values[:password])
         @document.root << quota_node(values[:quota]) if values[:quota]
         @document.root << name_node(values[:first_name], values[:last_name])
 
@@ -49,7 +43,7 @@ module GoogleApps
       # login_node 'username', 'password', suspended
       #
       # login_node returns an 'apps:login' LibXML::XML::Node
-  		def login_node(user_name, password, suspended="false")
+  		def old_login_node(user_name, password, suspended="false")
         suspended = "true" unless suspended == "false"
   			login = Atom::XML::Node.new('apps:login')
   			login['userName'] = user_name
@@ -61,12 +55,12 @@ module GoogleApps
   		end
 
       # TODO: This needs to be cleaned and documented.
-      def update_node(suspended = "false", user_name = nil, password = nil)
+      def login_node(suspended = "false", user_name = nil, password = nil)
         login = Atom::XML::Node.new('apps:login')
         login['userName'] = user_name unless user_name.nil?
         login['password'] = OpenSSL::Digest::SHA1.hexdigest password unless password.nil?
         login['hashFunctionName'] = Atom::HASH_FUNCTION unless password.nil?
-        login['suspended'] = suspended
+        login['suspended'] = suspended.to_s
 
         login
       end
