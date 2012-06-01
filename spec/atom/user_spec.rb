@@ -10,10 +10,6 @@ describe "GoogleApps::Atom::User" do
 		end
 	end
 
-	describe '#add' do
-		it "adds a user to the Google Apps domain"
-	end
-
   describe '#add_header' do
     it "adds the user header to the docuemnt" do
       gapp.send(:add_header)
@@ -33,10 +29,23 @@ describe "GoogleApps::Atom::User" do
 		end
 	end
 
-  describe "#update_node" do
-    it "should create a login node with attributes to be updated" do
-      
+  # TODO: Needs to be broken out into multiple tests
+  describe "#modify_user" do
+    it "should add nodes for the appropriate options to the document" do
+      gapp.modify_user username: 'bob', password: 'uncle', suspended: 'false', quota: 18567, first_name: 'uncle', last_name: 'bob'
+      document = gapp.to_s
+
+      document.should include 'userName="bob"'
+      document.should include 'password='
+      document.should include 'suspended="false"'
+      document.should include 'limit="18567"'
+      document.should include 'familyName="bob"'
+      document.should include 'givenName="uncle"'
     end
+  end
+
+  describe "#update_node" do
+    it "should create a login node with attributes to be updated"
   end
 
   describe '#login_node' do

@@ -27,6 +27,15 @@ module GoogleApps
         @document
   		end
 
+      # TODO: Document and replace new_user
+      def modify_user(values = {})
+        @document.root << update_node(values[:suspended], values[:username], values[:password])
+        @document.root << quota_node(values[:quota]) if values[:quota]
+        @document.root << name_node(values[:first_name], values[:last_name])
+
+        @document
+      end
+
       # new_doc re-initializes the XML document.
       def new_doc
         @document = Atom::XML::Document.new
@@ -52,13 +61,13 @@ module GoogleApps
   		end
 
       # TODO: This needs to be cleaned and documented.
-      def update_node(user_name = nil, password = nil, suspended = nil)
+      def update_node(suspended = "false", user_name = nil, password = nil)
         login = Atom::XML::Node.new('apps:login')
         login['userName'] = user_name unless user_name.nil?
-        login['password'] = password unless password.nil?
-        login['suspended'] = suspended unless suspended.nil?
+        login['password'] = OpenSSL::Digest::SHA1.hexdigest password unless password.nil?
+        login['hashFunctionName'] = Atom::HASH_FUNCTION unless password.nil?
+        login['suspended'] = suspended
 
-        @document.root << login
         login
       end
 
