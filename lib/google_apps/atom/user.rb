@@ -23,9 +23,10 @@ module GoogleApps
 
       # TODO: Document
       def set_values(values = {})
+        # Don't want to create login_node if nothing has been specified.
         @document.root << login_node(values[:suspended], values[:username], values[:password])
         @document.root << quota_node(values[:quota]) if values[:quota]
-        @document.root << name_node(values[:first_name], values[:last_name]) if values[:first_name] and values[:last_name]
+        @document.root << name_node(values[:first_name], values[:last_name]) if values[:first_name] or values[:last_name]
 
         @document
       end
@@ -55,7 +56,7 @@ module GoogleApps
         login['userName'] = user_name unless user_name.nil?
         login['password'] = OpenSSL::Digest::SHA1.hexdigest password unless password.nil?
         login['hashFunctionName'] = Atom::HASH_FUNCTION unless password.nil?
-        login['suspended'] = suspended.to_s
+        suspended.nil? ? login['suspended'] = 'false' : login['suspended'] = suspended
 
         login
       end
@@ -82,10 +83,10 @@ module GoogleApps
       # name_node 'first name', 'last name'
       #
       # name_node returns an apps:name LibXML::XML::Node
-  		def name_node(first, last)
+  		def name_node(first = nil, last = nil)
   			name = Atom::XML::Node.new('apps:name')
-  			name['familyName'] = last
-  			name['givenName'] = first
+  			name['familyName'] = last if last
+  			name['givenName'] = first if first
 
   			name
   		end

@@ -16,6 +16,7 @@ __Domain API__
       * User Creation
       * User Deletion
       * User Record Retrieval
+      * User Modification
     * Groups
       * Group Creation
       * Group Deletion
@@ -75,6 +76,13 @@ user = GoogleApps::Atom::User.new
 user.new_user 'bob', 'Bob', 'Jenkins', 'password', 2048
 
 transporter.new_user user
+
+
+# Modifying a User
+user = GoogleApps::Atom::User.new
+user.set_values suspended: true, :lastname 'Todd'
+
+transporter.update_user 'bob', user
 
 
 # Deleting a User
