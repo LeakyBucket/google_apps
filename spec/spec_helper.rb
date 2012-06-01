@@ -2,7 +2,10 @@ require 'google_apps'
 require 'yaml'
 
 def get_credentials
-  YAML.load_file(cred_file_absolute)
+  YAML.load_file(cred_file_absolute).inject({}) do |hsh, part|
+    hsh[part.flatten[0]] = part.flatten[1]
+    hsh
+  end
 end
 
 def cred_file_absolute
