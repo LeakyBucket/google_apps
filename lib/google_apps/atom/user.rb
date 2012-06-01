@@ -28,7 +28,7 @@ module GoogleApps
   		end
 
       # TODO: Document and replace new_user
-      def modify_user(values = {})
+      def populate_with(values = {})
         @document.root << update_node(values[:suspended], values[:username], values[:password])
         @document.root << quota_node(values[:quota]) if values[:quota]
         @document.root << name_node(values[:first_name], values[:last_name])
