@@ -18,21 +18,16 @@ module GoogleApps
       #
       # new_user returns the full XML document.
   		def new_user(user_name, first, last, password, quota=nil)
-        populate_with suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: quota
+        set_values suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: quota
   		end
 
       # TODO: Document
-      def populate_with(values = {})
+      def set_values(values = {})
         @document.root << login_node(values[:suspended], values[:username], values[:password])
         @document.root << quota_node(values[:quota]) if values[:quota]
-        @document.root << name_node(values[:first_name], values[:last_name])
+        @document.root << name_node(values[:first_name], values[:last_name]) if values[:first_name] and values[:last_name]
 
         @document
-      end
-
-      # new_doc re-initializes the XML document.
-      def new_doc
-        @document = Atom::XML::Document.new
       end
 
       # login_node adds an apps:login attribute to @document.
@@ -101,6 +96,11 @@ module GoogleApps
       end
 
       private
+
+      # new_doc re-initializes the XML document.
+      def new_doc
+        @document = Atom::XML::Document.new
+      end
 
       def add_header
         @document.root = Atom::XML::Node.new('atom:entry')

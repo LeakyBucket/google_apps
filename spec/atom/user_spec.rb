@@ -30,9 +30,9 @@ describe "GoogleApps::Atom::User" do
 	end
 
   # TODO: Needs to be broken out into multiple tests
-  describe "#populate_with" do
+  describe "#set_values" do
     it "should add nodes for the appropriate options to the document" do
-      gapp.populate_with username: 'bob', password: 'uncle', suspended: 'false', quota: 18567, first_name: 'uncle', last_name: 'bob'
+      gapp.set_values username: 'bob', password: 'uncle', suspended: 'false', quota: 18567, first_name: 'uncle', last_name: 'bob'
       document = gapp.to_s
 
       document.should include 'userName="bob"'
