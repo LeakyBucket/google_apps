@@ -29,6 +29,16 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#set_auth_token" do
+    it "should set @token to the value found in the response body" do
+      transporter.get_user user_name
+      transporter.instance_eval { @response.body = "\nbob\nauth=fake_token" }
+      transporter.send(:set_auth_token)
+
+      transporter.instance_eval { @token }.should == 'fake_token'
+    end
+  end
+
   describe '#add_user' do
     it "sends a POST request to the User endpoint" do
       transporter.add_user user_doc
