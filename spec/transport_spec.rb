@@ -30,8 +30,11 @@ describe "GoogleApps::Transport" do
   end
 
   describe '#add_user' do
-    it "creates a user in the Google Apps environment" do
+    it "sends a POST request to the User endpoint" do
+      transporter.add_user user_doc
 
+      transporter.instance_eval { @request }.should be_a Net::HTTP::Post
+      transporter.instance_eval { @request.body }.should include user_doc.to_s
     end
   end
 end

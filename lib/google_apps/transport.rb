@@ -209,6 +209,8 @@ module GoogleApps
         self.send(:update, instance_variable_get("@#{$2}"), *args)
       when "get"
         self.send(:get, instance_variable_get("@#{$2}"), *args)
+      when "add"
+        self.send(:add, instance_variable_get("@#{$2}"), *args)
       else
       	super
       end
