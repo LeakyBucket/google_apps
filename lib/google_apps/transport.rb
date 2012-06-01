@@ -39,9 +39,8 @@ module GoogleApps
 			set_headers :auth
 
 			@response = request(uri)
-			@response.body.split("\n").grep(/auth=(.*)/i)
 
-			@token = $1
+			set_auth_token
 
       @response
 		end
@@ -228,6 +227,15 @@ module GoogleApps
     def auth_body(account, pass)
       "&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
     end
+
+
+    # Grab the auth token from the response body
+    def set_auth_token
+      @response.body.split("\n").grep(/auth=(.*)/i)
+
+      @token = $1
+    end
+
 
 		def request(uri)
       # TODO: Clashes with @request reader

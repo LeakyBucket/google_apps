@@ -3,6 +3,8 @@ require 'spec_helper'
 describe "GoogleApps::Transport" do
   let (:transporter) { GoogleApps::Transport.new "cnm.edu" }
   let (:user_doc) { GoogleApps::Atom::User.new }
+  let (:credentials) { get_credentials }
+  let (:user_name) { generate_username }
 
   describe '#new' do
     it "assigns endpoints and sets @token to nil" do
@@ -14,7 +16,7 @@ describe "GoogleApps::Transport" do
 
   describe '#authenticate' do
     it "gets the Auth token from the ClientLogin endpoint" do
-      transporter.authenticate("lholcomb2@cnm.edu", "CNMtr4cksth3m")
+      transporter.authenticate(credentials['username'][0], credentials['password'][0])
 
       transporter.response.should be_a Net::HTTPOK
       transporter.instance_eval { @token }.should be_a String
@@ -28,6 +30,8 @@ describe "GoogleApps::Transport" do
   end
 
   describe '#add_user' do
-    it "POSTs the provided document to the user endpoint"
+    it "creates a user in the Google Apps environment" do
+
+    end
   end
 end
