@@ -42,25 +42,81 @@ describe "GoogleApps::Atom::User" do
       document.should include 'familyName="bob"'
       document.should include 'givenName="uncle"'
     end
-  end
 
-  describe "#update_node" do
-    it "should create a login node with attributes to be updated"
+    # Currently always adds suspended.  This needs to be fixed.
+    it "should only add the username if nothing else is specified" do
+      gapp.set_values username: 'tim'
+      document = gapp.to_s
+
+      document.should include 'userName="tim"'
+      document.should_not include 'password='
+      document.should_not include 'limit'
+      document.should_not include 'familyName'
+      document.should_not include 'givenName'
+    end
+
+    it "should only add the password if nothing else is specified" do
+      gapp.set_values password: 'bananas'
+      document = gapp.to_s
+
+      document.should_not include 'userName='
+      document.should include 'password='
+      document.should_not include 'limit'
+      document.should_not include 'familyName'
+      document.should_not include 'givenName'
+    end
+
+    it "should only add the quota if nothing else is specified" do
+      gapp.set_values quota: 12474
+      document = gapp.to_s
+
+      document.should_not include 'userName='
+      document.should_not include 'password='
+      document.should include 'limit="12474"'
+      document.should_not include 'familyName'
+      document.should_not include 'givenName'
+    end
+
+    it "should only add the fist name if nothing else is specified" do
+      gapp.set_values first_name: 'Daisy'
+      document = gapp.to_s
+
+      document.should_not include 'userName'
+      document.should_not include 'password'
+      document.should_not include 'limit'
+      document.should_not include 'familyName'
+      document.should include 'givenName="Daisy"'
+    end
+
+    it "should only add the last name if nothing else is specified" do
+      gapp.set_values last_name: 'Thomas'
+      document = gapp.to_s
+
+      document.should_not include 'userName'
+      document.should_not include 'password'
+      document.should_not include 'limit'
+      document.should include 'familyName="Thomas"'
+      document.should_not include 'givenName'
+    end
   end
 
   describe '#login_node' do
-    it "creates a google apps api node for the user_name and password" do
-      login_node = gapp.login_node("test", "db64e604690686663821888f20373a3941ed7e95")
+    it "should create a google apps api node for the user_name and password" do
+      login_node = gapp.login_node("test", "pancakes")
 
-      
+      login_node.should be_a LibXML::XML::Node
     end
   end
 
   describe '#quota_node' do
-    it "creates a google apps api node for the quota"
+    it "should create a google apps api node for the quota" do
+      gapp.quota_node(12868).should be_a LibXML::XML::Node
+    end
   end
 
   describe '#name_node' do
-    it "creates a google apps api node for the real name"
+    it "should create a google apps api node for the real name" do
+      gapp.name_node("Tom").should be_a LibXML::XML::Node
+    end
   end
 end
