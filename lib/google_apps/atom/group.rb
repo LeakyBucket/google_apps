@@ -16,10 +16,14 @@ module GoogleApps
       #
       # new_group returns @document.root
       def new_group(group_data)
-        group_data.keys.each do |key|
+        set_values group_data
+      end
+
+      def set_values(group_values)
+        group_values.keys.each do |key|
           prop = Atom::XML::Node.new('apps:property')
           prop_name(prop, key)
-          prop.attributes['value'] = group_data[key]
+          prop.attributes['value'] = group_values[key]
           @document.root << prop 
         end
 
@@ -57,7 +61,7 @@ module GoogleApps
         when :description
           property.attributes['name'] = 'description'
         when :perms
-          property.attributes['name'] = 'emailPermission'
+          property.attributes['name'] = 'emailPermissions'
         end
 
         property

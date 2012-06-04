@@ -34,6 +34,51 @@ describe "GoogleApps::Atom::Group" do
     end
   end
 
+  describe "#set_values" do
+    it "should set the specified values in the XML document" do
+      group.set_values id: 'sample', name: 'Test', description: 'Test Group', perms: 'Domain'
+      document = group.to_s
+
+      document.should include 'sample'
+      document.should include 'Test'
+      document.should include 'Test Group'
+      document.should include 'Domain'
+    end
+
+    it "should only set the id if nothing else is specified" do
+      group.set_values id: 'sample'
+      document = group.to_s
+
+      document.should include 'sample'
+      document.should include 'groupId'
+      document.should_not include 'groupName'
+      document.should_not include 'description'
+      document.should_not include 'emailPermissions'
+    end
+
+    it "should only set the name if nothing else is specified" do
+      group.set_values name: 'Name'
+      document = group.to_s
+
+      document.should include 'Name'
+      document.should include 'groupName'
+      document.should_not include 'groupId'
+      document.should_not include 'description'
+      document.should_not include 'emailPermissions'
+    end
+
+    it "should only set the description if nothing else is specified" do
+      group.set_values description: 'Test Group'
+      document = group.to_s
+
+      document.should include 'description'
+      document.should include 'Test Group'
+      document.should_not include 'groupId'
+      document.should_not include 'groupName'
+      document.should_not include 'emailPermissions'
+    end
+  end
+
   describe "#to_s" do
     it "should present @document as a string" do
       group.to_s.should be_a String
