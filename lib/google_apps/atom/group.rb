@@ -1,6 +1,8 @@
 module GoogleApps
   module Atom
     class Group
+      #ATTRIBUTES = %w(id name description perms).map(&:to_sym)
+
       def initialize
         @document = Atom::XML::Document.new
         add_header
@@ -9,16 +11,26 @@ module GoogleApps
       # new_group populates the Group XML document with
       # the provided values.  new_group accepts a hash
       # with the following keys:  id, name, description
-      # and perms.
+      # and perms. id and name are required for a call
+      # to new_group.
       #
       # new_group id: 'ID', name: 'Name', description: 'Group Description',
       #           perms: 'emailPermissions'
       #
       # new_group returns @document.root
       def new_group(group_data)
+        [:id, :name].each { |attr| raise(ArgumentError, "Missing or Invalid Parameter(s)") unless group_data.key?(attr) }
         set_values group_data
       end
 
+
+      # set_values will add the specified group attributes
+      # to @document.  set_values accepts a hash with any of
+      # the following keys:  id:, name:, description:, perms:
+      #
+      # set_values id: 'blah', description: 'Unexciting and uninspired'
+      #
+      # set_values returns @document.root
       def set_values(group_values)
         group_values.keys.each do |key|
           prop = Atom::XML::Node.new('apps:property')
