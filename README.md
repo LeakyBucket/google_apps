@@ -28,7 +28,7 @@ __Domain API__
     * Mailbox Export Download
   * Email Migration
     * Message Upload
-    * Sett Message Attributes
+    * Set Message Attributes
 
 
 #### TODO:
