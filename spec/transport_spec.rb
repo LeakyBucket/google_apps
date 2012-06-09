@@ -23,6 +23,16 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#add_member_to" do
+    it "creates an HTTP POST request to add a member to a group" do
+      transporter.add_member_to 'Test', 'Bob'
+      base_path = get_path("group")
+
+      transporter.instance_eval { @request }.should be_a Net::HTTP::Post
+      transporter.instance_eval { @request.path }.should == "/#{base_path}/Test/Bob"
+    end
+  end
+
   describe '#auth_body' do
     it "builds the POST body for the authenticate request" do
       transporter.send(:auth_body, "not real user", "not real password").should be_a(String)

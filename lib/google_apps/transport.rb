@@ -5,7 +5,7 @@ require 'rexml/document'
 
 module GoogleApps
 	class Transport
-		attr_reader :request, :response
+		attr_reader :request, :response, :domain
 		attr_accessor :auth, :user, :group, :nickname
 
     BOUNDARY = "=AaB03xDFHT8xgg"
@@ -18,11 +18,12 @@ module GoogleApps
 			@group = targets[:group] || "https://apps-apis.google.com/a/feeds/group/2.0/#{domain}"
 			@nickname = targets[:nickname]
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
+      @domain = domain
 			@token = nil
 			@response = nil
 			@request = nil
 		end
-		
+
 
     # authenticate will take the provided account and
     # password and attempt to authenticate them with
@@ -126,6 +127,20 @@ module GoogleApps
       @response = request(uri)
     end
 
+
+    # add_member_to adds a member to a group in the domain.
+    # It takes a group_id and a GoogleApps::Atom::GroupMember
+    # document as arguments.
+    #
+    # add_member_to 'test', document
+    #
+    # add_member_to returns the response received from Google.
+    def add_member_to(group_id, document)
+      puts @group + "/#{group_id}/member"
+      add(@group + "/#{group_id}/member", document)
+    end
+
+
     # add is a generic target for method_missing.  It is
     # intended to handle the general case of adding
     # to the GoogleApps Domain.  It takes an API endpoint
@@ -174,13 +189,13 @@ module GoogleApps
       uri = URI(endpoint + "/#{id}")
       @request = Net::HTTP::Delete.new(uri.path)
       set_headers :user
-      
+
       @response = request(uri)
     end
 
     # migration performs mail migration from a local
     # mail environment to GoogleApps.  migrate takes a
-    # username a GoogleApps::Atom::Properties dcoument 
+    # username a GoogleApps::Atom::Properties dcoument
     # and the message as plain text (String) as arguments.
     #
     # migrate 'user', properties, message
@@ -252,6 +267,10 @@ module GoogleApps
         @request['content-type'] = "application/x-www-form-urlencoded"
       when :migrate
         @request['content-type'] = "multipart/related; boundary=\"#{BOUNDARY}\""
+        @request['authorization'] = "GoogleLogin auth=#{@token}"
+      when :member
+        @request['content-type'] = "application/x-www-form-urlencoded"
+        @request['content-length'] = 0
         @request['authorization'] = "GoogleLogin auth=#{@token}"
       else
         @request['content-type'] = "application/atom+xml"
