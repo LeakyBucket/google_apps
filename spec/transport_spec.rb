@@ -29,7 +29,17 @@ describe "GoogleApps::Transport" do
       base_path = get_path("group")
 
       transporter.instance_eval { @request }.should be_a Net::HTTP::Post
-      transporter.instance_eval { @request.path }.should == "/#{base_path}/Test/Bob"
+      transporter.instance_eval { @request.path }.should == "/#{base_path}/Test/member"
+    end
+  end
+
+  describe "#delete_member_from" do
+    it "crafts an HTTP DELETE request for a group member" do
+      transporter.delete_member_from 'next_group', 'lholcomb2@cnm.edu'
+      base_path = get_path("group")
+
+      transporter.instance_eval { @request }.should be_a Net::HTTP::Delete
+      transporter.instance_eval { @request.path }.should == "/#{base_path}/next_group/member/lholcomb2@cnm.edu"
     end
   end
 

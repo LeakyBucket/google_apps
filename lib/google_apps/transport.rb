@@ -136,8 +136,18 @@ module GoogleApps
     #
     # add_member_to returns the response received from Google.
     def add_member_to(group_id, document)
-      puts @group + "/#{group_id}/member"
       add(@group + "/#{group_id}/member", document)
+    end
+
+
+    # delete_member_from removes a member from a group in the
+    # domain.  It takes a group_id and member_id as arguments.
+    #
+    # delete_member_from 'test_group', 'member@cnm.edu'
+    #
+    # delete_member_from returns the respnse received from Google.
+    def delete_member_from(group_id, member_id)
+      delete(@group + "/#{group_id}/member", member_id)
     end
 
 
@@ -267,10 +277,6 @@ module GoogleApps
         @request['content-type'] = "application/x-www-form-urlencoded"
       when :migrate
         @request['content-type'] = "multipart/related; boundary=\"#{BOUNDARY}\""
-        @request['authorization'] = "GoogleLogin auth=#{@token}"
-      when :member
-        @request['content-type'] = "application/x-www-form-urlencoded"
-        @request['content-length'] = 0
         @request['authorization'] = "GoogleLogin auth=#{@token}"
       else
         @request['content-type'] = "application/atom+xml"

@@ -8,22 +8,48 @@ module GoogleApps
         add_header
       end
 
+
+      # member= sets the member value, if @member is non-nil
+      # member= will replace the value in the XML document
+      # before setting @member to the new value.
+      #
+      # member = 'test_user@cnm.edu'
+      #
+      # member= returns the value of @member
       def member=(member)
         @member.nil? ? set_member(member) : change_member(member)
       end
 
+
+      # to_s returns @document as a string.
       def to_s
         @document.to_s
       end
 
+
       private
 
+      # set_member adds a memberId property element to
+      # the XML document and sets @member to the given
+      # value.
+      #
+      # set_member 'test_user@cnm.edu'
+      #
+      # set_member returns the value of @member
       def set_member(member)
         @document.root << build_node(member)
 
         @member = member
       end
 
+
+      # build_node creates an apps:property element
+      # for memberId with the provided argument as
+      # the value.
+      #
+      # build_node 'test_user@cnm.edu'
+      #
+      # build_node returns an apps:property XML Node.
       def build_node(member)
         node = Atom::XML::Node.new('apps:property')
         node.attributes['name'] = 'memberId'
@@ -32,6 +58,15 @@ module GoogleApps
         node
       end
 
+
+      # change_member changes the value attribute of the
+      # apps:property element in @document to the value
+      # of the provided argument.  It also sets @member
+      # to the provided argument.
+      #
+      # change_member 'test_user@cnm.edu'
+      #
+      # change_member returns the value of @member
       def change_member(member)
         # This really should use find but I can't figure out how to
         # get the XPath to work with this document.
@@ -42,6 +77,8 @@ module GoogleApps
         @member = member
       end
 
+
+      # add_header sets the root element of @document
       def add_header
         @document.root = Atom::XML::Node.new('atom:entry')
 
