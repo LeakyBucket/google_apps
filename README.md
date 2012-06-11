@@ -21,6 +21,9 @@ __Domain API__
       * Group Creation
       * Group Deletion
       * Group Record Retrieval
+      * Add Group Member
+      * Delete Group Member
+      * Modify Group Attributes
   * Public Key Upload
   * Email Audit
     * Mailbox Export Request
@@ -43,8 +46,11 @@ __Domain__
     * Email Monitors
     * Account Information
   * Email Settings
-  * Groups Settings (Modification only)
-  * Provisioning (Modification only)
+  * Groups Settings
+    * Member List
+  * User Provisioning
+    * List all users in domain
+    * User list pagination
   * Reporting
   * Reporting Visualization
   * User Profiles
@@ -100,6 +106,24 @@ group = GoogleApps::Atom::Group.new
 group.new_group id: 'ID', name: 'TestGroup', description: 'Simple Test Group', perms: 'Domain'
 
 transporter.new_group group
+
+
+# Modifying a Group
+group = GoogleApps::Atom::Group.new
+group.set_values name: 'New Name'
+
+transporter.update_group 'target_group', group
+
+
+# Adding a Member to a Group
+group_member = GoogleApps::Atom::GroupMember.new
+group_member.member = 'Bob'
+
+transporter.add_member_to 'target_group', group_member
+
+
+# Seleting a Member from a Group
+transporter.delete_member_from 'target_group', 'member_id'
 
 
 # Deleting a Group
