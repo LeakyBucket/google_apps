@@ -5,6 +5,7 @@ describe "GoogleApps::Transport" do
   let (:user_doc) { GoogleApps::Atom::User.new }
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
+  let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
 
   describe '#new' do
     it "assigns endpoints and sets @token to nil" do
@@ -56,6 +57,16 @@ describe "GoogleApps::Transport" do
       transporter.send(:set_auth_token)
 
       transporter.instance_eval { @token }.should == 'fake_token'
+    end
+  end
+
+  describe "#request_export" do
+    it "crafts a HTTP POST request for a mailbox export" do
+      transporter.request_export 'lholcomb2', document
+      base_path = get_path("export")
+
+      transporter.instance_eval { @request }.should be_a Net::HTTP::Post
+      transporter.instance_eval { @request.path }.should == "/#{base_path}/lholcomb2"
     end
   end
 

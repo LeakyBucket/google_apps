@@ -6,7 +6,7 @@ require 'rexml/document'
 module GoogleApps
 	class Transport
 		attr_reader :request, :response, :domain
-		attr_accessor :auth, :user, :group, :nickname
+		attr_accessor :auth, :user, :group, :nickname, :export
 
     BOUNDARY = "=AaB03xDFHT8xgg"
 
@@ -39,7 +39,7 @@ module GoogleApps
 			@request.body = auth_body(account, pass)
 			set_headers :auth
 
-			@response = request(uri)
+			@response = request uri
 
 			set_auth_token
 
@@ -56,12 +56,7 @@ module GoogleApps
     # request_export returns the HTTP response received
     # from Google.
     def request_export(username, document)
-      uri = URI(@export + "/#{username}")
-      @request = Net::HTTP::Post.new uri.path
-      @request.body = document.to_s
-      set_headers :user
-
-      @response = request(uri)
+      add(@export + "/#{username}", document)
     end
 
     # export_status checks the status of a mailbox export
@@ -124,7 +119,7 @@ module GoogleApps
       @request = Net::HTTP::Get.new(uri.path)
       set_headers :user
 
-      @response = request(uri)
+      @response = request uri
     end
 
 
@@ -165,7 +160,7 @@ module GoogleApps
 			@request.body = document.to_s
 			set_headers :user
 
-			@response = request(uri)
+			@response = request uri
 		end
 
     # update is a generic target for method_missing.  It is
@@ -184,7 +179,7 @@ module GoogleApps
       @request.body = document.to_s
       set_headers :user
 
-      @response = request(uri)
+      @response = request uri
     end
 
     # delete is a generic target for method_missing.  It is
@@ -200,7 +195,7 @@ module GoogleApps
       @request = Net::HTTP::Delete.new(uri.path)
       set_headers :user
 
-      @response = request(uri)
+      @response = request uri
     end
 
     # migration performs mail migration from a local
@@ -217,7 +212,7 @@ module GoogleApps
       @request.body = multi_part(properties.to_s, message)
       set_headers :migrate
 
-      @response = request(uri)
+      @response = request uri
     end
 
 
