@@ -65,15 +65,10 @@ module GoogleApps
     #
     # export_status 'username', 847576
     #
-    # export_status will return the body of the HTTP
+    # export_status will return the status of the HTTP
     # response from Google
     def export_status(username, req_id)
-      uri = URI(@export + "/#{username}/#{req_id}")
-      @request = Net::HTTP::Get.new uri.path
-      set_headers :user
-
-      # TODO: Return actual status not whole body.
-      (@response = request(uri)).body
+      get(@export + "/#{username}", req_id)
     end
 
     def fetch_export(username, req_id, filename) # :nodoc:

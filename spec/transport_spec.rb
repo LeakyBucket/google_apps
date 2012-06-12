@@ -70,6 +70,16 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#export_status" do
+    it "crafts a HTTP GET request for a mailbox export status" do
+      transporter.export_status 'lholcomb2', 83838
+      base_path = get_path("export")
+
+      transporter.instance_eval { @request }.should be_a Net::HTTP::Get
+      transporter.instance_eval { @request.path }.should == "/#{base_path}/lholcomb2/83838"
+    end
+  end
+
   describe '#add_user' do
     it "sends a POST request to the User endpoint" do
       transporter.add_user user_doc
