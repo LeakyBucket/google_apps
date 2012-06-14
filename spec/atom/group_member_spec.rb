@@ -39,6 +39,14 @@ describe "GoogleApps::Atom::GroupMember" do
     end
   end
 
+  describe "#parse_doc" do
+    it "sets @document to be a parsed copy of @document" do
+      member.send(:parse_doc)
+
+      member.instance_eval { @document }.should be_a LibXML::XML::Document
+    end
+  end
+
   describe "#to_s" do
     it "returns @document as a string" do
       member.member = 'Tom'

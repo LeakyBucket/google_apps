@@ -77,6 +77,12 @@ module GoogleApps
         @member = member
       end
 
+      # parse_doc parses the current @document so that it can
+      # be searched with find.
+      def parse_doc
+        @document = Atom::XML::Parser.document(@document).parse
+      end
+
 
       # add_header sets the root element of @document
       def add_header
