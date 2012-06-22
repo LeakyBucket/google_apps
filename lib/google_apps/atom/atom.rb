@@ -15,6 +15,12 @@ module GoogleApps
     HASH_FUNCTION = "SHA-1"
     DOCUMENTS = %w(user export group group_member message_attributes public_key)
 
+    NAMESPACES = {
+      atom: 'http://www.w3.org/2005/Atom',
+      apps: 'http://schemas.google.com/apps/2006',
+      gd: 'http://schemas.google.com/g/2005'
+    }
+
     # The idea is to make document distribution more dynamic.
     # Might be pointless but it's here for now.
     DOCUMENTS.each do |doc|

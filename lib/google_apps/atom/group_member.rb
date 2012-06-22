@@ -80,7 +80,7 @@ module GoogleApps
       # parse_doc parses the current @document so that it can
       # be searched with find.
       def parse_doc(document = @document)
-        @document = Atom::XML::Parser.document(document).parse
+        Atom::XML::Parser.document(document).parse
       end
 
 
