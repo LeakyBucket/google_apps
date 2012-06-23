@@ -1,6 +1,7 @@
 module GoogleApps
   module Atom
     class GroupMember
+      include GoogleApps::Atom::Node
       attr_accessor :member
 
       def initialize
@@ -37,25 +38,9 @@ module GoogleApps
       #
       # set_member returns the value of @member
       def set_member(member)
-        @document.root << build_node(member)
+        @document.root << create_node(type: 'apps:property', attrs: [['name', 'memberId'], ['value', member]])
 
         @member = member
-      end
-
-
-      # build_node creates an apps:property element
-      # for memberId with the provided argument as
-      # the value.
-      #
-      # build_node 'test_user@cnm.edu'
-      #
-      # build_node returns an apps:property XML Node.
-      def build_node(member)
-        node = Atom::XML::Node.new('apps:property')
-        node.attributes['name'] = 'memberId'
-        node.attributes['value'] = member
-
-        node
       end
 
 
