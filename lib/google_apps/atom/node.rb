@@ -19,6 +19,14 @@ module GoogleApps
         end
       end
 
+
+      # add_attributes adds the specified attributes to the
+      # given node.  It takes a LibXML::XML::Node and an
+      # array of name, value attribute pairs.
+      #
+      # add_attribute node, [['title', 'emperor'], ['name', 'Napoleon']]
+      #
+      # add_attribute returns the modified node.
       def add_attributes(node, attributes)
         attributes.each do |attribute|
           node.attributes[attribute[0]] = attribute[1]
@@ -27,9 +35,23 @@ module GoogleApps
         node
       end
 
-      def update_node(*properties)
-        @document.root.each do |node|
-          node.attributes[]
+
+      # update_node updates the values for the specified
+      # attributes on the node specified by the given xpath
+      # value.  It is ill behaved and will change any
+      # matching attributes in any node returned using the
+      # given xpath.
+      #
+      # update_node takes a document (must be parsed), an
+      # xpath value and a hash of attribute names with
+      # current and new value pairs.
+      #
+      # update_node document, '/apps:nickname', name: ['Bob', 'Tom']
+      def find_and_update(document, xpath, attributes)
+        document.find(xpath).each do |node|
+          attributes.each_key do |attrib|
+            node.attributes[attrib.to_s] = attributes[attrib][1] if node.attributes[attrib.to_s] == attributes[attrib][0]
+          end
         end
       end
     end
