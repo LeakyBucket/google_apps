@@ -1,6 +1,7 @@
 module GoogleApps
   module Atom
     class Nickname
+      include GoogleApps::Atom::Node
       attr_reader :nickname, :user, :document
 
       ELEMENTS = { nick: ['apps:nickname', 'name'], user: ['apps:login', 'userName'] }
@@ -77,7 +78,7 @@ module GoogleApps
       #
       # set_nickname returns the new nickname value.
       def set_nickname(nick)
-        @document.root << new_element(:nick, nick)
+        @document.root << create_node(type: 'apps:nickname', attrs: [['name', nick]])
 
         @nickname = nick
       end
@@ -91,7 +92,7 @@ module GoogleApps
       #
       # set_user returns the new user value.
       def set_user(username)
-        @document.root << new_element(:user, username)
+        @document.root << create_node(type: 'apps:login', attrs: [['userName', username]])
 
         @user = username
       end
@@ -133,23 +134,6 @@ module GoogleApps
         @document.root.each do |node|
           node.attributes[ELEMENTS[type][1]] = value
         end
-      end
-
-
-      # new_element builds an apps:login or apps:nickname
-      # node that can be added to the underlying XML
-      # document.  It takes a type (:nick or :user) along
-      # with the value for the node attribute.
-      #
-      # new_element :nick, 'Timmy'
-      #
-      # new_element returns an XML node corresponding to
-      # the specified type.
-      def new_element(type, value)
-        node = Atom::XML::Node.new ELEMENTS[type][0]
-        node.attributes[ELEMENTS[type][1]] = value
-
-        node
       end
 
 
