@@ -138,6 +138,19 @@ transporter.get_group 'ID'
 
 transporter.response.body
 
+
+# Creating a Nickname
+nick = GoogleApps::Atom::Nickname.new
+nick.nickname = 'Nickname'
+nick.user = 'username'
+
+transporter.add_nickname nick
+
+
+# Deleting a Nickname
+transporter.delete_nickname 'Nickname'
+
+
 # Uploading Public Key
 pub_key = GoogleApps::Atom::PublicKey.new
 pub_key.new_key File.read('key_file')
