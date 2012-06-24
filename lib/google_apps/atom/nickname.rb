@@ -24,10 +24,10 @@ module GoogleApps
 
 
       # user= sets the username value on the object and in the
-      # underlying XML document.  It takes a string (email address)
+      # underlying XML document.  It takes a string (default/current username)
       # as an argument.
       #
-      # user = 'tom@work.com'
+      # user = 'tom'
       #
       # user= returns the new username value
       def user=(username)
@@ -86,9 +86,10 @@ module GoogleApps
 
       # set_user adds an apps:login node to the underlying
       # XML document and sets @user.  It takes a username
-      # (email address) in string form for its argument.
+      # (current/default username) in string form for its
+      # argument.
       #
-      # set_user 'bob@work.com'
+      # set_user 'bob'
       #
       # set_user returns the new user value.
       def set_user(username)

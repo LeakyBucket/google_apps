@@ -16,7 +16,7 @@ module GoogleApps
       @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
       @migration = targets[:migration] || "https://apps-apis.google.com/a/feeds/migration/2.0/#{domain}"
 			@group = targets[:group] || "https://apps-apis.google.com/a/feeds/group/2.0/#{domain}"
-			@nickname = targets[:nickname]
+			@nickname = targets[:nickname] || "https://apps-apis.google.com/a/feeds/#{domain}/nickname/2.0"
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
       @domain = domain
 			@token = nil
