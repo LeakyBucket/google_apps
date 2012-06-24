@@ -24,6 +24,9 @@ __Domain API__
       * Add Group Member
       * Delete Group Member
       * Modify Group Attributes
+    * Nicknames
+      * Creation
+      * Deletion
   * Public Key Upload
   * Email Audit
     * Mailbox Export Request
