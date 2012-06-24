@@ -147,6 +147,10 @@ nick.user = 'username'
 transporter.add_nickname nick
 
 
+# Retrieving a Nickname
+transporter.get_nickname 'Nickname'
+
+
 # Deleting a Nickname
 transporter.delete_nickname 'Nickname'
 
