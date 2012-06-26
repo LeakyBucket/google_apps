@@ -109,7 +109,7 @@ module GoogleApps
     # get returns the HTTP response received from Google.
     def get(endpoint, id = nil)
       # TODO:  Need to handle <link rel='next' for pagination if wanting all users
-      id ? uri = URI(endpoint + "/#{id}") : uri = URI(endpoint)
+      id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
       #uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
       @request = Net::HTTP::Get.new(uri.path)
       set_headers :user
@@ -243,6 +243,14 @@ module GoogleApps
     # query parameters.
     def auth_body(account, pass)
       "&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
+    end
+
+
+    # build_id checks the id string.  If it is formatted
+    # as a query string it is returned as is.  If not
+    # a / is prepended to the id string.
+    def build_id(id)
+      id =~ /^\?/ ? id : "/#{id}"
     end
 
 

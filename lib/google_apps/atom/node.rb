@@ -54,6 +54,18 @@ module GoogleApps
           end
         end
       end
+
+
+      # get_content returns the content of the specified node.
+      # If multiple nodes match the xpath value get_content
+      # will return the content of the first occurance.
+      #
+      # get_content document, '//title'
+      #
+      # get_content returns the content of the node as a string.
+      def get_content(document, xpath)
+        document.find(xpath).first.content
+      end
     end
   end
 end

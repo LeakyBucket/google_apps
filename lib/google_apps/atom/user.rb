@@ -2,8 +2,8 @@ module GoogleApps
 	module Atom
   	class User
       attr_reader :document
-      
-  		def initialize
+
+  		def initialize(xml = nil)
         new_doc
   			add_header
   		end
@@ -33,7 +33,7 @@ module GoogleApps
 
       # login_node adds an apps:login attribute to @document.
       #  login_node takes a username and password as arguments
-      # it is also possible to specify that the account be 
+      # it is also possible to specify that the account be
       # suspended.
       #
       # login_node suspended, 'username', 'password'
@@ -50,7 +50,7 @@ module GoogleApps
       end
 
 
-      # quota_node adds an apps:quota attribute to @document.  
+      # quota_node adds an apps:quota attribute to @document.
       # quota_node takes an integer value as an argument.  This
       # argument translates to the number of megabytes available
       # on the Google side.
@@ -65,7 +65,7 @@ module GoogleApps
   			quota
   		end
 
-      # name_node adds an apps:name attribute to @document.  
+      # name_node adds an apps:name attribute to @document.
       # name_node takes the first and last names as arguments.
       #
       # name_node 'first name', 'last name'

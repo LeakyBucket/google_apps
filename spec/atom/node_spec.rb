@@ -40,4 +40,10 @@ describe "GoogleApps::Atom::Node" do
       document.find('//apps:property').first.attributes['value'].should == 'senior'
     end
   end
+
+  describe "#get_content" do
+    it "Returns the content of the specified node" do
+      node.get_content(document, '//title').should == 'Users'
+    end
+  end
 end

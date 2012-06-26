@@ -18,13 +18,14 @@ module GoogleApps
     NAMESPACES = {
       atom: 'http://www.w3.org/2005/Atom',
       apps: 'http://schemas.google.com/apps/2006',
-      gd: 'http://schemas.google.com/g/2005'
+      gd: 'http://schemas.google.com/g/2005',
+      openSearch: 'http://a9.com/-/spec/opensearchrss/1.0/'
     }
 
     # The idea is to make document distribution more dynamic.
     # Might be pointless but it's here for now.
     DOCUMENTS.each do |doc|
-      eval "def #{doc}\n  #{doc.camel_up}.new\nend"
+      eval "def #{doc}(*args)\n  #{doc.camel_up}.new *args\nend"
       module_function doc.to_sym
     end
   end

@@ -80,6 +80,16 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#build_id" do
+    it "Returns a query string unchanged" do
+      transporter.send(:build_id, '?bob').should == '?bob'
+    end
+
+    it "Prepends a slash to non-query strings" do
+      transporter.send(:build_id, 'tom').should == '/tom'
+    end
+  end
+
   describe '#add_user' do
     it "sends a POST request to the User endpoint" do
       transporter.add_user user_doc
