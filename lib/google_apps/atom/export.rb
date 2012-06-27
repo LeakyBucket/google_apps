@@ -1,6 +1,9 @@
 module GoogleApps
   module Atom
     class Export
+      HEADER = 'HEADER_ONLY'
+      FULL = 'FULL_MESSAGE'
+
       def initialize
         @document = Atom::XML::Document.new
         set_header

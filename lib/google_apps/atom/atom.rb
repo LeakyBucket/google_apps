@@ -13,7 +13,7 @@ module GoogleApps
     include LibXML
 
     HASH_FUNCTION = "SHA-1"
-    DOCUMENTS = %w(user export group group_member message_attributes public_key)
+    DOCUMENTS = %w(user export group group_member message_attributes public_key feed)
 
     NAMESPACES = {
       atom: 'http://www.w3.org/2005/Atom',
