@@ -25,7 +25,7 @@ module GoogleApps
     # The idea is to make document distribution more dynamic.
     # Might be pointless but it's here for now.
     DOCUMENTS.each do |doc|
-      eval "def #{doc}(*args)\n  #{doc.camel_up}.new *args\nend"
+      eval "def #{doc}(*args)\n  #{doc.camel_up}.new *args\nend" # Needs __file__ and __line__
       module_function doc.to_sym
     end
   end
