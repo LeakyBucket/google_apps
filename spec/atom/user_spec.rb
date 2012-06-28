@@ -7,8 +7,16 @@ describe "GoogleApps::Atom::User" do
 
 	describe '#new' do
 		it "creates an empty XML document when given no arguments" do
-			gapp.instance_eval { @document }.should be_a(LibXML::XML::Document)
+			gapp.document.should be_a LibXML::XML::Document
 		end
+
+    it "adds the root element to @document" do
+      gapp.document.to_s.should include '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006">'
+    end
+
+    it "adds the category element to @document" do
+      gapp.document.to_s.should include '<atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/apps/2006#user"/>'
+    end
 
     it "creates an xml document matching the given argument" do
       usr = GoogleApps::Atom.user xml
@@ -20,7 +28,7 @@ describe "GoogleApps::Atom::User" do
   describe '#add_header' do
     it "adds the user header to the docuemnt" do
       gapp.send(:add_header)
-      entry = gapp.instance_eval { @document }.root.children.first
+      entry = gapp.document.root.children.first
 
       entry.should be_a(LibXML::XML::Node)
     end
@@ -30,7 +38,7 @@ describe "GoogleApps::Atom::User" do
 		it "adds a new user record to the document" do
 			gapp.new_user *user
 
-      document = gapp.instance_eval { @document.to_s }
+      document = gapp.document.to_s
 
       document.should include 'test_account'
 		end

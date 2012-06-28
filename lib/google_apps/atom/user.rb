@@ -10,7 +10,7 @@ module GoogleApps
         if xml
           @document = parse(xml)
         else
-          new_doc
+          @document = new_empty_doc
   			  add_header
         end
   		end
