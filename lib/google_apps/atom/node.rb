@@ -20,6 +20,22 @@ module GoogleApps
       end
 
 
+      # add_namespaces adds the specified namespaces to the
+      # specified node.  namespaces should be a hash of name,
+      # value pairs.
+      #
+      # add_namespaces node, atom: 'http://www.w3.org/2005/Atom', apps: 'http://schemas.google.com/apps/2006'
+      #
+      # add_namespaces returns the node with namespaces
+      def add_namespaces(node, namespaces)
+        namespaces.each_pair do |name, value|
+          Atom::XML::Namespace.new node, name.to_s, value
+        end
+
+        node
+      end
+
+
       # add_attributes adds the specified attributes to the
       # given node.  It takes a LibXML::XML::Node and an
       # array of name, value attribute pairs.

@@ -46,4 +46,13 @@ describe "GoogleApps::Atom::Node" do
       node.get_content(document, '//title').should == 'Users'
     end
   end
+
+  describe "#add_namespaces" do
+    it "Adds the specified namespaces to the given node" do
+      test = node.create_node type: 'atom:entry'
+      node.add_namespaces(test, atom: 'http://www.w3.org/2005/Atom')
+
+      test.to_s.should include 'xmlns:atom="http://www.w3.org/2005/Atom"'
+    end
+  end
 end
