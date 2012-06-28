@@ -16,4 +16,13 @@ describe "GoogleApps::Atom::Document" do
       document.make_document(doc_string).should be_a LibXML::XML::Document
     end
   end
+
+  describe "#new_empty_doc" do
+    it "Returns a new empty LibXML::XML::Document" do
+      new_doc = document.new_empty_doc
+
+      new_doc.should be_a LibXML::XML::Document
+      new_doc.to_s.strip.should == '<?xml version="1.0" encoding="UTF-8"?>'
+    end
+  end
 end

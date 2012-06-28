@@ -25,6 +25,17 @@ module GoogleApps
       def make_document(xml)
         xml.is_a?(Atom::XML::Document) ? xml : Atom::XML::Document.string(xml)
       end
+
+
+      # new_empty_doc creates an empty LibXML::XML::Document
+      #
+      # new_empty_doc
+      #
+      # new_empty_doc returns a LibXML::XML::Document without
+      # any nodes.
+      def new_empty_doc
+        Atom::XML::Document.new        
+      end
     end
   end
 end
