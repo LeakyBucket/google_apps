@@ -1,11 +1,18 @@
 module GoogleApps
 	module Atom
   	class User
+      include Atom::Node
+      include Atom::Document
+
       attr_reader :document
 
   		def initialize(xml = nil)
-        new_doc
-  			add_header
+        if xml
+          @document = parse(xml)
+        else
+          new_doc
+  			  add_header
+        end
   		end
 
       # new_user adds the nodes necessary to create a new

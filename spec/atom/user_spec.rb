@@ -3,11 +3,18 @@ require 'spec_helper'
 describe "GoogleApps::Atom::User" do
 	let (:gapp) { GoogleApps::Atom::User.new }
 	let (:user) { ["test_account", "Test", "Account", "db64e604690686663821888f20373a3941ed7e95", 2048] }
+  let (:xml) { File.read('spec/xml/user.xml') }
 
 	describe '#new' do
-		it "creates an empty XML document" do
+		it "creates an empty XML document when given no arguments" do
 			gapp.instance_eval { @document }.should be_a(LibXML::XML::Document)
 		end
+
+    it "creates an xml document matching the given argument" do
+      usr = GoogleApps::Atom.user xml
+
+      usr.document.to_s.should include xml
+    end
 	end
 
   describe '#add_header' do
