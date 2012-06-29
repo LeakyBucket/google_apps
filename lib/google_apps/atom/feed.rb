@@ -19,7 +19,11 @@ module GoogleApps
         #type = properties[:type]
 
         properties[:document].root.inject([]) do |results, entry|
-          results << Atom.send(type, entry) if entry.name == properties[:entry_tag]
+          if entry.name == properties[:entry_tag]
+            xml = entry.children.inject('') { |xml, entry| xml + entry.to_s }
+            results << Atom.send(type, xml)
+          end
+          #results << Atom.send(type, entry) if entry.name == properties[:entry_tag]
           results
         end
       end
