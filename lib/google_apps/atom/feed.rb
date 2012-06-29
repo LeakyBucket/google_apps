@@ -7,6 +7,7 @@ module GoogleApps
       attr_reader :xml, :items
 
       TYPE_MATCH = /<title type="text">(\w*?)</
+      #TYPE_MATCH = /term.*?\#(\w*?)/
 
       def initialize(xml)
         @xml = parse(xml)
@@ -15,6 +16,7 @@ module GoogleApps
 
       def entries_from(properties)
         type = properties[:type].downcase.match(/(\w*?)s$|$/).captures[0].to_sym
+        #type = properties[:type]
 
         properties[:document].root.inject([]) do |results, entry|
           results << Atom.send(type, entry) if entry.name == properties[:entry_tag]

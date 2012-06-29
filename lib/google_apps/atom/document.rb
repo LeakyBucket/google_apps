@@ -34,7 +34,7 @@ module GoogleApps
       # new_empty_doc returns a LibXML::XML::Document without
       # any nodes.
       def new_empty_doc
-        Atom::XML::Document.new        
+        Atom::XML::Document.new
       end
     end
   end
