@@ -22,6 +22,8 @@ module GoogleApps
       openSearch: 'http://a9.com/-/spec/opensearchrss/1.0/'
     }
 
+    ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
+
     # The idea is to make document distribution more dynamic.
     # Might be pointless but it's here for now.
     DOCUMENTS.each do |doc|

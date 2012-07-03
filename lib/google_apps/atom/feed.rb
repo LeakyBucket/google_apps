@@ -32,8 +32,29 @@ module GoogleApps
         end
       end
 
+
       def new_doc_with_entry(type)
         Atom.send type, "<apps:entry xmlns:atom=\"#{Atom::NAMESPACES[:atom]}\" xmlns:apps=\"#{Atom::NAMESPACES[:apps]}\"/>"
+      end
+
+
+      def new_doc(type, content_array, filters)
+        content_array = filters.inject([]) do |content, filter|
+          content << grab_elements(content_array, filter)
+          content
+        end
+
+        Atom.send type, entry_wrap(content_array.flatten).join("\n")
+      end
+
+
+      def grab_elements(content_array, filter)
+        content_array.grep(Regexp.new filter)
+      end
+
+
+      def entry_wrap(content_array)
+        content_array.unshift(Atom::ENTRY_TAG[0]).push(Atom::ENTRY_TAG[1])
       end
     end
   end
