@@ -23,12 +23,6 @@ describe "GoogleApps::Atom::Feed" do
     end
   end
 
-  describe "#new_doc_with_entry" do
-    it "Returns a document with an apps:entry element" do
-      feed.new_doc_with_entry('user').to_s.should include '<apps:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006"/>'
-    end
-  end
-
   describe "#new_doc" do
     it "Returns a new Atom Document with the desired elements" do
       doc = feed.new_doc 'user', content_array, ['apps:']
@@ -54,6 +48,14 @@ describe "GoogleApps::Atom::Feed" do
       entry.should include "<atom:entry xmlns:atom"
       entry.should include "bob"
       entry.should include "</atom:entry>"
+    end
+  end
+
+  describe "#node_to_ary" do
+    it "Returns the content of a node as an array" do
+      content = feed.node_to_ary(entry_node)
+
+      content.should be_an Array
     end
   end
 

@@ -25,3 +25,12 @@ end
 def get_path(category)
   transporter.send(category.to_sym).split('/')[3..-1].join('/')
 end
+
+def entry_node
+  entry = LibXML::XML::Node.new 'entry'
+
+  entry << LibXML::XML::Node.new('uncle')
+  entry << LibXML::XML::Node.new('aunt')
+
+  entry
+end
