@@ -15,6 +15,7 @@ module GoogleApps
       end
 
       # TODO: Need to make sure this works for feeds other than user.
+      # TODO: Need to get category somehow.
       def entries_from(properties)
         type = properties[:type].downcase.match(/(\w*?)s$|$/).captures[0].to_sym
         #type = properties[:type]

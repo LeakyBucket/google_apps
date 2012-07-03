@@ -129,6 +129,17 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
+  describe "#find_values" do
+    it "Populates instance variables with values from @document" do
+      user = GoogleApps::Atom::User.new xml
+
+      user.login.should == 'lholcomb2'
+      user.suspended.should == false
+      user.first_name.should == 'Lawrence'
+      user.last_name.should == 'Holcomb'
+    end
+  end
+
   describe '#name_node' do
     it "should create a google apps api node for the real name" do
       gapp.name_node("Tom").should be_a LibXML::XML::Node

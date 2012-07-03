@@ -22,6 +22,15 @@ module GoogleApps
       openSearch: 'http://a9.com/-/spec/opensearchrss/1.0/'
     }
 
+    MAPS = {
+      user: {
+        userName: :login,
+        suspended: :suspended,
+        familyName: :last_name,
+        givenName: :first_name
+      }
+    }
+
     ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
 
     # The idea is to make document distribution more dynamic.

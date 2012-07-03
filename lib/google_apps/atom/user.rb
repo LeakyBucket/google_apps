@@ -4,11 +4,12 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
-      attr_reader :document
+      attr_reader :document, :login, :suspended, :first_name, :last_name
 
   		def initialize(xml = nil)
         if xml
           @document = parse(xml)
+          find_values
         else
           @document = new_empty_doc
   			  add_header
@@ -96,6 +97,18 @@ module GoogleApps
       # new_doc re-initializes the XML document.
       def new_doc
         @document = Atom::XML::Document.new
+      end
+
+      # TODO: This needs to target the proper nodes.
+      # TODO: This needs to treat 'true' and 'false' properly
+      def find_values
+        map = Atom::MAPS[:user]
+
+        @document.root.each do |entry|
+          entry.attributes.each do |attribute|
+            instance_variable_set "@#{map[attribute.name.to_sym]}", attribute.to_s.split(' ').last
+          end
+        end
       end
 
       def add_header
