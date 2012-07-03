@@ -106,7 +106,7 @@ module GoogleApps
 
         @document.root.each do |entry|
           entry.attributes.each do |attribute|
-            instance_variable_set "@#{map[attribute.name.to_sym]}", attribute.to_s.split(' ').last
+            instance_variable_set "@#{map[attribute.name.to_sym]}", attribute.value
           end
         end
       end
