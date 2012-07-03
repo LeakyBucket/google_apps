@@ -21,4 +21,10 @@ describe "GoogleApps::Atom::Feed" do
       results.first.should be_a GoogleApps::Atom::User
     end
   end
+
+  describe "#new_doc_with_entry" do
+    it "Returns a document with an apps:entry element" do
+      feed.new_doc_with_entry('user').to_s.should include '<apps:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006"/>'
+    end
+  end
 end

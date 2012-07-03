@@ -21,9 +21,7 @@ module GoogleApps
 
         properties[:document].root.inject([]) do |results, entry|
           if entry.name == properties[:entry_tag]
-            doc = Atom.send type
-            doc.document.root = create_node type: 'apps:entry'
-            add_namespaces doc.document.root, atom: 'http://www.w3.org/2005/Atom', apps: 'http://schemas.google.com/apps/2006'
+            doc = new_doc_with_entry type
             entry.children.each do |child|
               doc.document.root << doc.document.import(child)
             end
@@ -32,6 +30,10 @@ module GoogleApps
           #results << Atom.send(type, entry) if entry.name == properties[:entry_tag]
           results
         end
+      end
+
+      def new_doc_with_entry(type)
+        Atom.send type, "<apps:entry xmlns:atom=\"#{Atom::NAMESPACES[:atom]}\" xmlns:apps=\"#{Atom::NAMESPACES[:apps]}\"/>"
       end
     end
   end
