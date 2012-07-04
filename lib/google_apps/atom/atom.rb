@@ -28,6 +28,10 @@ module GoogleApps
         suspended: :suspended,
         familyName: :last_name,
         givenName: :first_name
+      },
+      nickname: {
+        name: :nickname,
+        userName: :user
       }
     }
 
