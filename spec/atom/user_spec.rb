@@ -140,6 +140,20 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
+  describe "#check_value" do
+    it "Returns true if the value is 'true'" do
+      gapp.send(:check_value, 'true').should == true
+    end
+
+    it "Returns flase if the value is 'false'" do
+      gapp.send(:check_value, 'false').should == false
+    end
+
+    it "Returns the origional object if not == 'true' or 'false'" do
+      gapp.send(:check_value, 'bob').should == 'bob'
+    end
+  end
+
   describe '#name_node' do
     it "should create a google apps api node for the real name" do
       gapp.name_node("Tom").should be_a LibXML::XML::Node

@@ -106,10 +106,23 @@ module GoogleApps
 
         @document.root.each do |entry|
           entry.attributes.each do |attribute|
-            instance_variable_set "@#{map[attribute.name.to_sym]}", attribute.value
+            instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
           end
         end
       end
+
+
+      def check_value(value)
+        case value
+          when 'true'
+            true
+          when 'false'
+            false
+          else
+            value
+          end
+      end
+
 
       def add_header
         @document.root = Atom::XML::Node.new('atom:entry')
