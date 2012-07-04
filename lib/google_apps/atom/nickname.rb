@@ -58,7 +58,7 @@ module GoogleApps
       # appropriate attributes for a GoogleApps nickname
       # document.
       def category
-        create_node type: 'atom:category', attrs: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#nickname']]
+        create_node type: 'atom:category', attrs: Atom::CATEGORY[:nickname]
       end
 
 
