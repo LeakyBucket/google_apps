@@ -67,10 +67,7 @@ module GoogleApps
       #
       # quota_node returns an 'apps:quota' LibXML::XML::Node
   		def quota_node(limit)
-  			quota = Atom::XML::Node.new('apps:quota')
-  			quota['limit'] = limit.to_s
-
-  			quota
+        create_node type: 'apps:quota', attrs: [['limit', limit.to_s]]
   		end
 
       # name_node adds an apps:name attribute to @document.
