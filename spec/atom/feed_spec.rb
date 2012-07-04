@@ -41,6 +41,15 @@ describe "GoogleApps::Atom::Feed" do
     end
   end
 
+  describe "#add_category" do
+    it "Adds an atom:category node to the front of the content_array" do
+      content = feed.add_category(content_array, 'user').join("\n")
+
+      content.should include '<atom:category'
+      content.should include '#user'
+    end
+  end
+
   describe "#entry_wrap" do
     it "Wraps the given content in an apps:entry element" do
       entry = feed.entry_wrap(["bob"]).join("\n")

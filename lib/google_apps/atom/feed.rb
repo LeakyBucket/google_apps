@@ -15,7 +15,6 @@ module GoogleApps
       end
 
       # TODO: Need to make sure this works for feeds other than user.
-      # TODO: Need to get category somehow.
       def entries_from(properties)
         type = properties[:type].downcase.match(/(\w*?)s$|$/).captures[0].to_sym
         #type = properties[:type]
@@ -55,7 +54,20 @@ module GoogleApps
           content
         end
 
+        add_category content_array, type
+
         Atom.send type, entry_wrap(content_array.flatten).join("\n")
+      end
+
+
+      # add_category adds the proper atom:category node to the
+      # content_array
+      #
+      # add_category content_array, 'user'
+      #
+      # add_category returns the modified content_array
+      def add_category(content_array, type)
+        content_array.unshift(create_node(type: 'atom:category', attrs: Atom::CATEGORY[type.to_sym]).to_s)
       end
 
 

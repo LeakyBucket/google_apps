@@ -13,7 +13,6 @@ module GoogleApps
     include LibXML
 
     HASH_FUNCTION = "SHA-1"
-    DOCUMENTS = %w(user export group group_member message_attributes public_key feed)
 
     NAMESPACES = {
       atom: 'http://www.w3.org/2005/Atom',
@@ -41,6 +40,8 @@ module GoogleApps
     }
 
     ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
+
+    DOCUMENTS = %w(user export group group_member message_attributes public_key feed)
 
     # The idea is to make document distribution more dynamic.
     # Might be pointless but it's here for now.
