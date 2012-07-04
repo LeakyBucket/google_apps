@@ -50,12 +50,7 @@ module GoogleApps
       # header returns an atom:entry node with the appropriate
       # namespaces for a GoogleApps nickname document
       def header
-        node = Atom::XML::Node.new('atom:entry')
-
-        Atom::XML::Namespace.new(node, 'atom', 'http://www.w3.org/2005/Atom')
-        Atom::XML::Namespace.new(node, 'apps', 'http://schemas.google.com/apps/2006')
-
-        node
+        add_namespaces create_node(type: 'atom:entry'), atom: 'http://www.w3.org/2005/Atom', apps: 'http://schemas.google.com/apps/2006'
       end
 
 
@@ -63,11 +58,7 @@ module GoogleApps
       # appropriate attributes for a GoogleApps nickname
       # document.
       def category
-        node = Atom::XML::Node.new('atom:category')
-        node.attributes['scheme'] = 'http://schemas.google.com/g/2005#kind'
-        node.attributes['term'] = 'http://schemas.google.com/apps/2006#nickname'
-
-        node
+        create_node type: 'atom:category', attrs: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#nickname']]
       end
 
 
