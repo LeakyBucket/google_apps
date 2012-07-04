@@ -77,11 +77,11 @@ module GoogleApps
       #
       # name_node returns an apps:name LibXML::XML::Node
   		def name_node(first = nil, last = nil)
-  			name = Atom::XML::Node.new('apps:name')
-  			name['familyName'] = last if last
-  			name['givenName'] = first if first
+        attrs = []
+        attrs << ['givenName', first] if first
+        attrs << ['familyName', last] if last
 
-  			name
+        create_node(type: 'apps:name', attrs: attrs) unless attrs.empty?
   		end
 
       # to_s returns @document as a string
