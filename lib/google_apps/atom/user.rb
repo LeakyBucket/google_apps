@@ -39,7 +39,7 @@ module GoogleApps
         @document
       end
 
-      def set(type, attrs, value)
+      def set(type, attrs)
         @document.root << create_node(type: type, attrs: attrs)
 
         @document = parse @document
@@ -49,8 +49,14 @@ module GoogleApps
         find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{attribute}").to_s, value.to_s]}
       end
 
+      # TODO: Move this method.
+      def node?(name)
+        @document.find("//#{name}").first
+      end
+
+      # TODO: If apps:login exists but there is no suspended value then this update logic will fail
       def suspended=(value)
-        @suspended.nil? ? @document.root << set('apps:login', [['suspended', value.to_s]], true) : update('apps:login', :suspended, value)
+        node?('apps:login') ? set('apps:login', [['suspended', value.to_s]]) : update('apps:login', :suspended, value)
 
         @suspended = value
       end

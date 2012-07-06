@@ -129,6 +129,34 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
+  describe "#set" do
+    it "Creates the specified node and parses the document" do
+      gapp.set 'apps:login', [['suspended', 'false']]
+
+      gapp.to_s.should include '<apps:login suspended="false"/>'
+    end
+  end
+
+  describe "#update" do
+    it "Updated an existing node with the given values" do
+      gapp.set 'apps:login', [['suspended', 'false']]
+      gapp.instance_eval { @suspended = false }
+      gapp.update 'apps:login', :suspended, true
+
+      gapp.to_s.should include 'suspended="true"'
+      gapp.to_s.should_not include 'suspended="false"'
+    end
+  end
+
+  describe "#node?" do
+    it "Checks the document for a node with the given name" do
+      gapp.suspended = true
+
+      gapp.node?('apps:login').should be true
+      gapp.node?('bacon').should be false
+    end
+  end
+
   describe "#suspended=" do
     it "Sets the suspended attribute on the apps:login node" do
       gapp.suspended = true
