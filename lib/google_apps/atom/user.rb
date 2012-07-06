@@ -43,17 +43,16 @@ module GoogleApps
         @document.root << create_node(type: type, attrs: attrs)
 
         @document = parse @document
-        @suspended = value
       end
 
       def update(type, attribute, value)
         find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{attribute}").to_s, value.to_s]}
-
-        @suspended = value
       end
 
       def suspended=(value)
         @suspended.nil? ? @document.root << set('apps:login', [['suspended', value.to_s]], true) : update('apps:login', :suspended, value)
+
+        @suspended = value
       end
 
       def login=(login)
