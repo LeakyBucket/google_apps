@@ -39,6 +39,38 @@ module GoogleApps
         @document
       end
 
+      def set(type, attrs, value)
+        @document.root << create_node(type: type, attrs: attrs)
+
+        @document = parse @document
+        @suspended = value
+      end
+
+      def update(type, attribute, value)
+        find_and_update @document, "//#{type}", attribute.to_sym [@suspended.to_s, value.to_s]
+
+        @suspended = value
+      end
+
+      def suspended=(value)
+        @suspended.nil? ? @document.root << create_node(type: 'apps:login', attrs: [['suspended', value.to_s]]) : find_and_update(@document, '//apps:login', suspended: [@suspended.to_s, value.to_s])
+
+        @document = parse @document
+        @suspended = value
+      end
+
+      def login=(login)
+        @login.nil? ? set_login(login) : update_login(login)
+      end
+
+      def first_name=(name)
+        @first_name.nil? ? set_first_name(name) : update_first_name(name)
+      end
+
+      def last_name=(name)
+        @last_name.nil? ? set_last_name(name) : update_last_name(name)
+      end
+
       # login_node adds an apps:login attribute to @document.
       #  login_node takes a username and password as arguments
       # it is also possible to specify that the account be

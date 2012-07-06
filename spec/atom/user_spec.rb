@@ -129,6 +129,35 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
+  describe "#suspended=" do
+    it "Sets the suspended attribute on the apps:login node" do
+      gapp.suspended = true
+
+      gapp.document.to_s.should include 'suspended="true"'
+    end
+
+    it "Sets @suspended to the given value" do
+      gapp.suspended = true
+
+      gapp.suspended.should == true
+    end
+
+    it "Changes the value of suspended in apps:login if already set" do
+      gapp.suspended = true
+      gapp.suspended = false
+
+      gapp.document.to_s.should include 'suspended="false"'
+      gapp.document.to_s.should_not include 'suspended="true"'
+    end
+
+    it "Sets @suspended to the given value if previously set" do
+      gapp.suspended = true
+      gapp.suspended = false
+
+      gapp.suspended.should == false
+    end
+  end
+
   describe "#find_values" do
     it "Populates instance variables with values from @document" do
       user = GoogleApps::Atom::User.new xml
