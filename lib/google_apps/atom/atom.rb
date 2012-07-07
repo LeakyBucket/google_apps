@@ -26,7 +26,8 @@ module GoogleApps
         userName: :login,
         suspended: :suspended,
         familyName: :last_name,
-        givenName: :first_name
+        givenName: :first_name,
+        limit: :quota
       },
       nickname: {
         name: :nickname,

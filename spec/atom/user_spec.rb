@@ -216,7 +216,7 @@ describe "GoogleApps::Atom::User" do
   end
 
   describe "#first_name=" do
-    it "Sets the givenName attribute on the apps:login node" do
+    it "Sets the givenName attribute on the apps:name node" do
       gapp.first_name = 'Sam'
 
       gapp.to_s.should include 'givenName="Sam"'
@@ -228,7 +228,7 @@ describe "GoogleApps::Atom::User" do
       gapp.first_name.should == 'Sam'
     end
 
-    it "Changes the value of givenName in apps:login if already set" do
+    it "Changes the value of givenName in apps:name if already set" do
       gapp.first_name = 'Sam'
       gapp.first_name = 'June'
 
@@ -244,8 +244,8 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
-  describe "#last_name" do
-    it "Sets the familyName attribute on the apps:login node" do
+  describe "#last_name=" do
+    it "Sets the familyName attribute on the apps:name node" do
       gapp.last_name = 'Strange'
 
       gapp.to_s.should include 'familyName="Strange"'
@@ -257,7 +257,7 @@ describe "GoogleApps::Atom::User" do
       gapp.last_name.should == 'Strange'
     end
 
-    it "Changes the value of familyName in apps:login if already set" do
+    it "Changes the value of familyName in apps:name if already set" do
       gapp.last_name = 'Strange'
       gapp.last_name = 'Parker'
 
@@ -270,6 +270,35 @@ describe "GoogleApps::Atom::User" do
       gapp.last_name = 'Parker'
 
       gapp.last_name.should == 'Parker'
+    end
+  end
+
+  describe "#quota=" do
+    it "Sets the limit attribute on the apps:quota node" do
+      gapp.quota = 12354
+
+      gapp.to_s.should include 'limit="12354"'
+    end
+
+    it "Sets @quota to the given value" do
+      gapp.quota = 12354
+
+      gapp.quota.should == 12354
+    end
+
+    it "Changes the value of limit in apps:quota if already set" do
+      gapp.quota = 12354
+      gapp.quota = 123456
+
+      gapp.to_s.should include 'limit="123456"'
+      gapp.to_s.should_not include 'limit="12354"'
+    end
+
+    it "Sets @quota to the given value if previously set" do
+      gapp.quota = 12354
+      gapp.quota = 123456
+
+      gapp.quota.should == 123456
     end
   end
 

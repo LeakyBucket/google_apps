@@ -6,7 +6,7 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
-      attr_reader :document, :login, :suspended, :first_name, :last_name
+      attr_reader :document, :login, :suspended, :first_name, :last_name, :quota
 
   		def initialize(xml = nil)
         if xml
@@ -70,15 +70,21 @@ module GoogleApps
       end
 
       def first_name=(name)
-        node?('apps:login') ? update('apps:login', :givenName, name) : set('apps:login', [['givenName', name]])
+        node?('apps:name') ? update('apps:name', :givenName, name) : set('apps:name', [['givenName', name]])
 
         @first_name = name
       end
 
       def last_name=(name)
-        node?('apps:login') ? update('apps:login', :familyName, name) : set('apps:login', [['familyName', name]])
+        node?('apps:name') ? update('apps:name', :familyName, name) : set('apps:name', [['familyName', name]])
 
         @last_name = name
+      end
+
+      def quota=(limit)
+        node?('apps:quota') ? update('apps:quota', :limit, limit) : set('apps:quota', [['limit', limit.to_s]])
+
+        @quota = limit
       end
 
       # login_node adds an apps:login attribute to @document.
