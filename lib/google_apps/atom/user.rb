@@ -46,11 +46,11 @@ module GoogleApps
       end
 
 
-      # update updates an existing node in the document.  It takes
+      # update_node updates an existing node in the document.  It takes
       # the type/name, attribute name and the new value as arguments
       #
-      # update 'apps:login', :userName, true
-      def update(type, attribute, value)
+      # update_node 'apps:login', :userName, true
+      def update_node(type, attribute, value)
         find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{Atom::MAPS[:user][attribute]}").to_s, value.to_s]}
       end
 
@@ -70,7 +70,7 @@ module GoogleApps
       #
       # suspended= returns the value that has been set
       def suspended=(value)
-        node('apps:login') ? update('apps:login', :suspended, value) : add_node('apps:login', [['suspended', value.to_s]])
+        node('apps:login') ? update_node('apps:login', :suspended, value) : add_node('apps:login', [['suspended', value.to_s]])
 
         @suspended = value
       end
@@ -82,7 +82,7 @@ module GoogleApps
       #
       # login= returns the value that has been set
       def login=(login)
-        node('apps:login') ? update('apps:login', :userName, login) : add_node('apps:login', [['userName', login]])
+        node('apps:login') ? update_node('apps:login', :userName, login) : add_node('apps:login', [['userName', login]])
 
         @login = login
       end
@@ -94,7 +94,7 @@ module GoogleApps
       #
       # first_name returns the value that has been set
       def first_name=(name)
-        node('apps:name') ? update('apps:name', :givenName, name) : add_node('apps:name', [['givenName', name]])
+        node('apps:name') ? update_node('apps:name', :givenName, name) : add_node('apps:name', [['givenName', name]])
 
         @first_name = name
       end
@@ -106,7 +106,7 @@ module GoogleApps
       #
       # last_name= returns the value that has been set
       def last_name=(name)
-        node('apps:name') ? update('apps:name', :familyName, name) : add_node('apps:name', [['familyName', name]])
+        node('apps:name') ? update_node('apps:name', :familyName, name) : add_node('apps:name', [['familyName', name]])
 
         @last_name = name
       end
@@ -118,7 +118,7 @@ module GoogleApps
       #
       # quota= returns the value that has been set
       def quota=(limit)
-        node('apps:quota') ? update('apps:quota', :limit, limit) : add_node('apps:quota', [['limit', limit.to_s]])
+        node('apps:quota') ? update_node('apps:quota', :limit, limit) : add_node('apps:quota', [['limit', limit.to_s]])
 
         @quota = limit
       end
@@ -134,7 +134,7 @@ module GoogleApps
       def password=(password)
         hashed = hash_password(password)
 
-        node('apps:login') ? update('apps:login', :password, hashed) : add_node('apps:login', [['password', hashed]])
+        node('apps:login') ? update_node('apps:login', :password, hashed) : add_node('apps:login', [['password', hashed]])
 
         add_attributes node('apps:login'), [['hashFunctionName', Atom::HASH_FUNCTION]]
 

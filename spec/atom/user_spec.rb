@@ -96,11 +96,11 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
-  describe "#update" do
+  describe "#update_node" do
     it "Updated an existing node with the given values" do
       gapp.add_node 'apps:login', [['userName', 'Zud']]
       gapp.instance_eval { @login = 'Zud' }
-      gapp.update 'apps:login', :userName, 'Bran'
+      gapp.update_node 'apps:login', :userName, 'Bran'
 
       gapp.to_s.should include 'userName="Bran"'
       gapp.to_s.should_not include 'userName="Zud"'
