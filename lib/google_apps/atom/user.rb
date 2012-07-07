@@ -19,26 +19,6 @@ module GoogleApps
   		end
 
 
-      # new_user adds the nodes necessary to create a new
-      # user in Google Apps.  new_user requires a username,
-      # first name, last name and password.  You can also
-      # provide an optional quota argument, this will override
-      # the default quota in Google Apps.
-      #
-      # new_user 'username', 'first_name', 'last_name', 'password', 1024
-      #
-      # new_user returns the full XML document.
-  		def new_user(user_name, first, last, password, limit=nil)
-        #set_values suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: limit
-        self.quota = limit if limit
-        self.suspended = false
-        self.first_name = first if first
-        self.last_name = last if last
-        self.password = password if password
-        self.login = user_name if user_name
-  		end
-
-
       # populate adds the values for the given attributes to the
       # current document.  populates takes a hash of attribute,
       # value pairs.
