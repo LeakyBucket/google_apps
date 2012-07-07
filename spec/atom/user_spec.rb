@@ -161,7 +161,7 @@ describe "GoogleApps::Atom::User" do
     it "Sets the suspended attribute on the apps:login node" do
       gapp.suspended = true
 
-      gapp.document.to_s.should include 'suspended="true"'
+      gapp.to_s.should include 'suspended="true"'
     end
 
     it "Sets @suspended to the given value" do
@@ -174,8 +174,8 @@ describe "GoogleApps::Atom::User" do
       gapp.suspended = true
       gapp.suspended = false
 
-      gapp.document.to_s.should include 'suspended="false"'
-      gapp.document.to_s.should_not include 'suspended="true"'
+      gapp.to_s.should include 'suspended="false"'
+      gapp.to_s.should_not include 'suspended="true"'
     end
 
     it "Sets @suspended to the given value if previously set" do
@@ -183,6 +183,93 @@ describe "GoogleApps::Atom::User" do
       gapp.suspended = false
 
       gapp.suspended.should == false
+    end
+  end
+
+  describe "#login=" do
+    it "Sets the userName attribute on the apps:login node" do
+      gapp.login = 'bob'
+
+      gapp.to_s.should include 'userName="bob"'
+    end
+
+    it "Sets @login to the given value" do
+      gapp.login = 'bob'
+
+      gapp.login.should == 'bob'
+    end
+
+    it "Changes the value of userName in apps:login if already set" do
+      gapp.login = 'bob'
+      gapp.login = 'lou'
+
+      gapp.to_s.should include 'userName="lou"'
+      gapp.to_s.should_not include 'userName="bob"'
+    end
+
+    it "Sets @login to the given value if previously set" do
+      gapp.login = 'bob'
+      gapp.login = 'lou'
+
+      gapp.login.should == 'lou'
+    end
+  end
+
+  describe "#first_name=" do
+    it "Sets the givenName attribute on the apps:login node" do
+      gapp.first_name = 'Sam'
+
+      gapp.to_s.should include 'givenName="Sam"'
+    end
+
+    it "Sets @first_name to the given value" do
+      gapp.first_name = 'Sam'
+
+      gapp.first_name.should == 'Sam'
+    end
+
+    it "Changes the value of givenName in apps:login if already set" do
+      gapp.first_name = 'Sam'
+      gapp.first_name = 'June'
+
+      gapp.to_s.should include 'givenName="June"'
+      gapp.to_s.should_not include 'givenName="Sam"'
+    end
+
+    it "Sets @first_name to the given value if previously set" do
+      gapp.first_name = 'Sam'
+      gapp.first_name = 'June'
+
+      gapp.first_name.should == 'June'
+    end
+  end
+
+  describe "#last_name" do
+    it "Sets the familyName attribute on the apps:login node" do
+      gapp.last_name = 'Strange'
+
+      gapp.to_s.should include 'familyName="Strange"'
+    end
+
+    it "Sets @last_name to the given value" do
+      gapp.last_name = 'Strange'
+
+      gapp.last_name.should == 'Strange'
+    end
+
+    it "Changes the value of familyName in apps:login if already set" do
+      gapp.last_name = 'Strange'
+      gapp.last_name = 'Parker'
+
+      gapp.to_s.should include 'familyName="Parker"'
+      gapp.to_s.should_not include 'familyName="Strange"'
+    end
+
+    it "Sets @last_name to the given value if previously set" do
+      gapp.last_name = 'Strange'
+      gapp.last_name = 'Parker'
+
+      gapp.last_name.should == 'Parker'
     end
   end
 

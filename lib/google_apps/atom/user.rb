@@ -1,5 +1,7 @@
 module GoogleApps
 	module Atom
+    # TODO: Move User attribute map to user class
+    # TODO: Update attribute map to include @ for instance variables
   	class User
       include Atom::Node
       include Atom::Document
@@ -46,7 +48,7 @@ module GoogleApps
       end
 
       def update(type, attribute, value)
-        find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{attribute}").to_s, value.to_s]}
+        find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{Atom::MAPS[:user][attribute]}").to_s, value.to_s]}
       end
 
       # TODO: Move this method.
@@ -62,15 +64,21 @@ module GoogleApps
       end
 
       def login=(login)
-        @login.nil? ? set_login(login) : update_login(login)
+        node?('apps:login') ? update('apps:login', :userName, login) : set('apps:login', [['userName', login]])
+
+        @login = login
       end
 
       def first_name=(name)
-        @first_name.nil? ? set_first_name(name) : update_first_name(name)
+        node?('apps:login') ? update('apps:login', :givenName, name) : set('apps:login', [['givenName', name]])
+
+        @first_name = name
       end
 
       def last_name=(name)
-        @last_name.nil? ? set_last_name(name) : update_last_name(name)
+        node?('apps:login') ? update('apps:login', :familyName, name) : set('apps:login', [['familyName', name]])
+
+        @last_name = name
       end
 
       # login_node adds an apps:login attribute to @document.
