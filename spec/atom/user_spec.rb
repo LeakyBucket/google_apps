@@ -74,20 +74,6 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
-  describe '#login_node' do
-    it "should create a google apps api node for the user_name and password" do
-      login_node = gapp.login_node("test", "pancakes")
-
-      login_node.should be_a LibXML::XML::Node
-    end
-  end
-
-  describe '#quota_node' do
-    it "should create a google apps api node for the quota" do
-      gapp.quota_node(12868).should be_a LibXML::XML::Node
-    end
-  end
-
   describe "#add_node" do
     it "Creates the specified node and parses the document" do
       gapp.add_node 'apps:login', [['suspended', 'false']]
@@ -322,12 +308,6 @@ describe "GoogleApps::Atom::User" do
 
     it "Returns the origional object if not == 'true' or 'false'" do
       gapp.send(:check_value, 'bob').should == 'bob'
-    end
-  end
-
-  describe '#name_node' do
-    it "should create a google apps api node for the real name" do
-      gapp.name_node("Tom").should be_a LibXML::XML::Node
     end
   end
 end

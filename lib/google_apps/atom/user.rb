@@ -152,53 +152,6 @@ module GoogleApps
       end
 
 
-      # login_node adds an apps:login attribute to @document.
-      #  login_node takes a username and password as arguments
-      # it is also possible to specify that the account be
-      # suspended.
-      #
-      # login_node suspended, 'username', 'password'
-      #
-      # login_node returns an 'apps:login' LibXML::XML::Node
-      def login_node(suspended = "false", user_name = nil, password = nil)
-        login = Atom::XML::Node.new('apps:login')
-        login['userName'] = user_name unless user_name.nil?
-        login['password'] = OpenSSL::Digest::SHA1.hexdigest password unless password.nil?
-        login['hashFunctionName'] = Atom::HASH_FUNCTION unless password.nil?
-        suspended.nil? ? login['suspended'] = 'false' : login['suspended'] = suspended
-
-        login
-      end
-
-
-      # quota_node adds an apps:quota attribute to @document.
-      # quota_node takes an integer value as an argument.  This
-      # argument translates to the number of megabytes available
-      # on the Google side.
-      #
-      # quota_node 1024
-      #
-      # quota_node returns an 'apps:quota' LibXML::XML::Node
-  		def quota_node(limit)
-        create_node type: 'apps:quota', attrs: [['limit', limit.to_s]]
-  		end
-
-
-      # name_node adds an apps:name attribute to @document.
-      # name_node takes the first and last names as arguments.
-      #
-      # name_node 'first name', 'last name'
-      #
-      # name_node returns an apps:name LibXML::XML::Node
-  		def name_node(first = nil, last = nil)
-        attrs = []
-        attrs << ['givenName', first] if first
-        attrs << ['familyName', last] if last
-
-        create_node(type: 'apps:name', attrs: attrs) unless attrs.empty?
-  		end
-
-
       # to_s returns @document as a string
       def to_s
         @document.to_s
