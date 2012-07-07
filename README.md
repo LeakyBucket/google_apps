@@ -82,14 +82,18 @@ transporter.authenticate 'username@domain', 'password'
 
 # Creating a User
 user = GoogleApps::Atom::User.new
-user.new_user 'bob', 'Bob', 'Jenkins', 'password', 2048
+# or
+user = GoogleApps::Atom.user
+
+user.set login: 'JWilkens', password: 'uncle J', first_name: 'Johnsen', last_name: 'Wilkens'
 
 transporter.new_user user
 
 
 # Modifying a User
 user = GoogleApps::Atom::User.new
-user.set_values suspended: true, :lastname 'Todd'
+user.last_name = 'Johnson'
+user.suspended = true
 
 transporter.update_user 'bob', user
 
