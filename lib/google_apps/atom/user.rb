@@ -41,20 +41,36 @@ module GoogleApps
         @document
       end
 
+
+      # set creates the specified node in the user document.  It
+      # takes a type/name and an array of attribute, value pairs as
+      # arguments.  It also parses the new document and saves the
+      # copy in @document
+      #
+      # set 'apps:login', [['userName', 'Zanzabar']]
+      #
+      # set returns a parsed copy of the new document.
       def set(type, attrs)
         @document.root << create_node(type: type, attrs: attrs)
 
         @document = parse @document
       end
 
+
+      # update updates an existing node in the document.  It takes
+      # the type/name, attribute name and the new value as arguments
+      #
+      # update 'apps:login', :userName, true
       def update(type, attribute, value)
         find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{Atom::MAPS[:user][attribute]}").to_s, value.to_s]}
       end
+
 
       # TODO: Move this method.
       def node?(name)
         @document.find_first("//#{name}") ? true : false
       end
+
 
       # NOTE: This should work even if apps:login exists but has no suspended property.  Unless libxml-ruby changes it's default for the attributes hash on a node.
       def suspended=(value)
@@ -63,29 +79,54 @@ module GoogleApps
         @suspended = value
       end
 
+
+      # login= sets the login/account name for this entry
+      #
+      # login = 'Zanzabar'
+      #
+      # login= returns the value that has been set
       def login=(login)
         node?('apps:login') ? update('apps:login', :userName, login) : set('apps:login', [['userName', login]])
 
         @login = login
       end
 
+
+      # first_name= sets the first name for this user entry
+      #
+      # first_name = 'Lou'
+      #
+      # first_name returns the value that has been set
       def first_name=(name)
         node?('apps:name') ? update('apps:name', :givenName, name) : set('apps:name', [['givenName', name]])
 
         @first_name = name
       end
 
+
+      # last_name= sets the last name for this user entry
+      #
+      # last_name = 'Svensen'
+      #
+      # last_name= returns the value that has been set
       def last_name=(name)
         node?('apps:name') ? update('apps:name', :familyName, name) : set('apps:name', [['familyName', name]])
 
         @last_name = name
       end
 
+
+      # quota= sets the quota for this user entry
+      #
+      # quota = 123456
+      #
+      # quota= returns the value that has been set
       def quota=(limit)
         node?('apps:quota') ? update('apps:quota', :limit, limit) : set('apps:quota', [['limit', limit.to_s]])
 
         @quota = limit
       end
+
 
       # login_node adds an apps:login attribute to @document.
       #  login_node takes a username and password as arguments
@@ -118,6 +159,7 @@ module GoogleApps
         create_node type: 'apps:quota', attrs: [['limit', limit.to_s]]
   		end
 
+
       # name_node adds an apps:name attribute to @document.
       # name_node takes the first and last names as arguments.
       #
@@ -132,10 +174,12 @@ module GoogleApps
         create_node(type: 'apps:name', attrs: attrs) unless attrs.empty?
   		end
 
+
       # to_s returns @document as a string
       def to_s
         @document.to_s
       end
+
 
       private
 
@@ -143,6 +187,7 @@ module GoogleApps
       def new_doc
         @document = Atom::XML::Document.new
       end
+
 
       # TODO: This needs to target the proper nodes.
       # TODO: This needs to treat 'true' and 'false' properly
