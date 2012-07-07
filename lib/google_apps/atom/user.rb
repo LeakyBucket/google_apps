@@ -32,11 +32,23 @@ module GoogleApps
         #set_values suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: limit
         self.quota = limit if limit
         self.suspended = false
-        self.first_name = first
-        self.last_name = last
-        self.password = password
-        self.login = user_name
+        self.first_name = first if first
+        self.last_name = last if last
+        self.password = password if password
+        self.login = user_name if user_name
   		end
+
+
+      # populate adds the values for the given attributes to the
+      # current document.  populates takes a hash of attribute,
+      # value pairs.
+      #
+      # populate login: 'Zuddile', password: 'old shoes'
+      def populate(attributes)
+        attributes.keys.each do |key|
+          self.send("#{key}=", attributes[key])
+        end
+      end
 
 
       # TODO: Document
