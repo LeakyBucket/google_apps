@@ -31,17 +31,6 @@ module GoogleApps
       end
 
 
-      # TODO: Document
-      def set_values(values = {})
-        # Don't want to create login_node if nothing has been specified.
-        @document.root << login_node(values[:suspended], values[:username], values[:password])
-        @document.root << quota_node(values[:quota]) if values[:quota]
-        @document.root << name_node(values[:first_name], values[:last_name]) if values[:first_name] or values[:last_name]
-
-        @document
-      end
-
-
       # set creates the specified node in the user document.  It
       # takes a type/name and an array of attribute, value pairs as
       # arguments.  It also parses the new document and saves the
