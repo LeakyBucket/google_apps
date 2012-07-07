@@ -18,6 +18,7 @@ module GoogleApps
         end
   		end
 
+
       # new_user adds the nodes necessary to create a new
       # user in Google Apps.  new_user requires a username,
       # first name, last name and password.  You can also
@@ -27,9 +28,16 @@ module GoogleApps
       # new_user 'username', 'first_name', 'last_name', 'password', 1024
       #
       # new_user returns the full XML document.
-  		def new_user(user_name, first, last, password, quota=nil)
-        set_values suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: quota
+  		def new_user(user_name, first, last, password, limit=nil)
+        #set_values suspended: 'false', username: user_name, password: password, first_name: first, last_name: last, quota: limit
+        self.quota = limit if limit
+        self.suspended = false
+        self.first_name = first
+        self.last_name = last
+        self.password = password
+        self.login = user_name
   		end
+
 
       # TODO: Document
       def set_values(values = {})
@@ -50,7 +58,7 @@ module GoogleApps
       # set 'apps:login', [['userName', 'Zanzabar']]
       #
       # set returns a parsed copy of the new document.
-      def set(type, attrs)
+      def set(type, attrs) # TODO: Should take a target argument rather than only appending to @document.root
         @document.root << create_node(type: type, attrs: attrs)
 
         @document = parse @document

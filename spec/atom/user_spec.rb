@@ -39,9 +39,7 @@ describe "GoogleApps::Atom::User" do
 		it "adds a new user record to the document" do
 			gapp.new_user *user
 
-      document = gapp.document.to_s
-
-      document.should include 'test_account'
+      gapp.to_s.should include 'test_account'
 		end
 	end
 
@@ -140,12 +138,12 @@ describe "GoogleApps::Atom::User" do
 
   describe "#update" do
     it "Updated an existing node with the given values" do
-      gapp.set 'apps:login', [['suspended', 'false']]
-      gapp.instance_eval { @suspended = false }
-      gapp.update 'apps:login', :suspended, true
+      gapp.set 'apps:login', [['userName', 'Zud']]
+      gapp.instance_eval { @login = 'Zud' }
+      gapp.update 'apps:login', :userName, 'Bran'
 
-      gapp.to_s.should include 'suspended="true"'
-      gapp.to_s.should_not include 'suspended="false"'
+      gapp.to_s.should include 'userName="Bran"'
+      gapp.to_s.should_not include 'userName="Zud"'
     end
   end
 
