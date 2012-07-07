@@ -19,27 +19,27 @@ module GoogleApps
   		end
 
 
-      # populate adds the values for the given attributes to the
+      # set adds the values for the given attributes to the
       # current document.  populates takes a hash of attribute,
       # value pairs.
       #
-      # populate login: 'Zuddile', password: 'old shoes'
-      def populate(attributes)
+      # set login: 'Zuddile', password: 'old shoes'
+      def set(attributes)
         attributes.keys.each do |key|
           self.send("#{key}=", attributes[key])
         end
       end
 
 
-      # set creates the specified node in the user document.  It
+      # add_node creates the specified node in the user document.  It
       # takes a type/name and an array of attribute, value pairs as
       # arguments.  It also parses the new document and saves the
       # copy in @document
       #
-      # set 'apps:login', [['userName', 'Zanzabar']]
+      # add_node 'apps:login', [['userName', 'Zanzabar']]
       #
-      # set returns a parsed copy of the new document.
-      def set(type, attrs) # TODO: Should take a target argument rather than only appending to @document.root
+      # add_node returns a parsed copy of the new document.
+      def add_node(type, attrs) # TODO: Should take a target argument rather than only appending to @document.root
         @document.root << create_node(type: type, attrs: attrs)
 
         @document = parse @document
@@ -70,7 +70,7 @@ module GoogleApps
       #
       # suspended= returns the value that has been set
       def suspended=(value)
-        node('apps:login') ? update('apps:login', :suspended, value) : set('apps:login', [['suspended', value.to_s]])
+        node('apps:login') ? update('apps:login', :suspended, value) : add_node('apps:login', [['suspended', value.to_s]])
 
         @suspended = value
       end
@@ -82,7 +82,7 @@ module GoogleApps
       #
       # login= returns the value that has been set
       def login=(login)
-        node('apps:login') ? update('apps:login', :userName, login) : set('apps:login', [['userName', login]])
+        node('apps:login') ? update('apps:login', :userName, login) : add_node('apps:login', [['userName', login]])
 
         @login = login
       end
@@ -94,7 +94,7 @@ module GoogleApps
       #
       # first_name returns the value that has been set
       def first_name=(name)
-        node('apps:name') ? update('apps:name', :givenName, name) : set('apps:name', [['givenName', name]])
+        node('apps:name') ? update('apps:name', :givenName, name) : add_node('apps:name', [['givenName', name]])
 
         @first_name = name
       end
@@ -106,7 +106,7 @@ module GoogleApps
       #
       # last_name= returns the value that has been set
       def last_name=(name)
-        node('apps:name') ? update('apps:name', :familyName, name) : set('apps:name', [['familyName', name]])
+        node('apps:name') ? update('apps:name', :familyName, name) : add_node('apps:name', [['familyName', name]])
 
         @last_name = name
       end
@@ -118,7 +118,7 @@ module GoogleApps
       #
       # quota= returns the value that has been set
       def quota=(limit)
-        node('apps:quota') ? update('apps:quota', :limit, limit) : set('apps:quota', [['limit', limit.to_s]])
+        node('apps:quota') ? update('apps:quota', :limit, limit) : add_node('apps:quota', [['limit', limit.to_s]])
 
         @quota = limit
       end
@@ -134,7 +134,7 @@ module GoogleApps
       def password=(password)
         hashed = hash_password(password)
 
-        node('apps:login') ? update('apps:login', :password, hashed) : set('apps:login', [['password', hashed]])
+        node('apps:login') ? update('apps:login', :password, hashed) : add_node('apps:login', [['password', hashed]])
 
         add_attributes node('apps:login'), [['hashFunctionName', Atom::HASH_FUNCTION]]
 

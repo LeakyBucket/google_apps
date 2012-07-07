@@ -35,40 +35,40 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
-  describe "#populate" do
+  describe "#set" do
     it "Adds the login attribute to the document" do
-      gapp.populate login: 'Zudder'
+      gapp.set login: 'Zudder'
 
       gapp.to_s.should include 'userName="Zudder"'
     end
 
     it "Adds the password attributes to the document" do
-      gapp.populate password: 'taco salad'
+      gapp.set password: 'taco salad'
 
       gapp.to_s.should include "password=\"#{hash_password('taco salad')}\""
       gapp.to_s.should include 'hashFunctionName="SHA'
     end
 
     it "Adds the quota attribute to the document" do
-      gapp.populate quota: 12344
+      gapp.set quota: 12344
 
       gapp.to_s.should include 'limit="12344"'
     end
 
     it "Adds the suspended attribute to the document" do
-      gapp.populate suspended: true
+      gapp.set suspended: true
 
       gapp.to_s.should include 'suspended="true"'
     end
 
     it "Adds the first name to the document" do
-      gapp.populate first_name: 'Luke'
+      gapp.set first_name: 'Luke'
 
       gapp.to_s.should include 'givenName="Luke"'
     end
 
     it "Adds the last name to the document" do
-      gapp.populate last_name: 'Olsen'
+      gapp.set last_name: 'Olsen'
 
       gapp.to_s.should include 'familyName="Olsen"'
     end
@@ -88,9 +88,9 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
-  describe "#set" do
+  describe "#add_node" do
     it "Creates the specified node and parses the document" do
-      gapp.set 'apps:login', [['suspended', 'false']]
+      gapp.add_node 'apps:login', [['suspended', 'false']]
 
       gapp.to_s.should include '<apps:login suspended="false"/>'
     end
@@ -98,7 +98,7 @@ describe "GoogleApps::Atom::User" do
 
   describe "#update" do
     it "Updated an existing node with the given values" do
-      gapp.set 'apps:login', [['userName', 'Zud']]
+      gapp.add_node 'apps:login', [['userName', 'Zud']]
       gapp.instance_eval { @login = 'Zud' }
       gapp.update 'apps:login', :userName, 'Bran'
 
