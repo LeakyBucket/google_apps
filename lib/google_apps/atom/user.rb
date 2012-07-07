@@ -61,7 +61,14 @@ module GoogleApps
       end
 
 
-      # NOTE: This should work even if apps:login exists but has no suspended property.  Unless libxml-ruby changes it's default for the attributes hash on a node.
+      # NOTE: setters should work even if target node exists but has no suspended property.  Unless libxml-ruby changes it's default for the attributes hash on a node.
+
+
+      # suspended= sets the suspended value for the account
+      #
+      # suspended = true
+      #
+      # suspended= returns the value that has been set
       def suspended=(value)
         node('apps:login') ? update('apps:login', :suspended, value) : set('apps:login', [['suspended', value.to_s]])
 
