@@ -51,12 +51,12 @@ module GoogleApps
 
       # TODO: Move this method.
       def node?(name)
-        @document.find("//#{name}").first
+        @document.find_first("//#{name}") ? true : false
       end
 
-      # TODO: If apps:login exists but there is no suspended value then this update logic will fail
+      # NOTE: This should work even if apps:login exists but has no suspended property.  Unless libxml-ruby changes it's default for the attributes hash on a node.
       def suspended=(value)
-        node?('apps:login') ? set('apps:login', [['suspended', value.to_s]]) : update('apps:login', :suspended, value)
+        node?('apps:login') ? update('apps:login', :suspended, value) : set('apps:login', [['suspended', value.to_s]])
 
         @suspended = value
       end
