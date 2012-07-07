@@ -34,3 +34,7 @@ def entry_node
 
   entry
 end
+
+def hash_password(password)
+  OpenSSL::Digest::SHA1.hexdigest password
+end

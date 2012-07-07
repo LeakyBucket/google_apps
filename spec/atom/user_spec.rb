@@ -4,6 +4,7 @@ describe "GoogleApps::Atom::User" do
 	let (:gapp) { GoogleApps::Atom::User.new }
 	let (:user) { ["test_account", "Test", "Account", "db64e604690686663821888f20373a3941ed7e95", 2048] }
   let (:xml) { File.read('spec/xml/user.xml') }
+  let (:default_password) { 'default' }
 
 	describe '#new' do
 		it "creates an empty XML document when given no arguments" do
@@ -148,12 +149,12 @@ describe "GoogleApps::Atom::User" do
     end
   end
 
-  describe "#node?" do
+  describe "#node" do
     it "Checks the document for a node with the given name" do
       gapp.suspended = true
 
-      gapp.node?('apps:login').should be true
-      gapp.node?('bacon').should be false
+      gapp.node('apps:login').should_not be nil
+      gapp.node('bacon').should be nil
     end
   end
 
@@ -299,6 +300,45 @@ describe "GoogleApps::Atom::User" do
       gapp.quota = 123456
 
       gapp.quota.should == 123456
+    end
+  end
+
+  describe "#password=" do
+    before(:all) do
+      @hashed = hash_password(default_password)
+    end
+
+    it "Sets the password attribute on the apps:login node" do
+      gapp.password = default_password
+
+      gapp.to_s.should include "password=\"#{@hashed}\""
+    end
+
+    it "Sets the hashFunctionName attribute on the apps:login node" do
+      gapp.password = default_password
+
+      gapp.to_s.should include "hashFunctionName=\"#{GoogleApps::Atom::HASH_FUNCTION}\""
+    end
+
+    it "Sets @password to the given value" do
+      gapp.password = default_password
+
+      gapp.password.should == @hashed
+    end
+
+    it "Updates the password attribute in apps:login if already set" do
+      gapp.password = default_password
+      gapp.password = 'new password'
+
+      gapp.to_s.should include "password=\"#{hash_password('new password')}\""
+      gapp.to_s.should_not include "password=\"#{@hashed}\""
+    end
+
+    it "Updates @password if previously set" do
+      gapp.password = default_password
+      gapp.password = 'new password'
+
+      gapp.password.should == hash_password('new password')
     end
   end
 

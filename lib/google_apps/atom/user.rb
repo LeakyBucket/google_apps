@@ -6,7 +6,7 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
-      attr_reader :document, :login, :suspended, :first_name, :last_name, :quota
+      attr_reader :document, :login, :suspended, :first_name, :last_name, :quota, :password
 
   		def initialize(xml = nil)
         if xml
@@ -67,14 +67,14 @@ module GoogleApps
 
 
       # TODO: Move this method.
-      def node?(name)
-        @document.find_first("//#{name}") ? true : false
+      def node(name)
+        @document.find_first("//#{name}")
       end
 
 
       # NOTE: This should work even if apps:login exists but has no suspended property.  Unless libxml-ruby changes it's default for the attributes hash on a node.
       def suspended=(value)
-        node?('apps:login') ? update('apps:login', :suspended, value) : set('apps:login', [['suspended', value.to_s]])
+        node('apps:login') ? update('apps:login', :suspended, value) : set('apps:login', [['suspended', value.to_s]])
 
         @suspended = value
       end
@@ -86,7 +86,7 @@ module GoogleApps
       #
       # login= returns the value that has been set
       def login=(login)
-        node?('apps:login') ? update('apps:login', :userName, login) : set('apps:login', [['userName', login]])
+        node('apps:login') ? update('apps:login', :userName, login) : set('apps:login', [['userName', login]])
 
         @login = login
       end
@@ -98,7 +98,7 @@ module GoogleApps
       #
       # first_name returns the value that has been set
       def first_name=(name)
-        node?('apps:name') ? update('apps:name', :givenName, name) : set('apps:name', [['givenName', name]])
+        node('apps:name') ? update('apps:name', :givenName, name) : set('apps:name', [['givenName', name]])
 
         @first_name = name
       end
@@ -110,7 +110,7 @@ module GoogleApps
       #
       # last_name= returns the value that has been set
       def last_name=(name)
-        node?('apps:name') ? update('apps:name', :familyName, name) : set('apps:name', [['familyName', name]])
+        node('apps:name') ? update('apps:name', :familyName, name) : set('apps:name', [['familyName', name]])
 
         @last_name = name
       end
@@ -122,9 +122,37 @@ module GoogleApps
       #
       # quota= returns the value that has been set
       def quota=(limit)
-        node?('apps:quota') ? update('apps:quota', :limit, limit) : set('apps:quota', [['limit', limit.to_s]])
+        node('apps:quota') ? update('apps:quota', :limit, limit) : set('apps:quota', [['limit', limit.to_s]])
 
         @quota = limit
+      end
+
+
+      # password= sets the password and hashFunctionName attributes
+      # in the apps:login node.  It takes a plaintext string as it's
+      # only argument.
+      #
+      # password = 'new password'
+      #
+      # password= returns the value that has been set
+      def password=(password)
+        hashed = hash_password(password)
+
+        node('apps:login') ? update('apps:login', :password, hashed) : set('apps:login', [['password', hashed]])
+
+        add_attributes node('apps:login'), [['hashFunctionName', Atom::HASH_FUNCTION]]
+
+        @password = hashed
+      end
+
+
+      # hash_password hashes the provided password
+      #
+      # hash_password 'new password'
+      #
+      # hash_password returns an SHA1 digest of the password
+      def hash_password(password)
+        OpenSSL::Digest::SHA1.hexdigest password
       end
 
 
