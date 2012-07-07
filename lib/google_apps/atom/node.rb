@@ -66,7 +66,7 @@ module GoogleApps
       def find_and_update(document, xpath, attributes)
         document.find(xpath).each do |node|
           attributes.each_key do |attrib|
-            node.attributes[attrib] = attributes[attrib][1] if node.attributes[attrib] == attributes[attrib][0]
+            node.attributes[attrib.to_s] = attributes[attrib][1] if node.attributes[attrib.to_s].to_s == attributes[attrib][0].to_s
           end
         end
       end
