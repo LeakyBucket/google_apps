@@ -124,19 +124,17 @@ module GoogleApps
     # users from that point on (alphabetically) will be returned.
     #
     # get_users start: 'lholcomb2'
-    # get_users
     #
     # get_users returns the final response from google.
     def get_users(options)
       @feeds = []
-      options[:start] ? get(@user + "?startUsername=#{options[:start]}") : get @user
+      options[:start] ? get(@user + "?startUsername=#{options[:start]}") : get(@user)
 
-      # Switch to add_feed
-      @feeds << GoogleApps::Atom.feed(@response.body)
+      add_feed
 
       while next_page = get_next(@feeds.last.xml)
         get next_page
-        @feeds << GoogleApps::Atom.feed(@response.body)
+        add_feed
       end
 
       @response
