@@ -98,4 +98,14 @@ describe "GoogleApps::Transport" do
       transporter.instance_eval { @request.body }.should include user_doc.to_s
     end
   end
+
+  describe "#get_users" do
+    it "Builds a GET request for the user endpoint" do
+      transporter.get_users
+
+      transporter.instance_eval { @request.path }.should include 'user'
+    end
+
+    it "Makes another request if the response has a <link rel=\"next\" node"
+  end
 end

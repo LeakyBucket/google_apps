@@ -5,7 +5,7 @@ require 'rexml/document'
 
 module GoogleApps
 	class Transport
-		attr_reader :request, :response, :domain
+		attr_reader :request, :response, :domain, :feeds
 		attr_accessor :auth, :user, :group, :nickname, :export
 
     BOUNDARY = "=AaB03xDFHT8xgg"
@@ -22,6 +22,7 @@ module GoogleApps
 			@token = nil
 			@response = nil
 			@request = nil
+      @feeds = []
 		end
 
 
@@ -114,6 +115,46 @@ module GoogleApps
       set_headers :user
 
       @response = request uri
+    end
+
+
+    # get_users retrieves as many users as specified from the
+    # domain.  If no starting point is given it will grab all the
+    # users in the domain.  If a starting point is specified all
+    # users from that point on (alphabetically) will be returned.
+    #
+    # get_users start: 'lholcomb2'
+    # get_users
+    #
+    # get_users returns the final response from google.
+    def get_users(options)
+      @feeds = []
+      options[:start] ? get(@user + "?startUsername=#{options[:start]}") : get @user
+
+      # Switch to add_feed
+      @feeds << GoogleApps::Atom.feed(@response.body)
+
+      while next_page = get_next(@feeds.last.xml)
+        get next_page
+        @feeds << GoogleApps::Atom.feed(@response.body)
+      end
+
+      @response
+    end
+
+
+    # get_next searches the given feed document for a link to
+    # the next page.
+    #
+    # get_next feed
+    #
+    # get_next returns the URL for the next page or nil.
+    def get_next(feed)
+      feed.root.each do |entry|
+        return entry.attributes['href'] if entry.name == 'link' and entry.attributes['rel'] == 'next'
+      end
+
+      nil
     end
 
 
@@ -258,6 +299,12 @@ module GoogleApps
       @response.body.split("\n").grep(/auth=(.*)/i)
 
       @token = $1
+    end
+
+
+    # add_feed adds a feed to the @feeds array.
+    def add_feed
+      @feeds << GoogleApps::Atom.feed(@response.body)
     end
 
 
