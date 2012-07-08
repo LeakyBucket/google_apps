@@ -131,6 +131,7 @@ module GoogleApps
     #
     # get_users returns the final response from google.
     def get_users(options = {})
+      # TODO: Limit isn't working right.  It stops the retrieval but not as soon as it should.
       @feeds, page = [], 0
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
