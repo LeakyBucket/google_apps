@@ -17,7 +17,7 @@ describe "GoogleApps::Atom::Feed" do
 
   describe "#entries_from" do
     it "Builds an array of Atom objects" do # We have a bad regex somewhere, User doesn't work as an argument
-      results = feed.entries_from document: feed.xml, type: 'Users', entry_tag: 'entry'
+      results = feed.entries_from document: feed.xml, type: 'user', entry_tag: 'entry'
 
       results.first.should be_a GoogleApps::Atom::User
     end

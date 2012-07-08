@@ -8,7 +8,7 @@ module GoogleApps
 
       attr_reader :xml, :items
 
-      TYPE_MATCH = /<title type="text">(\w*?)</
+      TYPE_MATCH = /<id.*(user|group|nickname).*?<\/id/
       #TYPE_MATCH = /term.*?\#(\w*?)/
 
       def initialize(xml)
@@ -18,8 +18,7 @@ module GoogleApps
 
       # TODO: Need to make sure this works for feeds other than user.
       def entries_from(properties)
-        type = properties[:type].downcase.match(/(\w*?)s$|$/).captures[0].to_sym
-        #type = properties[:type]
+        type = properties[:type].to_sym
 
         properties[:document].root.inject([]) do |results, entry|
           if entry.name == properties[:entry_tag]
