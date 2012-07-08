@@ -110,8 +110,7 @@ module GoogleApps
     def get(endpoint, id = nil)
       # TODO:  Need to handle <link rel='next' for pagination if wanting all users
       id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
-      #uri = URI(instance_variable_get("@#{endpoint.to_s}") + "/#{id}")
-      @request = Net::HTTP::Get.new(uri.path)
+      @request = Net::HTTP::Get.new(uri.request_uri)
       set_headers :user
 
       @response = request uri
