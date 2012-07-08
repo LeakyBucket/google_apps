@@ -1,13 +1,20 @@
 module GoogleApps
   module Atom
     class Group
+      include Atom::Node
+      include Atom::Document
+
       #ATTRIBUTES = %w(id name description perms).map(&:to_sym)
 
-      def initialize
-        @document = Atom::XML::Document.new
-        add_header
+      def initialize(xml = nil)
+        if xml
+          @document = parse(xml)
+        else
+          @document = Atom::XML::Document.new
+          add_header
+        end
       end
-      
+
       # new_group populates the Group XML document with
       # the provided values.  new_group accepts a hash
       # with the following keys:  id, name, description
@@ -36,7 +43,7 @@ module GoogleApps
           prop = Atom::XML::Node.new('apps:property')
           prop_name(prop, key)
           prop.attributes['value'] = group_values[key]
-          @document.root << prop 
+          @document.root << prop
         end
 
         @document.root

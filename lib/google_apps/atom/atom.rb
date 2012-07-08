@@ -38,7 +38,8 @@ module GoogleApps
 
     CATEGORY = {
       user: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#user']],
-      nickname: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#nickname']]
+      nickname: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#nickname']],
+      group: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#group']]
     }
 
     ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
