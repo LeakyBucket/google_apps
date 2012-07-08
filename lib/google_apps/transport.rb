@@ -9,6 +9,10 @@ module GoogleApps
 		attr_accessor :auth, :user, :group, :nickname, :export
 
     BOUNDARY = "=AaB03xDFHT8xgg"
+    PAGE_SIZE = {
+      user: 100,
+      group: 200
+    }
 
 		def initialize(domain, targets = {})
 			@auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
@@ -126,33 +130,21 @@ module GoogleApps
     # get_users start: 'lholcomb2'
     #
     # get_users returns the final response from google.
-    def get_users(options)
-      @feeds = []
+    def get_users(options = {})
+      @feeds, page = [], 0
+
+      options[:limit] ? limit = options[:limit] : limit = 1000000
       options[:start] ? get(@user + "?startUsername=#{options[:start]}") : get(@user)
 
       add_feed
 
-      while next_page = get_next(@feeds.last.xml)
-        get next_page
+      while (next_page = get_next(@feeds.last.xml)) and (page * PAGE_SIZE[:user] < limit)
+        get @feeds.last.next_page
         add_feed
+        page += 1
       end
 
       @response
-    end
-
-
-    # get_next searches the given feed document for a link to
-    # the next page.
-    #
-    # get_next feed
-    #
-    # get_next returns the URL for the next page or nil.
-    def get_next(feed)
-      feed.root.each do |entry|
-        return entry.attributes['href'] if entry.name == 'link' and entry.attributes['rel'] == 'next'
-      end
-
-      nil
     end
 
 

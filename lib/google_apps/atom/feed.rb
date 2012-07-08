@@ -6,7 +6,7 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
-      attr_reader :xml, :items
+      attr_reader :xml, :items, :next_page
 
       TYPE_MATCH = /<id.*(user|group|nickname).*?<\/id/
       #TYPE_MATCH = /term.*?\#(\w*?)/
@@ -24,8 +24,14 @@ module GoogleApps
           if entry.name == properties[:entry_tag]
             results << new_doc(type, node_to_ary(entry), ['apps:', 'atom:', 'gd:'])
           end
+          set_next_page(entry) if entry.name == 'link' and entry.attributes[:rel] == 'next'
           results
         end
+      end
+
+
+      def set_next_page(node)
+        @next_page = node.attributes[:href]
       end
 
 

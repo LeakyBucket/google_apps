@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe "GoogleApps::Atom::Feed" do
   let (:xml) { File.read('spec/feed.xml') }
+  let (:next_page) { 'https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0?startUsername=aadams37' }
   let (:feed) { GoogleApps::Atom::Feed.new xml }
   let (:content_array) { ['<apps:login userId="Mom"/>', '<apps:quota value="80"/>', '<id/>', '<atom:category/>'] }
 
@@ -12,6 +13,12 @@ describe "GoogleApps::Atom::Feed" do
 
     it "Populates @items with Atom objects of the proper type" do
       feed.items.first.should be_a GoogleApps::Atom::User
+    end
+  end
+
+  describe "#next_page" do
+    it "Sets the url for the next page in the feed" do
+      feed.next_page.should == next_page
     end
   end
 
