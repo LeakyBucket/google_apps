@@ -22,7 +22,7 @@ module GoogleApps
 
         properties[:document].root.inject([]) do |results, entry|
           if entry.name == properties[:entry_tag]
-            results << new_doc(type, node_to_ary(entry), ['apps:'])
+            results << new_doc(type, node_to_ary(entry), ['apps:', 'atom:', 'gd:'])
           end
           results
         end

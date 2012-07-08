@@ -66,6 +66,32 @@ module GoogleApps
         Atom::XML::Namespace.new(@document.root, 'gd', 'http://schemas.google.com/g/2005')
       end
 
+
+      def find_values
+        map = Atom::MAPS[:user]
+
+        @document.root.each do |entry|
+          unless entry.name.match 'gd' or entry.name.match 'atom'
+            entry.attributes.each do |attribute|
+              instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
+            end
+          end
+        end
+      end
+
+
+      def check_value(value)
+        case value
+          when 'true'
+            true
+          when 'false'
+            false
+          else
+            value
+        end
+      end
+
+
       # prop_name takes a LibXML::XML::Node object and
       # sets the name attribute based on the provided
       # key.
