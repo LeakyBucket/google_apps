@@ -131,18 +131,17 @@ module GoogleApps
     #
     # get_users returns the final response from google.
     def get_users(options = {})
-      # TODO: Limit isn't working right.  It stops the retrieval but not as soon as it should.
-      @feeds, page = [], 0
+      @feeds, pages = [], 0
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
       options[:start] ? get(@user + "?startUsername=#{options[:start]}") : get(@user)
 
       add_feed
+      pages += 1
 
-      while (@feeds.last.next_page) and (page * PAGE_SIZE[:user] < limit)
-        get @feeds.last.next_page
-        add_feed
-        page += 1
+      while (@feeds.last.next_page) and (pages * PAGE_SIZE[:user] < limit)
+        get_next_page
+        pages += 1
       end
 
       @response
@@ -290,6 +289,12 @@ module GoogleApps
       @response.body.split("\n").grep(/auth=(.*)/i)
 
       @token = $1
+    end
+
+
+    def get_next_page
+      get @feeds.last.next_page
+      add_feed
     end
 
 
