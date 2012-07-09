@@ -139,7 +139,7 @@ module GoogleApps
 
       add_feed
 
-      while (next_page = get_next(@feeds.last.xml)) and (page * PAGE_SIZE[:user] < limit)
+      while (@feeds.last.next_page) and (page * PAGE_SIZE[:user] < limit)
         get @feeds.last.next_page
         add_feed
         page += 1
