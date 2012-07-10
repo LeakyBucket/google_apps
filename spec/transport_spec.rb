@@ -101,7 +101,8 @@ describe "GoogleApps::Transport" do
 
   describe "#get_users" do
     it "Builds a GET request for the user endpoint" do
-      transporter.get_users start: 'znelson1'
+      transporter.authenticate credentials['username'], credentials['password']
+      transporter.get_users start: 'znelson1', limit: 2
 
       transporter.instance_eval { @request.path }.should include 'user'
     end
