@@ -1,5 +1,7 @@
 # Google Apps API
 
+[![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/LeakyBucket/google_apps)
+
 ## What is this?
 
 This is another GoogleApps API Library.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
