@@ -166,22 +166,6 @@ module GoogleApps
       end
 
 
-      # TODO: This needs to target the proper nodes.
-      # TODO: This needs to treat 'true' and 'false' properly
-      def find_values
-        map = Atom::MAPS[:user]
-
-        @document.root.each do |entry|
-          # Something in the feedLink entries causes a segfault.
-          unless entry.name.match 'gd' or entry.name.match 'atom'
-            entry.attributes.each do |attribute|
-              instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
-            end
-          end
-        end
-      end
-
-
       def check_value(value)
         case value
           when 'true'

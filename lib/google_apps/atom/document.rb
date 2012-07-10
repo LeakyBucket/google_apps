@@ -36,6 +36,26 @@ module GoogleApps
       def new_empty_doc
         Atom::XML::Document.new
       end
+
+
+      # find_values searches @document and assigns any values
+      # to their corresponding instance variables.  This is
+      # useful when we've been given a string of XML and need
+      # internal consistency in the object.
+      #
+      # find_values
+      def find_values # Moved from User and Group, causing segfault but only at odd times
+        map_key = self.class.to_s.split(':').last.downcase.to_sym
+        map = Atom::MAPS[map_key]
+
+        @document.root.each do |entry|
+          unless entry.name.match 'gd' or entry.name.match 'atom'
+            entry.attributes.each do |attribute|
+              instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
+            end
+          end
+        end
+      end
     end
   end
 end

@@ -67,19 +67,6 @@ module GoogleApps
       end
 
 
-      def find_values
-        map = Atom::MAPS[:user]
-
-        @document.root.each do |entry|
-          unless entry.name.match 'gd' or entry.name.match 'atom'
-            entry.attributes.each do |attribute|
-              instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
-            end
-          end
-        end
-      end
-
-
       def check_value(value)
         case value
           when 'true'
