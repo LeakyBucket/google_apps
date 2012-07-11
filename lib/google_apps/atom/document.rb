@@ -108,7 +108,7 @@ module GoogleApps
         ns = { atom: Atom::NAMESPACES[:atom], apps: Atom::NAMESPACES[:apps] }
 
         case type_to_s
-          when 'group'
+          when 'group', 'groupmember'
             ns[:gd] = Atom::NAMESPACES[:gd]
         end
 

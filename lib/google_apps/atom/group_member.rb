@@ -8,7 +8,7 @@ module GoogleApps
 
       def initialize
         @document = Atom::XML::Document.new
-        add_header
+        @document.root = build_root
       end
 
 
@@ -68,16 +68,6 @@ module GoogleApps
       # be searched with find.
       def parse_doc(document = @document)
         Atom::XML::Parser.document(document).parse
-      end
-
-
-      # add_header sets the root element of @document
-      def add_header
-        @document.root = Atom::XML::Node.new('atom:entry')
-
-        Atom::XML::Namespace.new(@document.root, 'atom', 'http://www.w3.org/2005/Atom')
-        Atom::XML::Namespace.new(@document.root, 'apps', 'http://schemas.google.com/apps/2006')
-        Atom::XML::Namespace.new(@document.root, 'gd', 'http://schemas.google.com/g/2005')
       end
     end
   end
