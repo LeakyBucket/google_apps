@@ -25,4 +25,39 @@ describe "GoogleApps::Atom::Document" do
       new_doc.to_s.strip.should == '<?xml version="1.0" encoding="UTF-8"?>'
     end
   end
+
+  describe "#build_root" do
+    it "Builds an atom:entry XML Node with the appropriate namespaces" do
+      
+    end
+
+    it "Builds an atom:entry XML Node containing a category element" do
+      
+    end
+
+    it "Builds an atom:entry XML Node containing a category element of the right kind" do
+      
+    end
+  end
+
+  describe "#type_to_s" do
+    it "Returns the document type (class) as a string" do
+      document.type_to_s.should == 'doc'
+    end
+  end
+
+  describe "#type_to_sym" do
+    it "Returns the document type (class) as a symbol" do
+      document.type_to_sym.should == :doc
+    end
+  end
+
+  describe "#determine_namespaces" do
+    it "Builds a hash of the appropriate namespaces" do
+      ns = document.determine_namespaces
+
+      ns[:atom].should == GoogleApps::Atom::NAMESPACES[:atom]
+      ns[:apps].should == GoogleApps::Atom::NAMESPACES[:apps]
+    end
+  end
 end

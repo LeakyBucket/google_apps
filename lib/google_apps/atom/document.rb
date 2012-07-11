@@ -56,6 +56,64 @@ module GoogleApps
           end
         end
       end
+
+
+      # build_root creates the shared root structure for the
+      # document.
+      #
+      # build_root
+      #
+      # build_root returns an atom:entry node with an
+      # apps:category element appropriate for the document
+      # type.
+      def build_root
+        root = create_node(type: 'atom:entry')
+
+        add_namespaces root, determine_namespaces
+        root << create_node(type: 'apps:category', attrs: Atom::CATEGORY[type_to_sym])
+
+        root
+      end
+
+
+      # type_to_s returns the current document's type as a
+      # string.
+      #
+      # type_to_s
+      #
+      # type_to_s returns a string
+      def type_to_s
+        self.class.to_s.split(':').last.downcase
+      end
+
+
+      # type_to_sym returns the current document's type as a
+      # symbol.
+      #
+      # type_to_sym
+      #
+      # type_to_sym returns a symbol
+      def type_to_sym
+        type_to_s.to_sym
+      end
+
+
+      # determine_namespaces builds a hash of namespace key/value
+      # pairs.
+      #
+      # determine_namespaces
+      #
+      # determine_namespaces returns a hash
+      def determine_namespaces
+        ns = { atom: Atom::NAMESPACES[:atom], apps: Atom::NAMESPACES[:apps] }
+
+        case type_to_s
+          when 'group'
+            ns[:gd] = Atom::NAMEPACES[:gd]
+        end
+
+        ns          
+      end
     end
   end
 end
