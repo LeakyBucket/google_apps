@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "GoogleApps::Atom::Document" do
-  let (:doc_container) { class Doc; include GoogleApps::Atom::Document; end }
+  let (:doc_container) { class User; include GoogleApps::Atom::Document; include GoogleApps::Atom::Node; end }
   let (:document) { doc_container.new }
   let (:doc_string) { File.read('spec/test_doc.xml') }
 
@@ -27,28 +27,33 @@ describe "GoogleApps::Atom::Document" do
   end
 
   describe "#build_root" do
+    before(:all) do
+      @root = document.build_root
+    end
+
     it "Builds an atom:entry XML Node with the appropriate namespaces" do
-      
+      @root.to_s.should include 'xmlns:atom'
+      @root.to_s.should include 'xmlns:apps'
     end
 
     it "Builds an atom:entry XML Node containing a category element" do
-      
+      @root.to_s.should include 'apps:category'
     end
 
     it "Builds an atom:entry XML Node containing a category element of the right kind" do
-      
+      @root.to_s.should include '2006#user'
     end
   end
 
   describe "#type_to_s" do
     it "Returns the document type (class) as a string" do
-      document.type_to_s.should == 'doc'
+      document.type_to_s.should == 'user'
     end
   end
 
   describe "#type_to_sym" do
     it "Returns the document type (class) as a symbol" do
-      document.type_to_sym.should == :doc
+      document.type_to_sym.should == :user
     end
   end
 
