@@ -246,7 +246,7 @@ module GoogleApps
     	super unless name.match /([a-z]*)_([a-z]*)/
 
       case $1
-      when "new"
+      when "new", "add"
       	self.send(:add, instance_variable_get("@#{$2}"), *args)
       when "delete"
         self.send(:delete, instance_variable_get("@#{$2}"), *args)
@@ -254,8 +254,6 @@ module GoogleApps
         self.send(:update, instance_variable_get("@#{$2}"), *args)
       when "get"
         self.send(:get, instance_variable_get("@#{$2}"), *args)
-      when "add"
-        self.send(:add, instance_variable_get("@#{$2}"), *args)
       else
       	super
       end
