@@ -49,7 +49,7 @@ module GoogleApps
         map = Atom::MAPS[map_key]
 
         @document.root.each do |entry|
-          unless entry.name.match 'gd' or entry.name.match 'atom'
+          unless entry.name.match 'gd' or entry.name.match 'atom' or entry.name.match 'openSearch'
             entry.attributes.each do |attribute|
               instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
             end
@@ -70,7 +70,7 @@ module GoogleApps
         root = create_node(type: 'atom:entry')
 
         add_namespaces root, determine_namespaces
-        root << create_node(type: 'apps:category', attrs: Atom::CATEGORY[type_to_sym])
+        root << create_node(type: 'apps:category', attrs: Atom::CATEGORY[type_to_sym]) if Atom::CATEGORY[type_to_sym]
 
         root
       end
@@ -109,7 +109,7 @@ module GoogleApps
 
         case type_to_s
           when 'group'
-            ns[:gd] = Atom::NAMEPACES[:gd]
+            ns[:gd] = Atom::NAMESPACES[:gd]
         end
 
         ns          

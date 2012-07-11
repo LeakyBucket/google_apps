@@ -11,7 +11,7 @@ module GoogleApps
           @document = parse(xml)
         else
           @document = Atom::XML::Document.new
-          add_header
+          @document.root = build_root
         end
       end
 
@@ -55,16 +55,6 @@ module GoogleApps
       end
 
       private
-
-      # add_header sets the required boilerplate for a
-      # Google Apps group.
-      def add_header
-        @document.root = Atom::XML::Node.new('atom:entry')
-
-        Atom::XML::Namespace.new(@document.root, 'atom', 'http://www.w3.org/2005/Atom')
-        Atom::XML::Namespace.new(@document.root, 'apps', 'http://schemas.google.com/apps/2006')
-        Atom::XML::Namespace.new(@document.root, 'gd', 'http://schemas.google.com/g/2005')
-      end
 
 
       def check_value(value)

@@ -3,14 +3,6 @@ require 'spec_helper'
 describe "GoogleApps::Atom::Group" do
   let (:group) { GoogleApps::Atom::Group.new }
 
-  describe "#add_header" do
-    it "should add the header to @document" do
-      group.send(:add_header)
-
-      group.instance_eval { @document.root }.should be_an LibXML::XML::Node
-    end
-  end
-
   describe "#new" do
     it "should initialize @document" do
       group.instance_eval { @document }.should be_a LibXML::XML::Document
