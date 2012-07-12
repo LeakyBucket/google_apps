@@ -21,12 +21,7 @@ module GoogleApps
       #
       # nickname= returns the new nickname value
       def nickname=(nick)
-        if @nickname
-          find_and_update @document, '//apps:nickname', name: [@nickname, nick]
-        else
-          @document.root << create_node(type: 'apps:nickname', attrs: [['name', nick]])
-          @document = parse @document
-        end
+        @nickname ? find_and_update(@document, '//apps:nickname', name: [@nickname, nick]) : create('nickname', nick)
 
         @nickname = nick
       end
@@ -52,6 +47,18 @@ module GoogleApps
 
 
       private
+
+
+      def create(type, value)
+        case type
+        when 'nickname'
+          @document.root << create_node(type: 'apps:nickname', attrs: [['name', value]])
+        when 'login'
+          @document.root << create_node(type: 'apps:login', attrs: [['userName', value]])
+        end
+
+        @document = parse @document
+      end
 
 
       # header returns an atom:entry node with the appropriate
