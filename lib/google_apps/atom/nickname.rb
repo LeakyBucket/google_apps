@@ -21,13 +21,12 @@ module GoogleApps
       #
       # nickname= returns the new nickname value
       def nickname=(nick)
-        if @nickname.nil?
+        if @nickname
+          find_and_update @document, '//apps:nickname', name: [@nickname, nick]
+        else
           @document.root << create_node(type: 'apps:nickname', attrs: [['name', nick]])
           @document = parse @document
-        else
-          find_and_update @document, '//apps:nickname', name: [@nickname, nick]
         end
-        #@nickname.nil? ? set_nickname(nick) : change_nickname(nick)
 
         @nickname = nick
       end
