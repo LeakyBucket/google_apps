@@ -21,7 +21,15 @@ module GoogleApps
       #
       # nickname= returns the new nickname value
       def nickname=(nick)
-        @nickname.nil? ? set_nickname(nick) : change_nickname(nick)
+        if @nickname.nil?
+          @document.root << create_node(type: 'apps:nickname', attrs: [['name', nick]])
+          @document = parse @document
+        else
+          find_and_update @document, '//apps:nickname', name: [@nickname, nick]
+        end
+        #@nickname.nil? ? set_nickname(nick) : change_nickname(nick)
+
+        @nickname = nick
       end
 
 
@@ -62,21 +70,6 @@ module GoogleApps
       end
 
 
-      # set_nickname adds an apps:nickname node to the
-      # underlying XML document and sets @nickname.
-      # It takes a nickname in string form for its
-      # argument.
-      #
-      # set_nickname 'Timmy'
-      #
-      # set_nickname returns the new nickname value.
-      def set_nickname(nick)
-        @document.root << create_node(type: 'apps:nickname', attrs: [['name', nick]])
-
-        @nickname = nick
-      end
-
-
       # set_user adds an apps:login node to the underlying
       # XML document and sets @user.  It takes a username
       # (current/default username) in string form for its
@@ -89,22 +82,6 @@ module GoogleApps
         @document.root << create_node(type: 'apps:login', attrs: [['userName', username]])
 
         @user = username
-      end
-
-
-      # change_nickname changes the name attribute for the
-      # apps:nickname node in the underlying XML document.
-      # It takes a nickname in string form.
-      #
-      # change_nickname 'Timmy'
-      #
-      # change_nickname returns the new nickname.
-      def change_nickname(nick)
-        @document.root.each do |node|
-          node.attributes['name'] = nick if node.attributes['name'] == @nickname
-        end
-
-        @nickname = nick
       end
 
 
