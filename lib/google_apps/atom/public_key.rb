@@ -1,9 +1,12 @@
 module GoogleApps
   module Atom
     class PublicKey
+      include Atom::Node
+      include Atom::Document
+
       def initialize
         @document = Atom::XML::Document.new
-        add_header
+        @document.root = build_root
       end
       
       # new_key adds the actual key to the PublicKey
@@ -23,15 +26,6 @@ module GoogleApps
       # to_s returns @document as a String
       def to_s
         @document.to_s
-      end
-
-      private
-
-      def add_header
-        @document.root = Atom::XML::Node.new('atom:entry')
-
-        Atom::XML::Namespace.new(@document.root, 'atom', 'http://www.w3.org/2005/Atom')
-        Atom::XML::Namespace.new(@document.root, 'apps', 'http://schemas.google.com/apps/2006')
       end
     end
   end
