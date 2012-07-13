@@ -14,7 +14,7 @@ module GoogleApps
           find_values
         else
           @document = new_empty_doc
-  			  add_header
+  			  @document.root = build_root
         end
   		end
 
@@ -175,20 +175,6 @@ module GoogleApps
           else
             value
         end
-      end
-
-
-      def add_header
-        @document.root = Atom::XML::Node.new('atom:entry')
-
-        Atom::XML::Namespace.new(@document.root, 'atom', 'http://www.w3.org/2005/Atom')
-        Atom::XML::Namespace.new(@document.root, 'apps', 'http://schemas.google.com/apps/2006')
-
-        category = Atom::XML::Node.new('atom:category')
-        category.attributes['scheme'] = 'http://schemas.google.com/g/2005#kind'
-        category.attributes['term'] = 'http://schemas.google.com/apps/2006#user'
-
-        @document.root << category
       end
   	end
   end
