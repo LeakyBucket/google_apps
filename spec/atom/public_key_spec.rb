@@ -4,13 +4,15 @@ describe "GoogleApps::Atom::PublicKey" do
   let (:pub_key) { GoogleApps::Atom::PublicKey.new }
   let (:key) { 'not really a key' }
 
-  describe "#add_header" do
-    it "should ad the proper header to @document" do
-      pub_key.send :add_header
+  describe "#new" do
+    it "Initializes @document to be a LibXML::XML::Document" do
+      pub_key.document.should be_a LibXML::XML::Document
+    end
 
-      doc = pub_key.to_s
-
-      doc.should include 'xmlns:apps'
+    it "Adds the root node to @document" do
+      pub_key.to_s.should include '<atom:entry'
+      pub_key.to_s.should include 'xmlns:atom'
+      pub_key.to_s.should include 'xmlns:apps'
     end
   end
 

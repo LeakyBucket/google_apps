@@ -4,6 +4,8 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
+      attr_reader :document
+
       def initialize
         @document = Atom::XML::Document.new
         @document.root = build_root
