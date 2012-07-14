@@ -16,7 +16,7 @@ describe "GoogleApps::Atom::User" do
     end
 
     it "adds the category element to @document" do
-      gapp.document.to_s.should include '<atom:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/apps/2006#user"/>'
+      gapp.document.to_s.should include '<apps:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/apps/2006#user"/>'
     end
 
     it "creates an xml document matching the given argument" do
@@ -25,15 +25,6 @@ describe "GoogleApps::Atom::User" do
       usr.document.to_s.should include xml
     end
 	end
-
-  describe '#add_header' do
-    it "adds the user header to the docuemnt" do
-      gapp.send(:add_header)
-      entry = gapp.document.root.children.first
-
-      entry.should be_a(LibXML::XML::Node)
-    end
-  end
 
   describe "#set" do
     it "Adds the login attribute to the document" do

@@ -2,8 +2,6 @@ require 'spec_helper'
 
 describe "GoogleApps::Atom::Nickname" do
   let (:nick) { GoogleApps::Atom::Nickname.new }
-  let (:category) { nick.send(:category) }
-  let (:header) { nick.send(:header) }
 
   describe "#new" do
     it "Initializes the document header" do
@@ -13,35 +11,7 @@ describe "GoogleApps::Atom::Nickname" do
     it "Initializes an XML document" do
       nick.document.should be_a LibXML::XML::Document
     end
-  end
-
-  describe "#category" do
-    it "Generates an atom:category element" do
-      category.to_s.should include 'atom:category'
-    end
-
-    it "Adds a scheme attribute to atom:category" do
-      category.to_s.should include 'http://schemas.google.com/g/2005#kind'
-    end
-
-    it "Adds a term attribute to atom:category" do
-      category.to_s.should include 'http://schemas.google.com/apps/2006#nickname'
-    end
-  end
-
-  describe "#header" do
-    it "Generates an atom:entry" do
-      header.to_s.should include 'atom:entry'
-    end
-
-    it "Adds the atom namespace to atom:entry" do
-      header.to_s.should include 'http://www.w3.org/2005/Atom'
-    end
-
-    it "Adds the apps namespace to atom:entry" do
-      header.to_s.should include 'http://schemas.google.com/apps/2006'
-    end
-  end
+  endcaj
 
   describe "#to_s" do
     it "Returns @document as a string" do

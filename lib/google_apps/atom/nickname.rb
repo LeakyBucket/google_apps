@@ -10,8 +10,7 @@ module GoogleApps
 
       def initialize
         @document = Atom::XML::Document.new
-        @document.root = header
-        @document.root << category
+        @document.root = build_root
       end
 
       # nickname= sets the nickname value on the object and in the
@@ -66,21 +65,6 @@ module GoogleApps
         end
 
         @document = parse @document
-      end
-
-
-      # header returns an atom:entry node with the appropriate
-      # namespaces for a GoogleApps nickname document
-      def header
-        add_namespaces create_node(type: 'atom:entry'), atom: 'http://www.w3.org/2005/Atom', apps: 'http://schemas.google.com/apps/2006'
-      end
-
-
-      # category constructs an atom:category node with the
-      # appropriate attributes for a GoogleApps nickname
-      # document.
-      def category
-        create_node type: 'atom:category', attrs: Atom::CATEGORY[:nickname]
       end
 
 
