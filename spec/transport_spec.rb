@@ -34,6 +34,15 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#get_nicknames_for" do
+    it "Gets a feed of the nicknames for the requested user" do
+      transporter.authenticate credentials['username'], credentials['password']
+      transporter.get_nicknames_for 'lholcomb2'
+
+      transporter.response.body.should include '2006#nickname'
+    end
+  end
+
   describe "#delete_member_from" do
     it "crafts an HTTP DELETE request for a group member" do
       transporter.delete_member_from 'next_group', 'lholcomb2@cnm.edu'

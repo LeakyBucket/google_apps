@@ -171,6 +171,17 @@ module GoogleApps
     end
 
 
+    # get_nicknames_for retrieves all the nicknames associated
+    # with the requested user.  It takes the username as a string.
+    #
+    # get_nickname_for 'lholcomb2'
+    #
+    # get_nickname_for returns the HTTP response from Google
+    def get_nicknames_for(login)
+      get_nickname "?username=#{login}"
+    end
+
+
     # add is a generic target for method_missing.  It is
     # intended to handle the general case of adding
     # to the GoogleApps Domain.  It takes an API endpoint
