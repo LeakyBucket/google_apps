@@ -11,7 +11,7 @@ describe "GoogleApps::Atom::Nickname" do
     it "Initializes an XML document" do
       nick.document.should be_a LibXML::XML::Document
     end
-  endcaj
+  end
 
   describe "#to_s" do
     it "Returns @document as a string" do

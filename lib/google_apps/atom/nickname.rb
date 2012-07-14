@@ -66,21 +66,6 @@ module GoogleApps
 
         @document = parse @document
       end
-
-
-      # :nodoc:
-      def change_element(type, value)
-        @document.root.each do |node|
-          node.attributes[ELEMENTS[type][1]] = value
-        end
-      end
-
-
-      # parse_document takes an XML document and returns
-      # a parsed copy of that document.
-      def parse_document(document = @document)
-        Atom::XML::Parser.document(document).parse
-      end
     end
   end
 end
