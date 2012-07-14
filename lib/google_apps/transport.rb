@@ -4,9 +4,9 @@ require 'openssl'
 require 'rexml/document'
 
 module GoogleApps
-	class Transport
-		attr_reader :request, :response, :domain, :feeds
-		attr_accessor :auth, :user, :group, :nickname, :export
+  class Transport
+    attr_reader :request, :response, :domain, :feeds
+    attr_accessor :auth, :user, :group, :nickname, :export
 
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
@@ -14,20 +14,20 @@ module GoogleApps
       group: 200
     }
 
-		def initialize(domain, targets = {})
-			@auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
-			@user = targets[:user] || "https://apps-apis.google.com/a/feeds/#{domain}/user/2.0"
+    def initialize(domain, targets = {})
+      @auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
+      @user = targets[:user] || "https://apps-apis.google.com/a/feeds/#{domain}/user/2.0"
       @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
       @migration = targets[:migration] || "https://apps-apis.google.com/a/feeds/migration/2.0/#{domain}"
-			@group = targets[:group] || "https://apps-apis.google.com/a/feeds/group/2.0/#{domain}"
-			@nickname = targets[:nickname] || "https://apps-apis.google.com/a/feeds/#{domain}/nickname/2.0"
+      @group = targets[:group] || "https://apps-apis.google.com/a/feeds/group/2.0/#{domain}"
+      @nickname = targets[:nickname] || "https://apps-apis.google.com/a/feeds/#{domain}/nickname/2.0"
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
       @domain = domain
-			@token = nil
-			@response = nil
-			@request = nil
+      @token = nil
+      @response = nil
+      @request = nil
       @feeds = []
-		end
+    end
 
 
     # authenticate will take the provided account and
@@ -38,18 +38,18 @@ module GoogleApps
     #
     # authenticate returns the HTTP response received
     # from Google
-		def authenticate(account, pass)
-			uri = URI(@auth)
-			@request = Net::HTTP::Post.new(uri.path)
-			@request.body = auth_body(account, pass)
-			set_headers :auth
+    def authenticate(account, pass)
+      uri = URI(@auth)
+      @request = Net::HTTP::Post.new(uri.path)
+      @request.body = auth_body(account, pass)
+      set_headers :auth
 
-			@response = request uri
+      @response = request uri
 
-			set_auth_token
+      set_auth_token
 
       @response
-		end
+    end
 
     # request_export performs the GoogleApps API call to
     # generate a mailbox export.  It takes the username
@@ -190,14 +190,14 @@ module GoogleApps
     # add 'endpoint', document
     #
     # add returns the HTTP response received from Google.
-		def add(endpoint, document)
-			uri = URI(endpoint)
-			@request = Net::HTTP::Post.new(uri.path)
-			@request.body = document.to_s
-			set_headers :user
+    def add(endpoint, document)
+      uri = URI(endpoint)
+      @request = Net::HTTP::Post.new(uri.path)
+      @request.body = document.to_s
+      set_headers :user
 
-			@response = request uri
-		end
+      @response = request uri
+    end
 
     # update is a generic target for method_missing.  It is
     # intended to handle the general case of updating an
@@ -254,11 +254,11 @@ module GoogleApps
 
     # TODO: This should perform the instance_variable_get and pass the value to the appropriate method.
     def method_missing(name, *args)
-    	super unless name.match /([a-z]*)_([a-z]*)/
+      super unless name.match /([a-z]*)_([a-z]*)/
 
       case $1
       when "new", "add"
-      	self.send(:add, instance_variable_get("@#{$2}"), *args)
+        self.send(:add, instance_variable_get("@#{$2}"), *args)
       when "delete"
         self.send(:delete, instance_variable_get("@#{$2}"), *args)
       when "update"
@@ -266,12 +266,13 @@ module GoogleApps
       when "get"
         self.send(:get, instance_variable_get("@#{$2}"), *args)
       else
-      	super
+        super
       end
     end
 
 
     private
+
 
     # auth_body generates the body for the authentication
     # request made by authenticate.
@@ -313,14 +314,14 @@ module GoogleApps
     end
 
 
-		def request(uri)
+    def request(uri)
       # TODO: Clashes with @request reader
-			Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
-				http.request(@request)
-			end
-		end
+      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+        http.request(@request)
+      end
+    end
 
-		def set_headers(request_type)
+    def set_headers(request_type)
       case request_type
       when :auth
         @request['content-type'] = "application/x-www-form-urlencoded"
@@ -331,7 +332,7 @@ module GoogleApps
         @request['content-type'] = "application/atom+xml"
         @request['authorization'] = "GoogleLogin auth=#{@token}"
       end
-		end
+    end
 
     def multi_part(properties, message)
       post_body = []
@@ -345,5 +346,5 @@ module GoogleApps
 
       post_body.join
     end
-	end
+  end
 end
