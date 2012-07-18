@@ -131,7 +131,7 @@ module GoogleApps
     #
     # get_users returns the final response from google.
     def get_users(options = {})
-      get_all 'users', options
+      get_all :users, options
     end
 
 
@@ -144,6 +144,7 @@ module GoogleApps
     # get_all returns the HTTP response received from Google.
     def get_all(type, options = {})
       @feeds, current_page = [], 0
+      type = type.to_s
       type.gsub!(/\w*s$/) { |match| match[0..-2] }
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
