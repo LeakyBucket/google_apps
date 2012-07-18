@@ -154,8 +154,7 @@ module GoogleApps
     # get_all returns the HTTP response received from Google.
     def get_all(type, options = {})
       @feeds, current_page = [], 0
-      type = type.to_s
-      type.gsub!(/\w*s$/) { |match| match[0..-2] }
+      type = normalize_type type
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
       options[:start] ? get(instance_variable_get("@#{type}") + "?#{start_query(type)}=#{options[:start]}") : get(instance_variable_get("@#{type}"))
@@ -163,10 +162,7 @@ module GoogleApps
       add_feed
       current_page += 1
 
-      while (@feeds.last.next_page) and (current_page * PAGE_SIZE[:user] < limit)
-        get_next_page
-        current_page += 1
-      end
+      fetch_feed(current_page, limit)
 
       @response
     end
@@ -326,9 +322,20 @@ module GoogleApps
     end
 
 
+    # get_next_page retrieves the next page in the response.
     def get_next_page
       get @feeds.last.next_page
       add_feed
+    end
+
+
+    # fetch_feed retrieves the remaining pages in the request.
+    # It takes a page and a limit as arguments.
+    def fetch_feed(page, limit)
+      while (@feeds.last.next_page) and (page * PAGE_SIZE[:user] < limit)
+        get_next_page
+        page += 1
+      end
     end
 
 
@@ -342,6 +349,11 @@ module GoogleApps
       when 'group'
         "startGroup"
       end
+    end
+
+
+    def normalize_type(type)
+      type.to_s.gsub!(/\w*s$/) { |match| match[0..-2] }
     end
 
 
