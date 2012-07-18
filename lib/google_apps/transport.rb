@@ -131,17 +131,23 @@ module GoogleApps
     #
     # get_users returns the final response from google.
     def get_users(options = {})
-      @feeds, pages = [], 0
+      get_all 'users', options
+    end
+
+
+    def get_all(type, options = {})
+      @feeds, current_page = [], 0
+      type.gsub!(/\w*s$/) { |match| match[0..-2] }
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
-      options[:start] ? get(@user + "?startUsername=#{options[:start]}") : get(@user)
+      options[:start] ? get(instance_variable_get("@#{type}") + "?#{start_query(type)}=#{options[:start]}") : get(instance_variable_get("@#{type}"))
 
       add_feed
-      pages += 1
+      current_page += 1
 
-      while (@feeds.last.next_page) and (pages * PAGE_SIZE[:user] < limit)
+      while (@feeds.last.next_page) and (current_page * PAGE_SIZE[:user] < limit)
         get_next_page
-        pages += 1
+        current_page += 1
       end
 
       @response
@@ -305,6 +311,16 @@ module GoogleApps
     def get_next_page
       get @feeds.last.next_page
       add_feed
+    end
+
+
+    def start_query(type)
+      case type
+      when 'user'
+        "startUsername"
+      when 'group'
+        "startGroup"
+      end
     end
 
 
