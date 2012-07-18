@@ -135,6 +135,13 @@ module GoogleApps
     end
 
 
+    # get_all retrieves a batch of records of the specified type
+    # from google.  You must specify the type of object you want
+    # to retreive.  You can also specify a start point and a limit.
+    #
+    # get_all 'users', start: 'lholcomb2', limit: 300
+    #
+    # get_all returns the HTTP response received from Google.
     def get_all(type, options = {})
       @feeds, current_page = [], 0
       type.gsub!(/\w*s$/) { |match| match[0..-2] }
@@ -314,6 +321,9 @@ module GoogleApps
     end
 
 
+    # start_query builds the value for the starting point
+    # query string used for retrieving batches of objects
+    # from Google.
     def start_query(type)
       case type
       when 'user'
