@@ -135,6 +135,16 @@ module GoogleApps
     end
 
 
+    # get_groups retrieves all the groups from the domain
+    #
+    # get_groups
+    #
+    # get_groups returns the final response from Google.
+    def get_groups(options = {})
+      get_all :groups, options
+    end
+
+
     # get_all retrieves a batch of records of the specified type
     # from google.  You must specify the type of object you want
     # to retreive.  You can also specify a start point and a limit.

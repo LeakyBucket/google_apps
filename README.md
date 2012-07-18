@@ -19,6 +19,7 @@ __Domain API__
       * User Deletion
       * User Record Retrieval
       * User Modification
+      * Retrieve all users in the domain
     * Groups
       * Group Creation
       * Group Deletion
@@ -53,9 +54,6 @@ __Domain__
   * Email Settings
   * Groups Settings
     * Member List
-  * User Provisioning
-    * List all users in domain
-    * User list pagination
   * Reporting
   * Reporting Visualization
   * User Profiles
@@ -110,6 +108,28 @@ transporter.get_user 'bob'
 transporter.response.body
 
 
+# Retrieving all Users
+# User feed access is clunky and needs to be simplified
+transporter.get_users
+
+transporter.feeds.each do |feed|
+  feed.items.each do |user|
+    puts user.login
+  end
+end
+
+
+# Retrieving a range of Users
+# Again this needs to be prettified
+transporter.get_users start: 'lholcomb2', limit: 320
+
+transporter.feeds.each do |feed|
+  feed.items.each do |user|
+    puts user.login
+  end
+end
+
+
 # Creating a Group
 group = GoogleApps::Atom::Group.new
 group.new_group id: 'ID', name: 'TestGroup', description: 'Simple Test Group', perms: 'Domain'
@@ -139,10 +159,14 @@ transporter.delete_member_from 'target_group', 'member_id'
 transporter.delete_group 'ID'
 
 
-# Retrieving a User
-transporter.get_group 'ID'
+# Retrieving all the Groups in the Domain
+transporter.get_groups
 
-transporter.response.body
+transporter.feeds.each do |feed|
+  feed.items.each do |group|
+    puts group.to_s
+  end
+end
 
 
 # Creating a Nickname
