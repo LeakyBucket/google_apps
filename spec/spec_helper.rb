@@ -26,6 +26,10 @@ def get_path(category)
   transporter.send(category.to_sym).split('/')[3..-1].join('/')
 end
 
+def build_request(verb)
+  GoogleApps::AppsRequest.new verb, 'http://www.google.com', test: 'bob'
+end
+
 def entry_node
   entry = LibXML::XML::Node.new 'entry'
 
