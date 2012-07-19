@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe "GoogleApps::AppsRequest" do
-  let (:request) { GoogleApps::AppsRequest.new :get, 'http://www.google.com', test: 'bob' }
+  let (:request) { GoogleApps::AppsRequest.new :get, 'http://www.google.com', [['test', 'bob']] }
 
   describe "#send_request" do
     it "Sends the request as configured" do
@@ -54,7 +54,7 @@ describe "GoogleApps::AppsRequest" do
 
   describe "#set_headers" do
     it "Sets the headers on @http_request" do
-      request.send(:set_headers, :'content-type' => 'application/x-www-form-urlencoded')
+      request.send(:set_headers, [['content-type', 'application/x-www-form-urlencoded']])
 
       request.instance_eval { @http_request['content-type'] }.should == 'application/x-www-form-urlencoded'
     end

@@ -1,4 +1,3 @@
-require 'net/http'
 require 'cgi'
 require 'openssl'
 require 'rexml/document'
@@ -113,12 +112,10 @@ module GoogleApps
     #
     # get returns the HTTP response received from Google.
     def get(endpoint, id = nil)
-      # TODO:  Need to handle <link rel='next' for pagination if wanting all users
       id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
-      @request = Net::HTTP::Get.new(uri.request_uri)
-      set_headers :user
+      @request = AppsRequest.new :get, uri, headers(:other)
 
-      @response = request uri
+      @response = @request.send_request
     end
 
 
@@ -209,11 +206,10 @@ module GoogleApps
     # add returns the HTTP response received from Google.
     def add(endpoint, document)
       uri = URI(endpoint)
-      @request = Net::HTTP::Post.new(uri.path)
-      @request.body = document.to_s
-      set_headers :user
+      @request = AppsRequest.new :post, uri, headers(:other)
+      @request.add_body document.to_s
 
-      @response = request uri
+      @response = @request.send_request
     end
 
     # update is a generic target for method_missing.  It is
@@ -367,6 +363,18 @@ module GoogleApps
       # TODO: Clashes with @request reader
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         http.request(@request)
+      end
+    end
+
+
+    def headers(category)
+      case category
+      when :auth
+        [['content-type', 'application/x-www-form-urlencoded']]
+      when :migration
+        [['content-type', "multipart/related; boundary=\"#{BOUNDARY}\""], ['authorization', "GoogleLogin auth=#{@token}"]]
+      else
+        [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{@token}"]]
       end
     end
 

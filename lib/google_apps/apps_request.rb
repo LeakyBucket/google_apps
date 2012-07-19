@@ -34,8 +34,8 @@ module GoogleApps
     end
 
     def set_headers(headers)
-      headers.each_key do |key|
-        @http_request[key.to_s] = headers[key]
+      headers.each do |field, value|
+        @http_request[field] = value
       end
     end
   end
