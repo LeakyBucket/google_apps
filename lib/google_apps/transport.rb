@@ -22,6 +22,7 @@ module GoogleApps
       @nickname = targets[:nickname] || "https://apps-apis.google.com/a/feeds/#{domain}/nickname/2.0"
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
       @domain = domain
+      @requester = AppsRequest || targets[:requester] # For testing.
       @token = nil
       @response = nil
       @request = nil
@@ -113,7 +114,7 @@ module GoogleApps
     # get returns the HTTP response received from Google.
     def get(endpoint, id = nil)
       id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
-      @request = AppsRequest.new :get, uri, headers(:other)
+      @request = @requester.new :get, uri, headers(:other)
 
       @response = @request.send_request
     end
@@ -206,7 +207,7 @@ module GoogleApps
     # add returns the HTTP response received from Google.
     def add(endpoint, document)
       uri = URI(endpoint)
-      @request = AppsRequest.new :post, uri, headers(:other)
+      @request = @requester.new :post, uri, headers(:other)
       @request.add_body document.to_s
 
       @response = @request.send_request

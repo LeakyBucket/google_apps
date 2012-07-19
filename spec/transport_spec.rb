@@ -1,11 +1,17 @@
 require 'spec_helper'
 
 describe "GoogleApps::Transport" do
-  let (:transporter) { GoogleApps::Transport.new "cnm.edu" }
+  let (:mock_request) { mock(GoogleApps::AppsRequest) }
+  let (:transporter) { GoogleApps::Transport.new "cnm.edu", requestor: mock_request }
   let (:user_doc) { GoogleApps::Atom::User.new }
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
   let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
+
+  before(:each) do
+    mock_request.stub(:send_request).and_return(double('Net::HTTPResponse'))
+    mock_request.stub(:add_body)
+  end
 
   describe '#new' do
     it "assigns endpoints and sets @token to nil" do
