@@ -5,7 +5,7 @@ require 'rexml/document'
 module GoogleApps
   class Transport
     attr_reader :request, :response, :domain, :feeds
-    attr_accessor :auth, :user, :group, :nickname, :export
+    attr_accessor :auth, :user, :group, :nickname, :export, :group, :requester
 
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
@@ -22,7 +22,7 @@ module GoogleApps
       @nickname = targets[:nickname] || "https://apps-apis.google.com/a/feeds/#{domain}/nickname/2.0"
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
       @domain = domain
-      @requester = AppsRequest || targets[:requester] # For testing.
+      @requester = AppsRequest || targets[:requester]
       @token = nil
       @response = nil
       @request = nil

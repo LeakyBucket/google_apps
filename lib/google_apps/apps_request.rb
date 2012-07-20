@@ -2,6 +2,8 @@ require 'net/http'
 
 module GoogleApps
   class AppsRequest
+    attr_reader :uri
+
     def initialize(verb, uri, headers)
       @uri = URI uri
       @ssl = (@uri.scheme == 'https')
@@ -9,7 +11,7 @@ module GoogleApps
 
       set_headers(headers)
     end
-    
+
     def send_request
       Net::HTTP.start(@uri.host, @uri.port, use_ssl: @ssl) do |http|
         http.request(@http_request)
