@@ -225,11 +225,10 @@ module GoogleApps
     def update(endpoint, target, document)
     	# TODO: Username needs to come from somewhere for uri
       uri = URI(endpoint + "/#{target}")
-      @request = Net::HTTP::Put.new(uri.path)
-      @request.body = document.to_s
-      set_headers :user
+      @request = @requester.new :put, uri, headers(:other)
+      @request.add_body document.to_s
 
-      @response = request uri
+      @response = @request.send_request
     end
 
     # delete is a generic target for method_missing.  It is
@@ -242,10 +241,9 @@ module GoogleApps
     # delete returns the HTTP response received from Google.
     def delete(endpoint, id)
       uri = URI(endpoint + "/#{id}")
-      @request = Net::HTTP::Delete.new(uri.path)
-      set_headers :user
+      @request = @requester.new :delete, uri, headers(:other)
 
-      @response = request uri
+      @response = @request.send_request
     end
 
     # migration performs mail migration from a local
