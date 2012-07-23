@@ -26,6 +26,7 @@ describe "GoogleApps::Transport" do
     mock_response.stub(:body).and_return('body')
     mock_request.stub(:send_request).and_return(mock_response)
     mock_request.stub(:add_body)
+    mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
   end
 
   describe '#new' do
@@ -59,7 +60,6 @@ describe "GoogleApps::Transport" do
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), headers[:other])
-      mock_response.should_receive :body
 
       transporter.get_nicknames_for 'lholcomb2'
 
@@ -69,11 +69,8 @@ describe "GoogleApps::Transport" do
 
   describe "#delete_member_from" do
     it "crafts an HTTP DELETE request for a group member" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:delete, URI(transporter.group + '/next_group/member/lholcomb2@cnm.edu'), headers[:other])
       transporter.delete_member_from 'next_group', 'lholcomb2@cnm.edu'
-      base_path = get_path("group")
-
-      transporter.instance_eval { @request }.should be_a Net::HTTP::Delete
-      transporter.instance_eval { @request.path }.should == "/#{base_path}/next_group/member/lholcomb2@cnm.edu"
     end
   end
 
@@ -136,10 +133,8 @@ describe "GoogleApps::Transport" do
 
   describe "#get_users" do
     it "Builds a GET request for the user endpoint" do
-      transporter.authenticate credentials['username'], credentials['password']
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.user + '?startUsername=znelson1'), headers[:other])
       transporter.get_users start: 'znelson1', limit: 2
-
-      transporter.instance_eval { @request.path }.should include 'user'
     end
 
     it "Makes another request if the response has a <link rel=\"next\" node"
