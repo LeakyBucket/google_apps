@@ -140,4 +140,34 @@ describe "GoogleApps::Transport" do
 
     it "Makes another request if the response has a <link rel=\"next\" node"
   end
+
+  describe "#download" do
+    before(:all) do
+      @url = 'http://www.google.com'
+      @filename = 'spec/download_test'
+    end
+
+    before(:each) do
+      mock_response.stub(:body).and_return("Test body")
+    end
+
+    after(:all) do
+      File.delete('spec/download_test')
+    end
+
+    it "Makes a GET request for the specified url" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(@url), @headers[:other])
+      mock_response.should_receive(:body)
+
+      transporter.download @url, @filename
+    end
+
+    it "Saves the response body to the specified filename" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(@url), @headers[:other])
+      mock_response.should_receive(:body)
+      transporter.download @url, @filename
+
+      File.read('spec/download_test').should == "Test body\n"
+    end
+  end
 end

@@ -90,12 +90,10 @@ module GoogleApps
     #
     # download 'url', 'save_file'
     def download(url, filename)
-      uri = URI(url)
-      @request = Net::HTTP::Get.new uri.path
-      set_headers :user
+      @request = @requester.new :get, URI(url), headers(:other)
 
       File.open(filename, "w") do |file|
-        file.puts request(uri).body
+        file.puts @request.send_request.body
       end
     end
 
