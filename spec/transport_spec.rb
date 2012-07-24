@@ -38,13 +38,11 @@ describe "GoogleApps::Transport" do
   end
 
   describe '#authenticate' do
-    it "gets the Auth token from the ClientLogin endpoint" do
+    it "Makes an authentication request to the @auth endpoint" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.auth), @headers[:auth])
       mock_response.should_receive(:body).and_return('auth=fake_token')
 
       transporter.authenticate credentials['username'], credentials['password']
-
-      transporter.instance_eval { @token }.should be_a String
     end
   end
 

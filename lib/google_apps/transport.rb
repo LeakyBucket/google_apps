@@ -39,10 +39,7 @@ module GoogleApps
     # authenticate returns the HTTP response received
     # from Google
     def authenticate(account, pass)
-      @request = @requester.new :post, URI(@auth), headers(:auth)
-      @request.add_body auth_body(account, pass)
-
-      @response = @request.send_request
+      add(@auth, auth_body(account, pass), :auth)
 
       set_auth_token
 
@@ -203,9 +200,10 @@ module GoogleApps
     # add 'endpoint', document
     #
     # add returns the HTTP response received from Google.
-    def add(endpoint, document)
+    def add(endpoint, document, header_type = nil)
+      header_type = :others unless header_type
       uri = URI(endpoint)
-      @request = @requester.new :post, uri, headers(:other)
+      @request = @requester.new :post, uri, headers(header_type)
       @request.add_body document.to_s
 
       @response = @request.send_request
@@ -221,7 +219,6 @@ module GoogleApps
     #
     # update returns the HTTP response received from Google
     def update(endpoint, target, document)
-    	# TODO: Username needs to come from somewhere for uri
       uri = URI(endpoint + "/#{target}")
       @request = @requester.new :put, uri, headers(:other)
       @request.add_body document.to_s
