@@ -106,9 +106,6 @@ describe "GoogleApps::Transport" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + '/lholcomb2/83838'), @headers[:other])
 
       transporter.export_status 'lholcomb2', 83838
-      base_path = get_path("export")
-
-      #transporter.instance_eval { @request.instance_eval { @http_request.path } }.should == "/#{base_path}/lholcomb2/83838"
     end
   end
 
