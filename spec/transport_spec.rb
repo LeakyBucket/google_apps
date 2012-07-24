@@ -8,25 +8,24 @@ describe "GoogleApps::Transport" do
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
   let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
-  let (:headers) do
-    { auth: [['content-type', 'application/x-www-form-urlencoded']],
-      migration: [['content-type', "multipart/related; boundary=\"#{GoogleApps::Transport::BOUNDARY}\""], ['authorization', "GoogleLogin auth=#{transporter.instance_eval { @token } }"]],
-      other: [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{transporter.instance_eval { @token } }"]]
-    }
-  end
 
   before(:all) do
     transporter.authenticate credentials['username'], credentials['password']
   end
 
   before(:each) do
+    @headers = {
+      auth: [['content-type', 'application/x-www-form-urlencoded']],
+      migration: [['content-type', "multipart/related; boundary=\"#{GoogleApps::Transport::BOUNDARY}\""], ['authorization', "GoogleLogin auth=#{transporter.instance_eval { @token } }"]],
+      other: [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{transporter.instance_eval { @token } }"]]
+    }
+
     GoogleApps::AppsRequest.stub(:new).and_return(mock_request)
     transporter.requester = GoogleApps::AppsRequest
 
-    mock_response.stub(:body).and_return('body')
     mock_request.stub(:send_request).and_return(mock_response)
     mock_request.stub(:add_body)
-    mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
+    #mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
   end
 
   describe '#new' do
@@ -49,7 +48,7 @@ describe "GoogleApps::Transport" do
 
   describe "#add_member_to" do
     it "creates an HTTP POST request to add a member to a group" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test/member'), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test/member'), @headers[:other])
       mock_request.should_receive :add_body
 
       transporter.add_member_to 'Test', 'Bob'
@@ -59,7 +58,7 @@ describe "GoogleApps::Transport" do
 
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), @headers[:other])
 
       transporter.get_nicknames_for 'lholcomb2'
 
@@ -69,7 +68,7 @@ describe "GoogleApps::Transport" do
 
   describe "#delete_member_from" do
     it "crafts an HTTP DELETE request for a group member" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:delete, URI(transporter.group + '/next_group/member/lholcomb2@cnm.edu'), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:delete, URI(transporter.group + '/next_group/member/lholcomb2@cnm.edu'), @headers[:other])
       transporter.delete_member_from 'next_group', 'lholcomb2@cnm.edu'
     end
   end
@@ -81,9 +80,11 @@ describe "GoogleApps::Transport" do
   end
 
   describe "#set_auth_token" do
+    before(:each) do
+      mock_response.stub(:body).and_return('auth=fake_token')
+    end
+
     it "should set @token to the value found in the response body" do
-      transporter.get_user user_name
-      transporter.instance_eval { @response.body = "\nbob\nauth=fake_token" }
       transporter.send(:set_auth_token)
 
       transporter.instance_eval { @token }.should == 'fake_token'
@@ -92,7 +93,7 @@ describe "GoogleApps::Transport" do
 
   describe "#request_export" do
     it "crafts a HTTP POST request for a mailbox export" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.export + '/lholcomb2'), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.export + '/lholcomb2'), @headers[:other])
 
       transporter.request_export 'lholcomb2', document
       base_path = get_path("export")
@@ -101,7 +102,7 @@ describe "GoogleApps::Transport" do
 
   describe "#export_status" do
     it "crafts a HTTP GET request for a mailbox export status" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + '/lholcomb2/83838'), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + '/lholcomb2/83838'), @headers[:other])
 
       transporter.export_status 'lholcomb2', 83838
       base_path = get_path("export")
@@ -122,18 +123,20 @@ describe "GoogleApps::Transport" do
 
   describe '#add_user' do
     it "sends a POST request to the User endpoint" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.user), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.user), @headers[:other])
       mock_request.should_receive(:add_body).with user_doc.to_s
 
       transporter.add_user user_doc
-
-      #transporter.instance_eval { @request.body }.should include user_doc.to_s
     end
   end
 
   describe "#get_users" do
+    before(:each) do
+      mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
+    end
+
     it "Builds a GET request for the user endpoint" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.user + '?startUsername=znelson1'), headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.user + '?startUsername=znelson1'), @headers[:other])
       transporter.get_users start: 'znelson1', limit: 2
     end
 
