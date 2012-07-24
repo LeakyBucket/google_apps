@@ -5,7 +5,7 @@ require 'rexml/document'
 module GoogleApps
   class Transport
     attr_reader :request, :response, :domain, :feeds
-    attr_accessor :auth, :user, :group, :nickname, :export, :group, :requester
+    attr_accessor :auth, :user, :group, :nickname, :export, :group, :requester, :migration
 
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
@@ -248,12 +248,10 @@ module GoogleApps
     #
     # migrate returns the HTTP response received from Google.
     def migrate(username, properties, message)
-      uri = URI(@migration + "/#{username}/mail")
-      @request = Net::HTTP::Post.new(uri.path)
-      @request.body = multi_part(properties.to_s, message)
-      set_headers :migrate
+      @request = @requester.new(:post, URI(@migration + "/#{username}/mail"), headers(:migration))
+      @request.add_body multi_part(properties.to_s, message)
 
-      @response = request uri
+      @request.send_request
     end
 
 

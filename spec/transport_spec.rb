@@ -170,4 +170,13 @@ describe "GoogleApps::Transport" do
       File.read('spec/download_test').should == "Test body\n"
     end
   end
+
+  describe "#migrate" do
+    it "Make a POST request to the migration endpoint" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.migration + "/#{user_name}/mail"), @headers[:migration])
+      mock_request.should_receive(:add_body).with(transporter.send(:multi_part, "bob", "cat"))
+
+      transporter.migrate(user_name, "bob", "cat")
+    end
+  end
 end
