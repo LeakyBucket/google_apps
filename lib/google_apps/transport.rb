@@ -367,19 +367,7 @@ module GoogleApps
         [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{@token}"]]
       end
     end
-
-    def set_headers(request_type)
-      case request_type
-      when :auth
-        @request['content-type'] = "application/x-www-form-urlencoded"
-      when :migrate
-        @request['content-type'] = "multipart/related; boundary=\"#{BOUNDARY}\""
-        @request['authorization'] = "GoogleLogin auth=#{@token}"
-      else
-        @request['content-type'] = "application/atom+xml"
-        @request['authorization'] = "GoogleLogin auth=#{@token}"
-      end
-    end
+    
 
     def multi_part(properties, message)
       post_body = []
