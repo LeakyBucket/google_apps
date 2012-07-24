@@ -39,12 +39,10 @@ module GoogleApps
     # authenticate returns the HTTP response received
     # from Google
     def authenticate(account, pass)
-      uri = URI(@auth)
-      @request = Net::HTTP::Post.new(uri.path)
-      @request.body = auth_body(account, pass)
-      set_headers :auth
+      @request = @requester.new :post, URI(@auth), headers(:auth)
+      @request.add_body auth_body(account, pass)
 
-      @response = request uri
+      @response = @request.send_request
 
       set_auth_token
 

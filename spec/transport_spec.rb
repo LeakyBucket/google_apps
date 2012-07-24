@@ -39,9 +39,11 @@ describe "GoogleApps::Transport" do
 
   describe '#authenticate' do
     it "gets the Auth token from the ClientLogin endpoint" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.auth), @headers[:auth])
+      mock_response.should_receive(:body).and_return('auth=fake_token')
+
       transporter.authenticate credentials['username'], credentials['password']
 
-      transporter.response.should be_a Net::HTTPOK
       transporter.instance_eval { @token }.should be_a String
     end
   end
@@ -49,6 +51,7 @@ describe "GoogleApps::Transport" do
   describe "#add_member_to" do
     it "creates an HTTP POST request to add a member to a group" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test/member'), @headers[:other])
+
       mock_request.should_receive :add_body
 
       transporter.add_member_to 'Test', 'Bob'
