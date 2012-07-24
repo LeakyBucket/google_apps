@@ -179,4 +179,18 @@ describe "GoogleApps::Transport" do
       transporter.migrate(user_name, "bob", "cat")
     end
   end
+
+  describe "#export_ready?" do
+    before(:each) do
+      mock_response.stub(:body).and_return(export_status)
+
+      @id = 828456
+    end
+
+    it "Fetches the export status and checks for fileUrl attributes" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
+
+      transporter.export_ready?.should == true
+    end
+  end
 end

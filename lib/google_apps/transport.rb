@@ -71,6 +71,7 @@ module GoogleApps
       get(@export + "/#{username}", req_id)
     end
 
+
     def fetch_export(username, req_id, filename) # :nodoc:
       # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
       export_status(username, req_id)
@@ -84,6 +85,7 @@ module GoogleApps
         download(url, filename + "#{urls.index(url)}")
       end
     end
+
 
     # download makes a get request of the provided url
     # and writes the body to the provided filename.
@@ -367,7 +369,7 @@ module GoogleApps
         [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{@token}"]]
       end
     end
-    
+
 
     def multi_part(properties, message)
       post_body = []
