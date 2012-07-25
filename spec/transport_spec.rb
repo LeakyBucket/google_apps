@@ -187,7 +187,7 @@ describe "GoogleApps::Transport" do
 
     it "Returns true if there is a fileUrl property in @response.body" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
-      mock_response.stub(:body).and_return(finished_export)
+      mock_response.should_receive(:body).and_return(finished_export)
 
       transporter.export_ready?.should == true
     end
