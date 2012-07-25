@@ -182,15 +182,16 @@ describe "GoogleApps::Transport" do
 
   describe "#export_ready?" do
     before(:each) do
-      mock_response.stub(:body).and_return(export_status)
-
       @id = 828456
     end
 
-    it "Fetches the export status and checks for fileUrl attributes" do
+    it "Returns true if there is a fileUrl property in @response.body" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
+      mock_response.stub(:body).and_return(finished_export)
 
       transporter.export_ready?.should == true
     end
+
+    it "Returns false if there is no fileUrl property in @response.body"
   end
 end

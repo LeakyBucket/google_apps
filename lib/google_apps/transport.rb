@@ -46,6 +46,7 @@ module GoogleApps
       @response
     end
 
+
     # request_export performs the GoogleApps API call to
     # generate a mailbox export.  It takes the username
     # and an GoogleApps::Atom::Export instance as
@@ -57,7 +58,10 @@ module GoogleApps
     # from Google.
     def request_export(username, document)
       add(@export + "/#{username}", document)
+
+      get_values('apps:property', ['name', 'requestId'], 'value')[0]
     end
+
 
     # export_status checks the status of a mailbox export
     # request.  It takes the username and the request_id
@@ -72,26 +76,37 @@ module GoogleApps
     end
 
 
+    # export_ready? checks the export_status response for the
+    # presence of an apps:property element with a fileUrl name
+    # attribute.
+    #
+    # export_ready? 'lholcomb2', 82834
+    #
+    # export_ready? returns true if there is a fileUrl present
+    # in the response and false if there is no fileUrl present
+    # in the response.
     def export_ready?(username, req_id)
       export_status(username, req_id)
 
-      Atom::XML::Document.parse(@response.body).find('//apps:property').each do |prop|
-
-      end
+      !(export_file_urls.empty?)
     end
 
 
-    def fetch_export(username, req_id, filename) # :nodoc:
-      # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
-      export_status(username, req_id)
-      doc = REXML::Document.new(@response.body)
-      urls = []
-      doc.elements.each('entry/apps:property') do |property|
-        urls << property.attributes['value'] if property.attributes['name'].match 'fileUrl'
-      end
-
-      urls.each do |url|
-        download(url, filename + "#{urls.index(url)}")
+    # fetch_export downloads the mailbox export from Google. 
+    # It takes a username, request id and a filename as
+    # arguments.  If the export consists of more than one file
+    # the file name will have numbers appended to indicate the
+    # piece of the export.
+    #
+    # fetch_export 'lholcomb2', 838382, 'lholcomb2'
+    #
+    # fetch_export reutrns nil in the event that the export is
+    # not yet ready.
+    def fetch_export(username, req_id, filename)
+      if export_ready?(username, req_id)
+        download_export(filename).each_with_index { |url, index| url.gsub!(/.*/, "#{filename}#{index}")}
+      else
+        nil
       end
     end
 
@@ -107,6 +122,7 @@ module GoogleApps
         file.puts @request.send_request.body
       end
     end
+
 
     # get is a generic target for method_missing.  It is
     # intended to handle the general case of retrieving a
@@ -305,6 +321,33 @@ module GoogleApps
     # a / is prepended to the id string.
     def build_id(id)
       id =~ /^\?/ ? id : "/#{id}"
+    end
+
+
+    # get_values returns an array of all the value attributes
+    # on elements matching the given key_attrib pair on the
+    # specified element type.
+    def get_values(element, key_attrib, value = 'value')
+      Atom::XML::Document.string(@response.body).find("//#{element}").inject([]) do |values, element|
+        values = prop.attributes["#{value}"] if prop.attributes["#{key_attrib[0]}"].match key_attrib[1]
+      end
+    end
+
+
+    # export_file_urls searches @response for any apps:property elements with a
+    # fileUrl name attribute and returns an array of the values.
+    def export_file_urls
+      Atom::XML::Document.string(@response.body).find('//apps:property').inject([]) do |urls, prop|
+        urls << prop.attributes['value'] if prop.attributes['name'].match 'fileUrl'
+        urls
+      end
+    end
+
+
+    def download_export(filename)
+      export_file_urls.each_with_index do |url, index|
+        download(url, filename + "#{index}")
+      end
     end
 
 
