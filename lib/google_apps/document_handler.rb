@@ -1,11 +1,13 @@
 module GoogleApps
   class DocumentHandler
-    attr_reader :type
+    attr_reader :format
 
     def initialize(args)
-      @type = args[:type]
+      @format = args[:format]
     end
     
-    
+    def doc_from_string(text)
+      
+    end
   end
 end
