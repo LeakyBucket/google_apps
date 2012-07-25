@@ -72,6 +72,15 @@ module GoogleApps
     end
 
 
+    def export_ready?(username, req_id)
+      export_status(username, req_id)
+
+      Atom::XML::Document.parse(@response.body).find('//apps:property').each do |prop|
+
+      end
+    end
+
+
     def fetch_export(username, req_id, filename) # :nodoc:
       # TODO: Shouldn't rely on export_status being run first.  Self, this is lazy and stupid.
       export_status(username, req_id)
