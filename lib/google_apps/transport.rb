@@ -59,7 +59,7 @@ module GoogleApps
     def request_export(username, document)
       add(@export + "/#{username}", document)
 
-      get_values('apps:property', ['name', 'requestId'], 'value')[0]
+      get_values('apps:property', ['name', 'requestId'], 'value')[0].to_i
     end
 
 
@@ -328,8 +328,9 @@ module GoogleApps
     # on elements matching the given key_attrib pair on the
     # specified element type.
     def get_values(element, key_attrib, value = 'value')
-      Atom::XML::Document.string(@response.body).find("//#{element}").inject([]) do |values, element|
-        values = prop.attributes["#{value}"] if prop.attributes["#{key_attrib[0]}"].match key_attrib[1]
+      Atom::XML::Document.string(@response.body).find('//' + element).inject([]) do |values, element|
+        values << element.attributes[value] if element.attributes[key_attrib[0]].match key_attrib[1]
+        values
       end
     end
 
