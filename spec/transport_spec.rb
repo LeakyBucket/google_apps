@@ -95,9 +95,9 @@ describe "GoogleApps::Transport" do
   describe "#request_export" do
     it "crafts a HTTP POST request for a mailbox export" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.export + '/lholcomb2'), @headers[:other])
+      mock_response.should_receive(:body).and_return(pending_export)
 
-      transporter.request_export 'lholcomb2', document
-      base_path = get_path("export")
+      transporter.request_export('lholcomb2', document).should == 75133001
     end
   end
 
