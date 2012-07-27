@@ -192,6 +192,11 @@ describe "GoogleApps::Transport" do
       transporter.export_ready?(user_name, @id).should == true
     end
 
-    it "Returns false if there is no fileUrl property in @response.body"
+    it "Returns false if there is no fileUrl property in @response.body" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
+      mock_response.should_receive(:body).and_return(pending_export)
+
+      transporter.export_ready?(user_name, @id).should == false
+    end
   end
 end
