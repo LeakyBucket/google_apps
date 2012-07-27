@@ -181,7 +181,7 @@ describe "GoogleApps::Transport" do
   end
 
   describe "#export_ready?" do
-    before(:each) do
+    before(:all) do
       @id = 828456
     end
 
