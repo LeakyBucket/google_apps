@@ -34,6 +34,18 @@ describe "GoogleApps::DocumentHandler" do
     end
   end
 
+  describe "#doc_of_type" do
+    it "Returns an object of the specified type if the type is valid for the format" do
+      user = handler.doc_of_type :user, File.read('spec/xml/user.xml')
+
+      user.should be_a GoogleApps::Atom::User
+    end
+
+    it "Raises a RuntimeError if the type is not valid for the format" do
+      lambda { handler.doc_of_type :goat, File.read('spec/xml/user.xml') }.should raise_error
+    end
+  end
+
   describe "#look_up_doc_types" do
     it "Returns a list of all Atom documents when @format is :atom" do
       handler.send(:look_up_doc_types).should == GoogleApps::Atom::DOCUMENTS

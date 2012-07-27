@@ -23,6 +23,18 @@ module GoogleApps
     end
 
 
+    # doc_of_type takes a document type and a string and
+    # returns a document of that type in the current format.
+    def doc_of_type(type, text)
+      raise "No #{@format.to_s.capitalize} document of type: #{type}" unless @documents.include?(type.to_s)
+
+      case @format
+      when :atom, :xml
+        @GoogleApps::Atom.send(type, text)
+      end
+    end
+
+
 
     private
 
