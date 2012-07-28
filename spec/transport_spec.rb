@@ -4,7 +4,7 @@ describe "GoogleApps::Transport" do
   let (:mock_request) { mock(GoogleApps::AppsRequest) }
   let (:mock_response) { mock(Net::HTTPResponse) }
   let (:transporter) { GoogleApps::Transport.new "cnm.edu" }
-  let (:user_doc) { GoogleApps::Atom::User.new }
+  let (:user_doc) { GoogleApps::Atom::User.new File.read('spec/xml/user.xml') }
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
   let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
@@ -198,5 +198,24 @@ describe "GoogleApps::Transport" do
 
       transporter.export_ready?(user_name, @id).should == false
     end
+  end
+
+  describe "#process_response" do
+    before(:each) do
+      mock_handler = double(GoogleApps::DocumentHandler)
+      transporter.instance_eval { @handler = mock_handler }
+      mock_handler.should_receive(:doc_of_type).and_return(user_doc)
+    end
+
+    it "Return a Document Object if Google doesn't return an error" do
+      mock_response.should_receive(:code).and_return(200)
+      mock_response.should_receive(:body).and_return(File.read('spec/xml/user.xml'))
+
+      transporter.update_user 'lholcomb2', user_doc
+
+      transporter.send(:process_response, :user).should be_a GoogleApps::Atom::User
+    end
+
+    it "Returns the HTTP Response object if Google returns an error"
   end
 end

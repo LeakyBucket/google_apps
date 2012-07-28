@@ -7,6 +7,7 @@ module GoogleApps
     attr_reader :request, :response, :domain, :feeds
     attr_accessor :auth, :user, :group, :nickname, :export, :group, :requester, :migration
 
+    SUCCESS_CODES = [200, 201]
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
       user: 100,
@@ -92,7 +93,7 @@ module GoogleApps
     end
 
 
-    # fetch_export downloads the mailbox export from Google. 
+    # fetch_export downloads the mailbox export from Google.
     # It takes a username, request id and a filename as
     # arguments.  If the export consists of more than one file
     # the file name will have numbers appended to indicate the
@@ -349,6 +350,14 @@ module GoogleApps
       export_file_urls.each_with_index do |url, index|
         download(url, filename + "#{index}")
       end
+    end
+
+
+    # process_response takes the HTTPResponse and either returns a
+    # document of the specified type or in the event of an error it
+    # returns the HTTPResponse.
+    def process_response(doc_type)
+      SUCCESS_CODES.include?(@response.code.to_i) ? @handler.doc_of_type(doc_type, @response.body) : @response
     end
 
 
