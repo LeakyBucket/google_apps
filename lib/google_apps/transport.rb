@@ -357,7 +357,14 @@ module GoogleApps
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
     def process_response(doc_type)
-      SUCCESS_CODES.include?(@response.code.to_i) ? @handler.doc_of_type(doc_type, @response.body) : @response
+      success_response? ? @handler.doc_of_type(doc_type, @response.body) : @response
+    end
+
+
+    # error_response? checks to see if Google Responded with a success
+    # code.
+    def success_response?
+      SUCCESS_CODES.include?(@response.code.to_i)
     end
 
 
