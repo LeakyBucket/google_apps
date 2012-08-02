@@ -36,7 +36,7 @@ describe "GoogleApps::DocumentHandler" do
 
   describe "#doc_of_type" do
     it "Returns an object of the specified type if the type is valid for the format" do
-      user = handler.doc_of_type :user, File.read('spec/xml/user.xml')
+      user = handler.doc_of_type File.read('spec/xml/user.xml'), :user
 
       user.should be_a GoogleApps::Atom::User
     end

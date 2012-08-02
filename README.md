@@ -30,6 +30,7 @@ __Domain API__
     * Nicknames
       * Creation
       * Deletion
+      * List Nicknames for a User
   * Public Key Upload
   * Email Audit
     * Mailbox Export Request
@@ -216,3 +217,37 @@ transporter.migrate 'username', attributes, message
 ~~~~~
 
 ## Long How
+
+#### GoogleApps::Transport
+
+This is the main piece of the library.  The Transport class does all the heavy lifting and communication between your code and the Google Apps Envrionment.  
+
+Transport will accept a plethora of configuration options.  However most have currently sane defaults.  In particular the endpoint values should default to currently valid URIs.  
+
+The only required option is the name of your domain:
+
+~~~~
+GoogleApps::Transport.new 'cnm.edu'
+~~~~
+
+This domain value is used to set many of the defaults, which are:
+
+  * @auth - The default base URI for auth requests (This will change once OAuth support is added).
+  * @user - The default base URI for user related API requests.
+  * @pubkey - The default base URI for public key related API requests.
+  * @migration - The default base URI for email migration related API requests.
+  * @group - The default base URI for group related API requests.
+  * @nickname - The default base URI for nickname related API requests.
+  * @export - The default base URI for mail export related API requests.
+  * @requester - The class to use for making API requests, the default is GoogleApps::AppsRequest
+  * @doc_handler - The doc_handler parses Google Apps responses and returns the proper document object.  The default format is :atom, you can specify a different format by passing format: <format> during Transport instantiation.
+
+GoogleApps::Transport is your interface for any HTTP verb related action.  It handles GET, PUT, POST and DELETE requests.  Transport also provides methods for checking the status of long running requests and downloading content.
+
+
+### GoogleApps::Atom::User
+
+This class represents a user record in the Google Apps Environment.  It is basically a glorified LibXML::XML::Document.  
+
+User provides a basic accessor interface for common attributes.  It also provides methods for setting and updating less common nodes.  
+
