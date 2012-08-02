@@ -53,7 +53,6 @@ module GoogleApps
 
 
       def change_value(name, old_value, new_value)
-        binding.pry
         find_and_update @document, '//apps:property', { name => [old_value, new_value] }
       end
 

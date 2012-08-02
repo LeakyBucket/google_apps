@@ -67,7 +67,7 @@ module GoogleApps
         document.find(xpath).each do |node|
           if node_match?(node, attributes)
             attributes.each_key do |attrib|
-              node.attributes[attrib.to_s] = attributes[attrib][1] if node.attributes[attrib.to_s].to_s == attributes[attrib][0].to_s
+              node.attributes[attrib.to_s] = attributes[attrib][1]
             end
           end
         end
