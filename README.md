@@ -249,5 +249,67 @@ GoogleApps::Transport is your interface for any HTTP verb related action.  It ha
 
 This class represents a user record in the Google Apps Environment.  It is basically a glorified LibXML::XML::Document.  
 
-User provides a basic accessor interface for common attributes.  It also provides methods for setting and updating less common nodes.  
+~~~~
+user = GoogleApps::Atom::User.new
+user = GoogleApps::Atom::User.new <xml string>
+
+user = GoogleApps::Atom.user
+user = GoogleApps::Atom.user <xml string>
+~~~~
+
+User provides a basic accessor interface for common attributes.    
+
+~~~~
+user.login = 'lholcomb2'
+# password= will return the plaintext password string but will set a SHA1 encrypted password.
+user.password = 'hobobob'
+user.first_name = 'Glen'
+user.last_name = 'Holcomb'
+user.suspended = false
+user.quota = 1000
+
+
+user.login
+> 'lholcomb2'
+
+# password returns the SHA1 hash of the password
+user.password
+> 'b8b32c3e5233b4891ae47bd31e36dc472987a7f4'
+
+user.first_name
+> 'Glen'
+
+user.last_name
+> 'Holcomb'
+
+user.suspended
+> false
+
+user.quota
+> 1000
+~~~~
+
+It also provides methods for setting and updating less common nodes and attributes.  
+
+~~~~
+user.update_node 'apps:login', :agreedToTerms, true
+
+# if the user specification were to change or expand you could manually set nodes in the following way.
+user.add_node 'apps:property', [['locale', 'Spanish']]
+~~~~
+
+GoogleApps::Atom::User also has a to_s method that will return the underlying LibXML::XML::Document as a string.
+
+
+### GoogleApps::Atom::Group
+
+This class represents a Google Apps Group.  Similarly to GoogleApps::Atom::User this is basically a LibXML::XML::Document.  
+
+~~~~
+group = GoogleApps::Atom::Group.new
+group = GoogleApps::Atom::Group.new <xml string>
+
+group = GoogleApps::Atom.group
+group = GoogleApps::Atom.group <xml string>
+~~~~
 

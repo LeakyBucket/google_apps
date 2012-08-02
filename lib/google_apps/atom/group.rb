@@ -4,6 +4,8 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
+      attr_accessor :id, :name, :description, :perms
+
       #ATTRIBUTES = %w(id name description perms).map(&:to_sym)
 
       def initialize(xml = nil)
@@ -48,6 +50,21 @@ module GoogleApps
 
         @document.root
       end
+
+
+      def change_value(name, old_value, new_value)
+        binding.pry
+        find_and_update @document, '//apps:property', { name => [old_value, new_value] }
+      end
+
+
+      def id=(value)
+        @document = parse(@document)
+        @id ? change_value(:value, @id, value) : set_values(id: value)
+
+        @id = value
+      end
+
 
       # to_s returns @document as a String.
       def to_s
