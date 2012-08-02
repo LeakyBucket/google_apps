@@ -93,19 +93,36 @@ describe "GoogleApps::Transport" do
   end
 
   describe "#request_export" do
-    it "crafts a HTTP POST request for a mailbox export" do
+    before(:each) do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.export + '/lholcomb2'), @headers[:other])
+    end
+
+    it "crafts a HTTP POST request for a mailbox export" do
       mock_response.should_receive(:body).and_return(pending_export)
+      mock_response.should_receive(:code).and_return(200)
 
       transporter.request_export('lholcomb2', document).should == 75133001
+    end
+
+    it "Crafts a HTTP POST request and returns @response if Google returns an error" do
+      mock_response.should_receive(:code).and_return(404)
+
+      transporter.request_export('lholcomb2', document).should be mock_response
     end
   end
 
   describe "#export_status" do
-    it "crafts a HTTP GET request for a mailbox export status" do
+    before(:each) do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + '/lholcomb2/83838'), @headers[:other])
+      mock_response.should_receive(:body).and_return(pending_export)
+    end
 
+    it "crafts a HTTP GET request for a mailbox export status" do
       transporter.export_status 'lholcomb2', 83838
+    end
+
+    it "Returns the response body from Google" do
+      transporter.export_status('lholcomb2', 83838).should be_a String
     end
   end
 
@@ -187,14 +204,16 @@ describe "GoogleApps::Transport" do
 
     it "Returns true if there is a fileUrl property in @response.body" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
-      mock_response.should_receive(:body).and_return(finished_export)
+      mock_response.should_receive(:body).twice.and_return(finished_export)
+      mock_response.should_receive(:code).and_return(200)
 
       transporter.export_ready?(user_name, @id).should == true
     end
 
     it "Returns false if there is no fileUrl property in @response.body" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
-      mock_response.should_receive(:body).and_return(pending_export)
+      mock_response.should_receive(:body).twice.and_return(pending_export)
+      mock_response.should_receive(:code).and_return(200)
 
       transporter.export_ready?(user_name, @id).should == false
     end

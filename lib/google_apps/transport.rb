@@ -7,7 +7,7 @@ module GoogleApps
     attr_reader :request, :response, :domain, :feeds
     attr_accessor :auth, :user, :group, :nickname, :export, :group, :requester, :migration
 
-    SUCCESS_CODES = [200, 201]
+    SUCCESS_CODES = [200, 201, 202]
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
       user: 100,
@@ -24,6 +24,7 @@ module GoogleApps
       @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
       @domain = domain
       @requester = AppsRequest || targets[:requester]
+      @doc_handler = DocumentHandler.new format: (targets[:format] || :atom)
       @token = nil
       @response = nil
       @request = nil
@@ -55,12 +56,12 @@ module GoogleApps
     #
     # request_export 'username', document
     #
-    # request_export returns the HTTP response received
-    # from Google.
+    # request_export returns the request ID on success or
+    # the HTTP response object on failure.
     def request_export(username, document)
       add(@export + "/#{username}", document)
 
-      get_values('apps:property', ['name', 'requestId'], 'value')[0].to_i
+      success_response? ? get_values('apps:property', ['name', 'requestId'], 'value')[0].to_i : @response
     end
 
 
@@ -70,10 +71,12 @@ module GoogleApps
     #
     # export_status 'username', 847576
     #
-    # export_status will return the status of the HTTP
-    # response from Google
+    # export_status will return the body of the HTTP response
+    # from Google
     def export_status(username, req_id)
       get(@export + "/#{username}", req_id)
+
+      @response.body
     end
 
 
@@ -89,7 +92,7 @@ module GoogleApps
     def export_ready?(username, req_id)
       export_status(username, req_id)
 
-      !(export_file_urls.empty?)
+      !(export_file_urls.empty?) unless !success_response?
     end
 
 
