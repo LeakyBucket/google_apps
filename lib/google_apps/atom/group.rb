@@ -56,7 +56,7 @@ module GoogleApps
         find_and_update @document, '//apps:property', { name => [old_value, new_value] }
       end
 
-
+      # TODO:  This needs to check all attributes of the element
       def id=(value)
         @document = parse(@document)
         @id ? change_value(:value, @id, value) : set_values(id: value)
