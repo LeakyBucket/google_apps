@@ -220,9 +220,9 @@ transporter.migrate 'username', attributes, message
 
 #### GoogleApps::Transport
 
-This is the main piece of the library.  The Transport class does all the heavy lifting and communication between your code and the Google Apps Envrionment.  
+This is the main piece of the library.  The Transport class does all the heavy lifting and communication between your code and the Google Apps Envrionment.
 
-Transport will accept a plethora of configuration options.  However most have currently sane defaults.  In particular the endpoint values should default to currently valid URIs.  
+Transport will accept a plethora of configuration options.  However most have currently sane defaults.  In particular the endpoint values should default to currently valid URIs.
 
 The only required option is the name of your domain:
 
@@ -247,17 +247,19 @@ GoogleApps::Transport is your interface for any HTTP verb related action.  It ha
 
 ### GoogleApps::Atom::User
 
-This class represents a user record in the Google Apps Environment.  It is basically a glorified LibXML::XML::Document.  
+This class represents a user record in the Google Apps Environment.  It is basically a glorified LibXML::XML::Document.
 
 ~~~~
 user = GoogleApps::Atom::User.new
 user = GoogleApps::Atom::User.new <xml string>
 
+# or
+
 user = GoogleApps::Atom.user
 user = GoogleApps::Atom.user <xml string>
 ~~~~
 
-User provides a basic accessor interface for common attributes.    
+User provides a basic accessor interface for common attributes.
 
 ~~~~
 user.login = 'lholcomb2'
@@ -289,7 +291,7 @@ user.quota
 > 1000
 ~~~~
 
-It also provides methods for setting and updating less common nodes and attributes.  
+It also provides methods for setting and updating less common nodes and attributes.
 
 ~~~~
 user.update_node 'apps:login', :agreedToTerms, true
@@ -303,13 +305,66 @@ GoogleApps::Atom::User also has a to_s method that will return the underlying Li
 
 ### GoogleApps::Atom::Group
 
-This class represents a Google Apps Group.  Similarly to GoogleApps::Atom::User this is basically a LibXML::XML::Document.  
+This class represents a Google Apps Group.  Similarly to GoogleApps::Atom::User this is basically a LibXML::XML::Document.
 
 ~~~~
 group = GoogleApps::Atom::Group.new
 group = GoogleApps::Atom::Group.new <xml string>
 
+# or
+
 group = GoogleApps::Atom.group
 group = GoogleApps::Atom.group <xml string>
 ~~~~
 
+The Group class provides getters and setter for the standard group properties.
+
+~~~~
+group.id = 'Group ID'
+group.name = 'Example Group'
+group.permissions = 'Domain'
+group.description = 'A Simple Example'
+
+group.id
+> 'Group ID'
+group.name
+> 'Example Group'
+group.permissions
+> 'Domain'
+group.description
+> 'A Simple Example'
+~~~~
+
+*Note:*  Group Membership is actually handled separately in the Google Apps Environment, therefore it is handled separately in this library as well (for now at least). See the next section for Group Membership.
+
+
+### GoogleApps::Atom::GroupMember
+
+This class is representative of a Google Apps Group Member.
+
+~~~~
+member = GoogleApps::Atom::GroupMember.new
+member = GoogleApps::Atom::GroupMember.new <xml string>
+
+# or
+
+member = GoogleApps::Atom.group_member
+member = GoogleApps::Atom.gorup_member <xml string>
+~~~~
+
+A GroupMember really only has one attribute.  The id of the member.
+
+~~~~
+member.member = 'bogus_account@cnme.edu'
+
+member.member
+> 'bogus_account@cme.edu'
+~~~~
+
+To add a group member you need to make an add_member_to request of your GoogleApps::Transport object.  The method requires the id of the group the member is being added to as well as the member doucument.
+
+~~~~
+transporter.add_member_to 'Group ID', member
+~~~~
+
+Id's are unique within the Google Apps environment so it is possible to add a group to another group.  You just need to supply the group id as the member value for the GoogleApps::Atom::GroupMember object.
