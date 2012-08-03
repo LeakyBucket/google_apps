@@ -4,7 +4,7 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
-      attr_accessor :id, :name, :description, :perms
+      attr_accessor :id, :name, :description, :permissions
 
       #ATTRIBUTES = %w(id name description perms).map(&:to_sym)
 
@@ -58,10 +58,34 @@ module GoogleApps
 
       # TODO:  This needs to check all attributes of the element
       def id=(value)
-        @document = parse(@document)
         @id ? change_value(:value, @id, value) : set_values(id: value)
 
         @id = value
+        @document = parse(@document)
+      end
+
+
+      def name=(value)
+        @name ? change_value(:value, @name, value) : set_values(name: value)
+
+        @name = value
+        @document = parse(@document)
+      end
+
+
+      def permissions=(value)
+        @permissions ? change_value(:value, @permissions, value) : set_values(perms: value)
+
+        @permissions = value
+        @document = parse(@document)
+      end
+
+
+      def description=(value)
+        @description ? change_value(:value, @description, value) : set_values(description: value)
+
+        @description = value
+        @document = parse(@document)
       end
 
 

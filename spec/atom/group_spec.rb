@@ -71,6 +71,82 @@ describe "GoogleApps::Atom::Group" do
     end
   end
 
+  describe "#id=" do
+    before(:all) do
+      group.id = 'ID'
+    end
+
+    it "Sets the @id value if not already set" do
+      group.id.should == 'ID'
+      group.to_s.should include 'ID'
+    end
+
+    it "Changes the @id value if it is already set" do
+      group.id = 'New ID'
+
+      group.id.should == 'New ID'
+      group.to_s.should include 'New ID'
+      group.to_s.should_not include 'value="ID"'
+    end
+  end
+
+  describe "#name=" do
+    before(:all) do
+      group.name = 'Group'
+    end
+
+    it "Sets @name if not already set" do
+      group.name.should == 'Group'
+      group.to_s.should include 'Group'
+    end
+
+    it "Changes the value of @name if already set" do
+      group.name = 'Fancy Group'
+
+      group.name.should == 'Fancy Group'
+      group.to_s.should include 'Fancy Group'
+      group.to_s.should_not include 'value="Group"'
+    end
+  end
+
+  describe "#description=" do
+    before(:all) do
+      group.description = 'Description'
+    end
+
+    it "Sets @description if not already set" do
+      group.description.should == 'Description'
+      group.to_s.should include 'Description'
+    end
+
+    it "Changes @description if already set" do
+      group.description = 'Elaborate Description'
+
+      group.description.should == 'Elaborate Description'
+      group.to_s.should include 'Elaborate Description'
+      group.to_s.should_not include 'value="Description"'
+    end
+  end
+
+  describe "#permissions=" do
+    before(:all) do
+      group.permissions = 'Allow'
+    end
+
+    it "Sets @permissions if not already set" do
+      group.permissions.should == 'Allow'
+      group.to_s.should include 'Allow'
+    end
+
+    it "Changes @permissions if already set" do
+      group.permissions = 'Deny'
+
+      group.permissions.should == 'Deny'
+      group.to_s.should include 'Deny'
+      group.to_s.should_not include 'Allow'
+    end
+  end
+
   describe "#to_s" do
     it "should present @document as a string" do
       group.to_s.should be_a String
