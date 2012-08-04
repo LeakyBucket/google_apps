@@ -368,3 +368,20 @@ transporter.add_member_to 'Group ID', member
 ~~~~
 
 Id's are unique within the Google Apps environment so it is possible to add a group to another group.  You just need to supply the group id as the member value for the GoogleApps::Atom::GroupMember object.
+
+
+### GoogleApps::Atom::MessageAttributes
+
+
+The MessageAttributes class represents a Google Apps Message Attribute XML Document.
+
+~~~~
+attributes = GoogleApps::Atom::MessageAttributes.new
+attributes = GoogleApps::Atom::MessageAttributes.new <xml string>
+
+# or
+
+attributes = GoogleApps::Atom.message_attributes
+attributes = GoogleApps::Atom.message_attributes <xml string>
+~~~~
+
