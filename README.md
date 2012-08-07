@@ -70,47 +70,81 @@ __Application__
 
 ## Short How
 
+Getting and using the library.  
+
 ~~~~~
 gem install google_apps
-~~~~~
 
-~~~~~
 require 'google_apps'
+~~~~~
 
+
+Setting up your GoogleApps::Transport object to send requests to Google.  
+
+~~~~~
 transporter = GoogleApps::Transport.new 'domain'
 transporter.authenticate 'username@domain', 'password'
+~~~~~
 
 
+Creating an entity is a matter of creating a matching object and sending it to Google.  
+
+~~~~~
 # Creating a User
 user = GoogleApps::Atom::User.new
+user = GoogleApps::Atom::User.new <xml string>
+
 # or
+
 user = GoogleApps::Atom.user
+user = GoogleApps::Atom.user <xml string>
+
 
 user.set login: 'JWilkens', password: 'uncle J', first_name: 'Johnsen', last_name: 'Wilkens'
 
+# or
+
+user.login = 'JWilkens'
+user.password = 'uncle J'
+user.first_name = 'Johnsen'
+user.last_name = 'Wilkens'
+
 transporter.new_user user
+~~~~~
 
 
+Modifying an entity is also a simple process.  
+
+~~~~~
 # Modifying a User
-user = GoogleApps::Atom::User.new
 user.last_name = 'Johnson'
 user.suspended = true
 
 transporter.update_user 'bob', user
+~~~~~
 
 
-# Deleting a User
+Deleting is extremely light weight.  
+
+~~~~~
 transporter.delete_user 'bob'
+~~~~~
 
 
+Getting an entity record from Google.  
+
+~~~~~
 # Retrieving a User
 transporter.get_user 'bob'
 
 transporter.response.body
+~~~~~
 
 
+Retrieving a batch of entities from Google.  
+
+~~~~~
 # Retrieving all Users
-# User feed access is clunky and needs to be simplified
 transporter.get_users
 
 transporter.feeds.each do |feed|
@@ -121,7 +155,6 @@ end
 
 
 # Retrieving a range of Users
-# Again this needs to be prettified
 transporter.get_users start: 'lholcomb2', limit: 320
 
 transporter.feeds.each do |feed|
@@ -129,91 +162,57 @@ transporter.feeds.each do |feed|
     puts user.login
   end
 end
+~~~~~
 
 
-# Creating a Group
-group = GoogleApps::Atom::Group.new
-group.new_group id: 'ID', name: 'TestGroup', description: 'Simple Test Group', perms: 'Domain'
+Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is fairly simple.  
 
-transporter.new_group group
-
-
-# Modifying a Group
-group = GoogleApps::Atom::Group.new
-group.set_values name: 'New Name'
-
-transporter.update_group 'target_group', group
-
-
-# Adding a Member to a Group
-group_member = GoogleApps::Atom::GroupMember.new
-group_member.member = 'Bob'
-
-transporter.add_member_to 'target_group', group_member
-
-
-# Seleting a Member from a Group
-transporter.delete_member_from 'target_group', 'member_id'
-
-
-# Deleting a Group
-transporter.delete_group 'ID'
-
-
-# Retrieving all the Groups in the Domain
-transporter.get_groups
-
-transporter.feeds.each do |feed|
-  feed.items.each do |group|
-    puts group.to_s
-  end
-end
-
-
-# Creating a Nickname
-nick = GoogleApps::Atom::Nickname.new
-nick.nickname = 'Nickname'
-nick.user = 'username'
-
-transporter.add_nickname nick
-
-
-# Retrieving a Nickname
-transporter.get_nickname 'Nickname'
-
-
-# Deleting a Nickname
-transporter.delete_nickname 'Nickname'
-
-
+~~~~~
 # Uploading Public Key
 pub_key = GoogleApps::Atom::PublicKey.new
 pub_key.new_key File.read('key_file')
 
 transporter.add_pubkey pub_key
+~~~~~
 
 
+Google Apps provides a few mail auditing functions.  One of those is grabbing a mailbox export.  Below is an example.  
+
+~~~~~
 # Request Mailbox Export
 export_req = GoogleApps::Atom::Export.new
 export_req.query 'from:Bob'
 export_req.content 'HEADER_ONLY'
 
 transporter.request_export 'username', export_req
+~~~~~
 
 
+Your export request will be placed in a queue and processed eventually.  Luckily you can check on the status while you wait.  
+
+~~~~~
 # Check Export Status
-transporter.export_status 'username', 'req_id'
+transporter.export_status 'username', <request_id>
+transporter.export_ready? 'username', <request_id>
+~~~~~
 
 
+Downloading the requested export is simple.  
+
+~~~~~
 # Download Export
 transporter.fetch_export 'username', 'req_id', 'filename'
+~~~~~
 
 
+The Google Apps API provides a direct migration option if you happen to have email in msg (RFC 822) format.  
+
+~~~~~
 # Migrate Email
 attributes = GoogleApps::Atom::MessageAttributes.new
 attributes.add_label 'Migration'
 
-transporter.migrate 'username', attributes, message
+transporter.migrate 'username', attributes, File.read(<message>)
 ~~~~~
 
 ## Long How
