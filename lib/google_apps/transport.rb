@@ -136,11 +136,13 @@ module GoogleApps
     # get 'endpoint', 'username'
     #
     # get returns the HTTP response received from Google.
-    def get(endpoint, id = nil)
+    def get(endpoint, type, id = nil)
       id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
       @request = @requester.new :get, uri, headers(:other)
 
       @response = @request.send_request
+
+      process_response(type)
     end
 
 
@@ -286,7 +288,6 @@ module GoogleApps
     end
 
 
-    # TODO: This should perform the instance_variable_get and pass the value to the appropriate method.
     def method_missing(name, *args)
       super unless name.match /([a-z]*)_([a-z]*)/
 
@@ -298,7 +299,7 @@ module GoogleApps
       when "update"
         self.send(:update, instance_variable_get("@#{$2}"), *args)
       when "get"
-        self.send(:get, instance_variable_get("@#{$2}"), *args)
+        self.send(:get, instance_variable_get("@#{$2}"), $2, *args)
       else
         super
       end
@@ -360,7 +361,7 @@ module GoogleApps
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
     def process_response(doc_type)
-      success_response? ? @handler.doc_of_type(doc_type, @response.body) : @response
+      success_response? ? @doc_handler.doc_of_type(@response.body, doc_type) : @response
     end
 
 

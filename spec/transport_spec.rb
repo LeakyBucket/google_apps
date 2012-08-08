@@ -60,6 +60,8 @@ describe "GoogleApps::Transport" do
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), @headers[:other])
+      mock_response.should_receive(:code).and_return(200)
+      mock_response.should_receive(:body).and_return(fake_nickname)
 
       transporter.get_nicknames_for 'lholcomb2'
 

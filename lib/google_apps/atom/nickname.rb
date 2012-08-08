@@ -8,7 +8,7 @@ module GoogleApps
 
       ELEMENTS = { nick: ['apps:nickname', 'name'], user: ['apps:login', 'userName'] }
 
-      def initialize
+      def initialize(xml = nil)
         @document = Atom::XML::Document.new
         @document.root = build_root
       end
