@@ -227,12 +227,12 @@ describe "GoogleApps::Transport" do
     before(:each) do
       mock_handler = double(GoogleApps::DocumentHandler)
       transporter.instance_eval { @handler = mock_handler }
-      mock_handler.should_receive(:doc_of_type).and_return(user_doc)
     end
 
     it "Return a Document Object if Google doesn't return an error" do
       mock_response.should_receive(:code).and_return(200)
       mock_response.should_receive(:body).and_return(File.read('spec/xml/user.xml'))
+      mock_handler.should_receive(:doc_of_type).and_return(user_doc)
 
       transporter.update_user 'lholcomb2', user_doc
 
@@ -240,6 +240,11 @@ describe "GoogleApps::Transport" do
       transporter.send(:process_response, :user).class.should == GoogleApps::Atom::User
     end
 
-    it "Returns the HTTP Response object if Google returns an error"
+    it "Raises an error if Google Responds in kind" do
+      mock_response.should_receive(:code).twice.and_return(400)
+      mock_response.should_receive(:message).and_return("Ooops")
+
+      lambda { transporter.get_user 'lholcomb2' }.should raise_error
+    end
   end
 end
