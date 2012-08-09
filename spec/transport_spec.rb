@@ -236,7 +236,8 @@ describe "GoogleApps::Transport" do
 
       transporter.update_user 'lholcomb2', user_doc
 
-      transporter.send(:process_response, :user).should be_a GoogleApps::Atom::User
+      #transporter.send(:process_response, :user).should be_a GoogleApps::Atom::User
+      transporter.send(:process_response, :user).class.should == GoogleApps::Atom::User
     end
 
     it "Returns the HTTP Response object if Google returns an error"

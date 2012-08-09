@@ -360,7 +360,7 @@ module GoogleApps
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
     def process_response(doc_type = nil)
-      success_response? ? @doc_handler.create_doc(@response.body, doc_type) : @response
+      success_response? ? @doc_handler.create_doc(@response.body, doc_type) : raise("Error: #{response.code}, #{response.message}")
     end
 
 
