@@ -74,9 +74,7 @@ module GoogleApps
     # export_status will return the body of the HTTP response
     # from Google
     def export_status(username, req_id)
-      get(@export + "/#{username}", req_id)
-
-      @response.body
+      get(@export + "/#{username}", :export_status, req_id)
     end
 
 
@@ -92,7 +90,7 @@ module GoogleApps
     def export_ready?(username, req_id)
       export_status(username, req_id)
 
-      !(export_file_urls.empty?) unless !success_response?
+      !(export_file_urls.empty?)
     end
 
 
@@ -181,7 +179,7 @@ module GoogleApps
       type = normalize_type type
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
-      options[:start] ? get(instance_variable_get("@#{type}") + "?#{start_query(type)}=#{options[:start]}") : get(instance_variable_get("@#{type}"))
+      options[:start] ? get(instance_variable_get("@#{type}") + "?#{start_query(type)}=#{options[:start]}", :feed) : get(instance_variable_get("@#{type}"), :feed)
 
       fetch_feed(page, limit)
 
@@ -288,6 +286,7 @@ module GoogleApps
     end
 
 
+
     def method_missing(name, *args)
       super unless name.match /([a-z]*)_([a-z]*)/
 
@@ -360,8 +359,8 @@ module GoogleApps
     # process_response takes the HTTPResponse and either returns a
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
-    def process_response(doc_type)
-      success_response? ? @doc_handler.doc_of_type(@response.body, doc_type) : @response
+    def process_response(doc_type = nil)
+      success_response? ? @doc_handler.create_doc(@response.body, doc_type) : @response
     end
 
 

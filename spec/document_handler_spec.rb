@@ -9,14 +9,28 @@ describe "GoogleApps::DocumentHandler" do
     end
   end
 
-  describe "#doc_from_string" do
+  describe "#create_doc" do
     it "Returns a XML document when given xml and @format is :atom" do
-      handler.doc_from_string(finished_export).should be_a LibXML::XML::Document
+      handler.create_doc(finished_export, :export).should be_a LibXML::XML::Document
     end
 
     it "Returns a XML document when given xml and @format is :xml" do
       handler.format = :xml
-      handler.doc_from_string(finished_export).should be_a LibXML::XML::Document
+      handler.create_doc(finished_export, :export).should be_a LibXML::XML::Document
+    end
+
+    it "Returns a document of the given type if specified" do
+      handler.create_doc(File.read('spec/xml/user.xml'), :user).should be_a GoogleApps::Atom::User
+    end
+  end
+
+  describe "#unknown_type" do
+    it "Returns an XML Document when given a string and @format is :atom" do
+      handler.unknown_type(finished_export).should be_a LibXML::XML::Document
+    end
+
+    it "Returns an XML Document when given a string and @format is :xml" do
+      handler.unknown_type(finished_export).should be_a LibXML::XML::Document
     end
   end
 

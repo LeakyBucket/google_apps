@@ -7,9 +7,16 @@ module GoogleApps
     end
     
 
-    # doc_from_string creates a document of the specified format
+    # create_doc creates a document of the specified format
     # from the given string.
-    def doc_from_string(text)
+    def create_doc(text, type = nil)
+      @documents.include?(type) ? doc_of_type(text, type) : unknown_type(text)
+    end
+
+
+    # unknown_type takes a string and returns a document of
+    # of the corresponding @format.
+    def unknown_type(text)
       case @format
       when :atom, :xml
         Atom::XML::Document.string(text)
@@ -30,7 +37,7 @@ module GoogleApps
 
       case @format
       when :atom, :xml
-        @GoogleApps::Atom.send(type, text)
+        GoogleApps::Atom.send(type, text)
       end
     end
 

@@ -7,7 +7,7 @@ module GoogleApps
       HEADER = 'HEADER_ONLY'
       FULL = 'FULL_MESSAGE'
 
-      def initialize
+      def initialize(xml = nil)
         @document = Atom::XML::Document.new
         @document.root = build_root
       end

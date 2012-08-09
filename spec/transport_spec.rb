@@ -117,6 +117,7 @@ describe "GoogleApps::Transport" do
     before(:each) do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + '/lholcomb2/83838'), @headers[:other])
       mock_response.should_receive(:body).and_return(pending_export)
+      mock_response.should_receive(:code).and_return(200)
     end
 
     it "crafts a HTTP GET request for a mailbox export status" do
@@ -124,7 +125,7 @@ describe "GoogleApps::Transport" do
     end
 
     it "Returns the response body from Google" do
-      transporter.export_status('lholcomb2', 83838).should be_a String
+      transporter.export_status('lholcomb2', 83838).should be_a LibXML::XML::Document
     end
   end
 
@@ -150,6 +151,7 @@ describe "GoogleApps::Transport" do
   describe "#get_users" do
     before(:each) do
       mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
+      mock_response.should_receive(:code).and_return(200)
     end
 
     it "Builds a GET request for the user endpoint" do
