@@ -41,7 +41,7 @@ module GoogleApps
     # authenticate returns the HTTP response received
     # from Google
     def authenticate(account, pass)
-      add(@auth, auth_body(account, pass), :auth)
+      add(@auth, nil, auth_body(account, pass), :auth)
 
       set_auth_token
 
@@ -59,9 +59,10 @@ module GoogleApps
     # request_export returns the request ID on success or
     # the HTTP response object on failure.
     def request_export(username, document)
-      add(@export + "/#{username}", document)
-
-      success_response? ? get_values('apps:property', ['name', 'requestId'], 'value')[0].to_i : @response
+      result = add(@export + "/#{username}", :export_response, document)
+      
+      get_values(result, 'apps:property', ['name', 'requestId'], 'value')[0].to_i
+      #success_response? ? get_values('apps:property', ['name', 'requestId'], 'value')[0].to_i : @response
     end
 
 
@@ -195,7 +196,7 @@ module GoogleApps
     #
     # add_member_to returns the response received from Google.
     def add_member_to(group_id, document)
-      add(@group + "/#{group_id}/member", document)
+      add(@group + "/#{group_id}/member", nil, document)
     end
 
 
@@ -229,13 +230,15 @@ module GoogleApps
     # add 'endpoint', document
     #
     # add returns the HTTP response received from Google.
-    def add(endpoint, document, header_type = nil)
+    def add(endpoint, type, document, header_type = nil)
       header_type = :others unless header_type
       uri = URI(endpoint)
       @request = @requester.new :post, uri, headers(header_type)
       @request.add_body document.to_s
 
       @response = @request.send_request
+
+      process_response type
     end
 
     # update is a generic target for method_missing.  It is
@@ -247,12 +250,14 @@ module GoogleApps
     # update 'endpoint', document
     #
     # update returns the HTTP response received from Google
-    def update(endpoint, target, document)
+    def update(endpoint, type, target, document)
       uri = URI(endpoint + "/#{target}")
       @request = @requester.new :put, uri, headers(:other)
       @request.add_body document.to_s
 
       @response = @request.send_request
+
+      process_response type
     end
 
     # delete is a generic target for method_missing.  It is
@@ -292,11 +297,11 @@ module GoogleApps
 
       case $1
       when "new", "add"
-        self.send(:add, instance_variable_get("@#{$2}"), *args)
+        self.send(:add, instance_variable_get("@#{$2}"), $2, *args)
       when "delete"
         self.send(:delete, instance_variable_get("@#{$2}"), *args)
       when "update"
-        self.send(:update, instance_variable_get("@#{$2}"), *args)
+        self.send(:update, instance_variable_get("@#{$2}"), $2, *args)
       when "get"
         self.send(:get, instance_variable_get("@#{$2}"), $2, *args)
       else
@@ -328,17 +333,6 @@ module GoogleApps
     end
 
 
-    # get_values returns an array of all the value attributes
-    # on elements matching the given key_attrib pair on the
-    # specified element type.
-    def get_values(element, key_attrib, value = 'value')
-      Atom::XML::Document.string(@response.body).find('//' + element).inject([]) do |values, element|
-        values << element.attributes[value] if element.attributes[key_attrib[0]].match key_attrib[1]
-        values
-      end
-    end
-
-
     # export_file_urls searches @response for any apps:property elements with a
     # fileUrl name attribute and returns an array of the values.
     def export_file_urls
@@ -360,7 +354,12 @@ module GoogleApps
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
     def process_response(doc_type = nil)
-      success_response? ? @doc_handler.create_doc(@response.body, doc_type) : raise("Error: #{response.code}, #{response.message}")
+      case doc_type
+      when nil
+        success_response? ? true : raise("Error: #{response.code}, #{response.message}")
+      else
+        success_response? ? @doc_handler.create_doc(@response.body, doc_type) : raise("Error: #{response.code}, #{response.message}")
+      end
     end
 
 
@@ -420,6 +419,16 @@ module GoogleApps
     # add_feed adds a feed to the @feeds array.
     def add_feed
       @feeds << GoogleApps::Atom.feed(@response.body)
+    end
+
+    # get_values returns an array of all the value attributes
+    # on elements matching the given key_attrib pair on the
+    # specified element type.
+    def get_values(document, element, key_attrib, value = 'value')
+      document.find('//' + element).inject([]) do |values, element|
+        values << element.attributes[value] if element.attributes[key_attrib[0]].match key_attrib[1]
+        values
+      end
     end
 
 

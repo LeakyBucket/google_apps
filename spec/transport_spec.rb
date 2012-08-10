@@ -41,6 +41,7 @@ describe "GoogleApps::Transport" do
     it "Makes an authentication request to the @auth endpoint" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.auth), @headers[:auth])
       mock_response.should_receive(:body).and_return('auth=fake_token')
+      mock_response.should_receive(:code).and_return(200)
 
       transporter.authenticate credentials['username'], credentials['password']
     end
@@ -49,6 +50,7 @@ describe "GoogleApps::Transport" do
   describe "#add_member_to" do
     it "creates an HTTP POST request to add a member to a group" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test/member'), @headers[:other])
+      mock_response.should_receive(:code).and_return(200)
 
       mock_request.should_receive :add_body
 
@@ -106,10 +108,11 @@ describe "GoogleApps::Transport" do
       transporter.request_export('lholcomb2', document).should == 75133001
     end
 
-    it "Crafts a HTTP POST request and returns @response if Google returns an error" do
-      mock_response.should_receive(:code).and_return(404)
+    it "Crafts a HTTP POST request and raises an error if Google returns an error" do
+      mock_response.should_receive(:code).twice.and_return(404)
+      mock_response.should_receive(:message).and_return('Ooops')
 
-      transporter.request_export('lholcomb2', document).should be mock_response
+      lambda { transporter.request_export('lholcomb2', document) }.should raise_error
     end
   end
 
@@ -143,6 +146,8 @@ describe "GoogleApps::Transport" do
     it "sends a POST request to the User endpoint" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.user), @headers[:other])
       mock_request.should_receive(:add_body).with user_doc.to_s
+      mock_response.should_receive(:code).and_return(200)
+      mock_response.should_receive(:body).and_return(File.read('spec/xml/user.xml'))
 
       transporter.add_user user_doc
     end
@@ -225,14 +230,14 @@ describe "GoogleApps::Transport" do
 
   describe "#process_response" do
     before(:each) do
-      mock_handler = double(GoogleApps::DocumentHandler)
-      transporter.instance_eval { @handler = mock_handler }
+      @mock_handler = double(GoogleApps::DocumentHandler)
+      transporter.instance_eval { @handler = @mock_handler }
     end
 
     it "Return a Document Object if Google doesn't return an error" do
       mock_response.should_receive(:code).and_return(200)
       mock_response.should_receive(:body).and_return(File.read('spec/xml/user.xml'))
-      mock_handler.should_receive(:doc_of_type).and_return(user_doc)
+      @mock_handler.should_receive(:doc_of_type).and_return(user_doc)
 
       transporter.update_user 'lholcomb2', user_doc
 

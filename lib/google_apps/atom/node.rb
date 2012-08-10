@@ -93,6 +93,17 @@ module GoogleApps
       def get_content(document, xpath)
         document.find(xpath).first.content
       end
+
+
+      # get_values returns an array of all the value attributes
+      # on elements matching the given key_attrib pair on the
+      # specified element type.
+      def get_values(element, key_attrib, value = 'value')
+        self.find('//' + element).inject([]) do |values, element|
+          values << element.attributes[value] if element.attributes[key_attrib[0]].match key_attrib[1]
+          values
+        end
+      end
     end
   end
 end

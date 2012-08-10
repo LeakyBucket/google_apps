@@ -136,8 +136,6 @@ Getting an entity record from Google.
 ~~~~~
 # Retrieving a User
 transporter.get_user 'bob'
-
-transporter.response.body
 ~~~~~
 
 
