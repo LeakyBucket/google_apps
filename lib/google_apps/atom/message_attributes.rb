@@ -4,7 +4,7 @@ module GoogleApps
       attr_reader :labels
       attr_accessor :property
 
-      def initialize
+      def initialize(xml = nil)
         @labels = []
         @document = Atom::XML::Document.new
         set_header
