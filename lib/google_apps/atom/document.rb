@@ -49,9 +49,10 @@ module GoogleApps
         map = Atom::MAPS[map_key]
 
         @document.root.each do |entry|
-          unless entry.name.match 'gd' or entry.name.match 'atom' or entry.name.match 'openSearch'
-            entry.attributes.each do |attribute|
-              instance_variable_set "@#{map[attribute.name.to_sym]}", check_value(attribute.value)
+          intersect = map.keys & entry.attributes.to_h.keys.map(&:to_sym)
+          unless intersect.empty?
+            intersect.each do |attribute|
+              instance_variable_set "@#{map[attribute]}", check_value(entry.attributes[attribute])
             end
           end
         end
@@ -112,7 +113,7 @@ module GoogleApps
             ns[:gd] = Atom::NAMESPACES[:gd]
         end
 
-        ns          
+        ns
       end
     end
   end
