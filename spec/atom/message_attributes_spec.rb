@@ -38,4 +38,18 @@ describe "GoogleApps::Atom::MessageAttributes" do
       attributes.to_s.should include 'Migration'
     end
   end
+
+  describe "#find_labels" do
+    before(:all) do
+      @fetched = GoogleApps::Atom::MessageAttributes.new File.read('spec/xml/mes_attr.xml')
+    end
+
+    it "Populates @labels according to the provided xml" do
+      @fetched.labels.should == ['test', 'label']
+    end
+
+    it "Populates the property value based on the provided xml" do
+      @fetched.property.should == 'Inbox'
+    end
+  end
 end

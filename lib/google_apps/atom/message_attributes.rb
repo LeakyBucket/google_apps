@@ -1,13 +1,22 @@
 module GoogleApps
   module Atom
     class MessageAttributes
+      include Document
+      include Node
+
       attr_reader :labels
       attr_accessor :property
 
       def initialize(xml = nil)
-        @labels = []
-        @document = Atom::XML::Document.new
-        set_header
+        if xml
+          @document = parse(xml)
+          find_labels
+          get_item_property
+        else
+          @labels = []
+          @document = Atom::XML::Document.new
+          set_header
+        end
       end
 
       def add_property(prop)
@@ -68,6 +77,14 @@ module GoogleApps
         header['type'] = 'message/rfc822'
 
         header
+      end
+
+      def find_labels
+        @labels = @document.find('//apps:label').inject([]) { |labels, entry| labels << entry.attributes['labelName']; labels }
+      end
+
+      def get_item_property
+        @property = @document.find('//apps:mailItemProperty').first.attributes['value']
       end
     end
   end
