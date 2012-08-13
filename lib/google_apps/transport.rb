@@ -15,13 +15,16 @@ module GoogleApps
     }
 
     def initialize(domain, targets = {})
+      @feeds_root = 'https://apps-apis.google.com/a/feeds'
       @auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
-      @user = targets[:user] || "https://apps-apis.google.com/a/feeds/#{domain}/user/2.0"
-      @pubkey = targets[:pubkey] || "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/#{domain}"
-      @migration = targets[:migration] || "https://apps-apis.google.com/a/feeds/migration/2.0/#{domain}"
-      @group = targets[:group] || "https://apps-apis.google.com/a/feeds/group/2.0/#{domain}"
-      @nickname = targets[:nickname] || "https://apps-apis.google.com/a/feeds/#{domain}/nickname/2.0"
-      @export = targets[:export] || "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/#{domain}"
+      @user = targets[:user] || "#{@feeds_root}/#{domain}/user/2.0"
+      @pubkey = targets[:pubkey] || "#{@feeds_root}/compliance/audit/publickey/#{domain}"
+      @migration = targets[:migration] || "#{@feeds_root}/migration/2.0/#{domain}"
+      @group = targets[:group] || "#{@feeds_root}/group/2.0/#{domain}"
+      @nickname = targets[:nickname] || "#{@feeds_root}/#{domain}/nickname/2.0"
+      @audit = "#{@feeds_root}/compliance/audit/mail"
+      @export = targets[:export] || "#{@audit}/export/#{domain}"
+      @monitor = targets[:monitor] || "#{@audit}/monitor/#{domain}"
       @domain = domain
       @requester = AppsRequest || targets[:requester]
       @doc_handler = DocumentHandler.new format: (targets[:format] || :atom)
@@ -183,7 +186,7 @@ module GoogleApps
       options[:limit] ? limit = options[:limit] : limit = 1000000
       options[:start] ? get(instance_variable_get("@#{type}") + "?#{start_query(type)}=#{options[:start]}", :feed) : get(instance_variable_get("@#{type}"), :feed)
 
-      fetch_feed(page, limit)
+      fetch_feed(page, limit, :feed)
 
       @response
     end
@@ -380,20 +383,20 @@ module GoogleApps
 
 
     # get_next_page retrieves the next page in the response.
-    def get_next_page
-      get @feeds.last.next_page
+    def get_next_page(type)
+      get @feeds.last.next_page, type
       add_feed
     end
 
 
     # fetch_feed retrieves the remaining pages in the request.
     # It takes a page and a limit as arguments.
-    def fetch_feed(page, limit)
+    def fetch_feed(page, limit, type)
       add_feed
       page += 1
 
       while (@feeds.last.next_page) and (page * PAGE_SIZE[:user] < limit)
-        get_next_page
+        get_next_page type
         page += 1
       end
     end
