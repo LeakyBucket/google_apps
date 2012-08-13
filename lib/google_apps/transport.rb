@@ -61,8 +61,9 @@ module GoogleApps
     def request_export(username, document)
       result = add(@export + "/#{username}", :export_response, document)
       
-      get_values(result, 'apps:property', ['name', 'requestId'], 'value')[0].to_i
-      #success_response? ? get_values('apps:property', ['name', 'requestId'], 'value')[0].to_i : @response
+      result.find('//apps:property').inject(nil) do |request_id, node| 
+        node.attributes['name'] == 'requestId' ? node.attributes['value'].to_i : request_id
+      end
     end
 
 
@@ -419,16 +420,6 @@ module GoogleApps
     # add_feed adds a feed to the @feeds array.
     def add_feed
       @feeds << GoogleApps::Atom.feed(@response.body)
-    end
-
-    # get_values returns an array of all the value attributes
-    # on elements matching the given key_attrib pair on the
-    # specified element type.
-    def get_values(document, element, key_attrib, value = 'value')
-      document.find('//' + element).inject([]) do |values, element|
-        values << element.attributes[value] if element.attributes[key_attrib[0]].match key_attrib[1]
-        values
-      end
     end
 
 
