@@ -4,11 +4,16 @@ module GoogleApps
       include Atom::Node
       include Atom::Document
 
-      attr_accessor :member
+      attr_accessor :member, :type
 
-      def initialize
-        @document = Atom::XML::Document.new
-        @document.root = build_root
+      def initialize(xml = nil)
+        if xml
+          @document = parse(xml)
+          populate_self
+        else
+          @document = Atom::XML::Document.new
+          @document.root = build_root
+        end
       end
 
 
@@ -20,9 +25,20 @@ module GoogleApps
       #
       # member= returns the value of @member
       def member=(member)
-        @member.nil? ? set_member(member) : change_member(member)
+        @member.nil? ? add_node('memberId', member) : change_node('memberId', member)
+
+        @document = parse(@document)
+        @member = member
       end
 
+
+      def type=(type)
+        @type.nil? ? add_node('memberType', type) : change_node('memberType', type)
+
+        @document = parse(@document)
+        @type = type
+      end
+      
 
       # to_s returns @document as a string.
       def to_s
@@ -32,19 +48,22 @@ module GoogleApps
 
       private
 
-      # set_member adds a memberId property element to
-      # the XML document and sets @member to the given
-      # value.
-      #
-      # set_member 'test_user@cnm.edu'
-      #
-      # set_member returns the value of @member
-      def set_member(member)
-        @document.root << create_node(type: 'apps:property', attrs: [['name', 'memberId'], ['value', member]])
-
-        @member = member
+      # 
+      # @param [] type
+      # @param [] value
+      # 
+      # @visibility private
+      # @return 
+      def add_node(type, value)
+        @document.root << create_node(type: 'apps:property', attrs: [['name', type], ['value', value]])
       end
 
+
+      def change_node(type, value)
+        @document.find('//apps:property').each do |node|
+          node.attributes['value'] = value if node.attributes['name'] == type
+        end
+      end
 
       # change_member changes the value attribute of the
       # apps:property element in @document to the value
@@ -64,10 +83,16 @@ module GoogleApps
         @member = member
       end
 
-      # parse_doc parses the current @document so that it can
-      # be searched with find.
-      def parse_doc(document = @document)
-        Atom::XML::Parser.document(document).parse
+
+      # 
+      # 
+      # @visibility private
+      # @return 
+      def populate_self
+        @document.find('//apps:property').each do |node|
+          @member = node.attributes['value'] if node.attributes['name'] == 'memberId'
+          @type = node.attributes['value'] if node.attributes['name'] == 'memberType'
+        end
       end
     end
   end

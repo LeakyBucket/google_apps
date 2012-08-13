@@ -8,12 +8,18 @@ module GoogleApps
 
       attr_reader :xml, :items, :next_page
 
-      TYPE_MATCH = /<id.*(user|group|nickname).*?<\/id/
-      #TYPE_MATCH = /term.*?\#(\w*?)/
+      # TODO: Figure out how to handle Group Members.  The regex below
+      # doesn't work in that case as group members also have group in
+      # the id url.
+      TYPE_MATCH = /<id.*(user|group.*member|nickname|group).*?<\/id/
+
 
       def initialize(xml)
+        type = xml.match(TYPE_MATCH).captures[0]
+        type.sub!(/\//, '_')
+
         @xml = parse(xml)
-        @items = entries_from document: @xml, type: @xml.to_s.match(TYPE_MATCH).captures[0], entry_tag: 'entry'
+        @items = entries_from document: @xml, type: type, entry_tag: 'entry'
       end
 
       # TODO: Need to make sure this works for feeds other than user.
@@ -74,7 +80,7 @@ module GoogleApps
       #
       # add_category returns the modified content_array
       def add_category(content_array, type)
-        content_array.unshift(create_node(type: 'atom:category', attrs: Atom::CATEGORY[type.to_sym]).to_s)
+        content_array.unshift(create_node(type: 'atom:category', attrs: Atom::CATEGORY[type.to_sym]).to_s) if Atom::CATEGORY[type.to_sym]
       end
 
 

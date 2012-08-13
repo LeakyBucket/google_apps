@@ -44,7 +44,7 @@ module GoogleApps
 
     ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
 
-    DOCUMENTS = %w(user export group group_member message_attributes public_key feed nickname)
+    DOCUMENTS = %w(user export group group_member message_attributes public_key feed nickname feed)
 
     # The idea is to make document distribution more dynamic.
     # Might be pointless but it's here for now.

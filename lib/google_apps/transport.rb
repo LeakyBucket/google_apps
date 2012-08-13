@@ -226,6 +226,16 @@ module GoogleApps
     end
 
 
+    # Retrieves the members of the requested group.
+    # 
+    # @param [String] group_idthe Group ID in the Google Apps Environment
+    # 
+    # @visibility public
+    # @return 
+    def get_members_of(group_id)
+      get @group + "/#{group_id}/member", :feed
+    end
+
     # add is a generic target for method_missing.  It is
     # intended to handle the general case of adding
     # to the GoogleApps Domain.  It takes an API endpoint
