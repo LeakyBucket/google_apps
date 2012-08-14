@@ -27,6 +27,7 @@ __Domain API__
       * Add Group Member
       * Delete Group Member
       * Modify Group Attributes
+      * Member List
     * Nicknames
       * Creation
       * Deletion
@@ -53,8 +54,6 @@ __Domain__
     * Email Monitors
     * Account Information
   * Email Settings
-  * Groups Settings
-    * Member List
   * Reporting
   * Reporting Visualization
   * User Profiles
