@@ -188,7 +188,8 @@ module GoogleApps
 
       fetch_feed(page, limit, :feed)
 
-      @response
+      #@response
+      return_all
     end
 
 
@@ -383,6 +384,18 @@ module GoogleApps
     # code.
     def success_response?
       SUCCESS_CODES.include?(@response.code.to_i)
+    end
+
+
+    # 
+    # Takes all the items in each feed and puts them into one array.
+    # 
+    # @visibility private
+    # @return Array of Documents
+    def return_all
+      @feeds.inject([]) do |results, feed|
+        results | feed.items
+      end
     end
 
 

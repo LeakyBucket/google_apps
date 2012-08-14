@@ -11,6 +11,7 @@ module GoogleApps
       def initialize(xml = nil)
         if xml
           @document = parse(xml)
+          attrs_from_props
         else
           @document = Atom::XML::Document.new
           @document.root = build_root

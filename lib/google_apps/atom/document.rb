@@ -44,7 +44,7 @@ module GoogleApps
       # internal consistency in the object.
       #
       # find_values
-      def find_values # Moved from User and Group, causing segfault but only at odd times
+      def find_values
         map_key = self.class.to_s.split(':').last.downcase.to_sym
         map = Atom::MAPS[map_key]
 
@@ -57,7 +57,8 @@ module GoogleApps
 
       # Sets instance variables in the current object based on 
       # values found in the XML document and the mapping specified
-      # in GoogleApps::Atom::MAPS
+      # in GoogleApps::Atom::MAPS
+
       # 
       # @param [Array] intersect
       # @param [LibXML::XML::Node] node
@@ -68,6 +69,24 @@ module GoogleApps
       def set_instances(intersect, node, map)
         intersect.each do |attribute|
           instance_variable_set "@#{map[attribute]}", check_value(node.attributes[attribute])
+        end
+      end
+
+
+      # 
+      #  Sets instance variables for property list type documents.
+      # 
+      # @visibility public
+      # @return 
+      def attrs_from_props
+        map_key = self.class.to_s.split(':').last.downcase.to_sym
+        map = Atom::MAPS[map_key]
+
+        @document.find('//apps:property').each do |entry|
+          prop_name = entry.attributes['name'].to_sym
+          if map.keys.include?(prop_name)
+            instance_variable_set "@#{map[prop_name]}", check_value(entry.attributes['value'])
+          end
         end
       end
 

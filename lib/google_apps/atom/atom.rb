@@ -33,6 +33,12 @@ module GoogleApps
       nickname: {
         name: :nickname,
         userName: :user
+      },
+      group: {
+        groupId: :id,
+        groupName: :name,
+        emailPermission: :permission,
+        description: :description
       }
     }
 
