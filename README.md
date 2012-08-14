@@ -370,3 +370,17 @@ attributes = GoogleApps::Atom.message_attributes
 attributes = GoogleApps::Atom.message_attributes <xml string>
 ~~~~
 
+This document is sent with an email message that is being migrated.  It tells Google how to store the message.  A Message Attribute object stores the labels for a message along with the "state" or "location" of the message.  Basically along with labels you can specify a message as being in the Inbox, Sent, Drafts, or Trash locations.  
+
+You can add labels.  
+
+~~~~
+attributes.add_label 'Migration'
+~~~~
+
+Check labels.  
+
+~~~~
+attributes.labels
+~~~~
+

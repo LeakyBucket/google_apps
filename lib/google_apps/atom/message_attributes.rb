@@ -44,7 +44,7 @@ module GoogleApps
 
       def remove_label(value)
         @labels.delete(value)
-        # Need a way to remove a node from the document.
+        delete('//apps:label', [['labelName', value]])
       end
 
       def to_s

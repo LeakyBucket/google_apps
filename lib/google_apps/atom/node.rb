@@ -106,7 +106,8 @@ module GoogleApps
       end
 
 
-      # Returns true if "true" and false if "false"
+      # Returns true if "true" and false if "false"
+
       # 
       # @param [String] value
       # 
@@ -120,6 +121,21 @@ module GoogleApps
             false
           else
             value
+        end
+      end
+
+
+      # 
+      # Delete a node from the document
+      # 
+      # @param [String] xpath is a node identifier in Xpath format
+      # @param [Array] attrsis an array of attr, value pairs
+      # 
+      # @visibility public
+      # @return 
+      def delete(xpath, attrs)
+        @document.find(xpath).each do |node|
+          node.remove! if node_match(node, attrs)
         end
       end
     end
