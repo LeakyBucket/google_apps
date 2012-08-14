@@ -55,6 +55,9 @@ module GoogleApps
       end
 
 
+      # Sets instance variables in the current object based on 
+      # values found in the XML document and the mapping specified
+      # in GoogleApps::Atom::MAPS
       # 
       # @param [Array] intersect
       # @param [LibXML::XML::Node] node
