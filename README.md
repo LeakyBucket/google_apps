@@ -147,6 +147,7 @@ users = transporter.get_users
 
 # Retrieving a range of Users
 users = transporter.get_users start: 'lholcomb2', limit: 320
+# Google actually returns records in batches so you will recieve the lowest multiple of 100 that covers your request.
 ~~~~~
 
 
