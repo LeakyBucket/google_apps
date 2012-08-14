@@ -97,18 +97,6 @@ module GoogleApps
       private
 
 
-      def check_value(value)
-        case value
-          when 'true'
-            true
-          when 'false'
-            false
-          else
-            value
-        end
-      end
-
-
       # prop_name takes a LibXML::XML::Node object and
       # sets the name attribute based on the provided
       # key.

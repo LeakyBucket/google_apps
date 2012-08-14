@@ -164,18 +164,6 @@ module GoogleApps
       def new_doc
         @document = Atom::XML::Document.new
       end
-
-
-      def check_value(value)
-        case value
-          when 'true'
-            true
-          when 'false'
-            false
-          else
-            value
-        end
-      end
   	end
   end
 end

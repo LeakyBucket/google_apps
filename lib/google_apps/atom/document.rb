@@ -50,11 +50,21 @@ module GoogleApps
 
         @document.root.each do |entry|
           intersect = map.keys & entry.attributes.to_h.keys.map(&:to_sym)
-          unless intersect.empty?
-            intersect.each do |attribute|
-              instance_variable_set "@#{map[attribute]}", check_value(entry.attributes[attribute])
-            end
-          end
+          set_instances(intersect, entry, map) unless intersect.empty?
+        end
+      end
+
+
+      # 
+      # @param [Array] intersect
+      # @param [LibXML::XML::Node] node
+      # @param [Hash] map
+      # 
+      # @visibility public
+      # @return 
+      def set_instances(intersect, node, map)
+        intersect.each do |attribute|
+          instance_variable_set "@#{map[attribute]}", check_value(node.attributes[attribute])
         end
       end
 

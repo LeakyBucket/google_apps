@@ -104,6 +104,24 @@ module GoogleApps
           values
         end
       end
+
+
+      # Returns true if "true" and false if "false"
+      # 
+      # @param [String] value
+      # 
+      # @visibility public
+      # @return 
+      def check_value(value)
+        case value
+          when 'true'
+            true
+          when 'false'
+            false
+          else
+            value
+        end
+      end
     end
   end
 end
