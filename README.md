@@ -142,23 +142,11 @@ Retrieving a batch of entities from Google.
 
 ~~~~~
 # Retrieving all Users
-transporter.get_users
-
-transporter.feeds.each do |feed|
-  feed.items.each do |user|
-    puts user.login
-  end
-end
+users = transporter.get_users
 
 
 # Retrieving a range of Users
-transporter.get_users start: 'lholcomb2', limit: 320
-
-transporter.feeds.each do |feed|
-  feed.items.each do |user|
-    puts user.login
-  end
-end
+users = transporter.get_users start: 'lholcomb2', limit: 320
 ~~~~~
 
 
