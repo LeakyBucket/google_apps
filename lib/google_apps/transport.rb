@@ -184,11 +184,23 @@ module GoogleApps
       type = normalize_type type
 
       options[:limit] ? limit = options[:limit] : limit = 1000000
-      options[:start] ? get(instance_variable_get("@#{type}") + "?#{start_query(type)}=#{options[:start]}", :feed) : get(instance_variable_get("@#{type}"), :feed)
+      options[:start] ? get(instance_variable_get("@#{type}") + "#{options[:extra]}" + "?#{start_query(type)}=#{options[:start]}", :feed) : get(instance_variable_get("@#{type}") + "#{options[:extra]}", :feed)
 
       fetch_feed(page, limit, :feed)
 
       @response
+    end
+
+
+    # Retrieves the members of the requested group.
+    # 
+    # @param [String] group_id the Group ID in the Google Apps Environment
+    # 
+    # @visibility public
+    # @return 
+    def get_members_of(group_id, options = {})
+      options[:extra] = "/#{group_id}/member"
+      get_all :groups, options
     end
 
 
@@ -225,16 +237,6 @@ module GoogleApps
       get_nickname "?username=#{login}"
     end
 
-
-    # Retrieves the members of the requested group.
-    # 
-    # @param [String] group_idthe Group ID in the Google Apps Environment
-    # 
-    # @visibility public
-    # @return 
-    def get_members_of(group_id)
-      get @group + "/#{group_id}/member", :feed
-    end
 
     # add is a generic target for method_missing.  It is
     # intended to handle the general case of adding
