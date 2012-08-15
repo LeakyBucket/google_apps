@@ -69,7 +69,7 @@ __Application__
 
 ## Short How
 
-Getting and using the library.  
+Getting and using the library.
 
 ~~~~~
 gem install google_apps
@@ -78,7 +78,7 @@ require 'google_apps'
 ~~~~~
 
 
-Setting up your GoogleApps::Transport object to send requests to Google.  
+Setting up your GoogleApps::Transport object to send requests to Google.
 
 ~~~~~
 transporter = GoogleApps::Transport.new 'domain'
@@ -86,7 +86,7 @@ transporter.authenticate 'username@domain', 'password'
 ~~~~~
 
 
-Creating an entity is a matter of creating a matching object and sending it to Google.  
+Creating an entity is a matter of creating a matching object and sending it to Google.
 
 ~~~~~
 # Creating a User
@@ -112,7 +112,7 @@ transporter.new_user user
 ~~~~~
 
 
-Modifying an entity is also a simple process.  
+Modifying an entity is also a simple process.
 
 ~~~~~
 # Modifying a User
@@ -123,14 +123,14 @@ transporter.update_user 'bob', user
 ~~~~~
 
 
-Deleting is extremely light weight.  
+Deleting is extremely light weight.
 
 ~~~~~
 transporter.delete_user 'bob'
 ~~~~~
 
 
-Getting an entity record from Google.  
+Getting an entity record from Google.
 
 ~~~~~
 # Retrieving a User
@@ -138,7 +138,7 @@ transporter.get_user 'bob'
 ~~~~~
 
 
-Retrieving a batch of entities from Google.  
+Retrieving a batch of entities from Google.
 
 ~~~~~
 # Retrieving all Users
@@ -151,7 +151,7 @@ users = transporter.get_users start: 'lholcomb2', limit: 320
 ~~~~~
 
 
-Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is fairly simple.  
+Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is fairly simple.
 
 ~~~~~
 # Uploading Public Key
@@ -162,7 +162,7 @@ transporter.add_pubkey pub_key
 ~~~~~
 
 
-Google Apps provides a few mail auditing functions.  One of those is grabbing a mailbox export.  Below is an example.  
+Google Apps provides a few mail auditing functions.  One of those is grabbing a mailbox export.  Below is an example.
 
 ~~~~~
 # Request Mailbox Export
@@ -174,7 +174,7 @@ transporter.request_export 'username', export_req
 ~~~~~
 
 
-Your export request will be placed in a queue and processed eventually.  Luckily you can check on the status while you wait.  
+Your export request will be placed in a queue and processed eventually.  Luckily you can check on the status while you wait.
 
 ~~~~~
 # Check Export Status
@@ -183,7 +183,7 @@ transporter.export_ready? 'username', <request_id>
 ~~~~~
 
 
-Downloading the requested export is simple.  
+Downloading the requested export is simple.
 
 ~~~~~
 # Download Export
@@ -191,7 +191,7 @@ transporter.fetch_export 'username', 'req_id', 'filename'
 ~~~~~
 
 
-The Google Apps API provides a direct migration option if you happen to have email in msg (RFC 822) format.  
+The Google Apps API provides a direct migration option if you happen to have email in msg (RFC 822) format.
 
 ~~~~~
 # Migrate Email
@@ -370,17 +370,26 @@ attributes = GoogleApps::Atom.message_attributes
 attributes = GoogleApps::Atom.message_attributes <xml string>
 ~~~~
 
-This document is sent with an email message that is being migrated.  It tells Google how to store the message.  A Message Attribute object stores the labels for a message along with the "state" or "location" of the message.  Basically along with labels you can specify a message as being in the Inbox, Sent, Drafts, or Trash locations.  
+This document is sent with an email message that is being migrated.  It tells Google how to store the message.  A Message Attribute object stores the labels for a message along with the "state" or "location" of the message.  Basically along with labels you can specify a message as being in the Inbox, Sent, Drafts, or Trash locations.
 
-You can add labels.  
+You can add labels.
 
 ~~~~
 attributes.add_label 'Migration'
 ~~~~
 
-Check labels.  
+Check labels.
 
 ~~~~
 attributes.labels
 ~~~~
 
+And remove labels.
+
+~~~~
+attributes.remove_label 'Migration'
+~~~~
+
+You can also specify the "Type" of message.  Basically this means you are identifying where it would reside aside from it's labels.  The options are IS_INBOX, IS_SENT, IS_DRAFTS, IS_TRASH, IS_STARRED, IS_UNREAD.
+
+Pretty self explainatory with the exception of IS_STARRED if you are not familiar with Google.  Starring is similar to flagging in Exchange.
