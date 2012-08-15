@@ -24,6 +24,7 @@ module GoogleApps
         property['value'] = prop
 
         @document.root << property
+        @document = parse(@document)
       end
 
       def property=(value)
@@ -36,6 +37,7 @@ module GoogleApps
 
         @document.root << label
         @labels << name
+        @document = parse(@document)
       end
 
       def <<(value)
@@ -44,7 +46,7 @@ module GoogleApps
 
       def remove_label(value)
         @labels.delete(value)
-        delete('//apps:label', labelName: value)
+        delete('//apps:label', labelName: [value])
       end
 
       def to_s
