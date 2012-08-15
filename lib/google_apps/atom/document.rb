@@ -55,17 +55,17 @@ module GoogleApps
       end
 
 
-      # Sets instance variables in the current object based on 
+      # Sets instance variables in the current object based on
       # values found in the XML document and the mapping specified
       # in GoogleApps::Atom::MAPS
 
-      # 
+      #
       # @param [Array] intersect
       # @param [LibXML::XML::Node] node
       # @param [Hash] map
-      # 
+      #
       # @visibility public
-      # @return 
+      # @return
       def set_instances(intersect, node, map)
         intersect.each do |attribute|
           instance_variable_set "@#{map[attribute]}", check_value(node.attributes[attribute])
@@ -73,11 +73,12 @@ module GoogleApps
       end
 
 
-      # 
+      #
+
       #  Sets instance variables for property list type documents.
-      # 
+      #
       # @visibility public
-      # @return 
+      # @return
       def attrs_from_props
         map_key = self.class.to_s.split(':').last.downcase.to_sym
         map = Atom::MAPS[map_key]
@@ -146,6 +147,21 @@ module GoogleApps
         end
 
         ns
+      end
+
+
+      #
+      # Delete a node from the document
+      #
+      # @param [String] xpath is a node identifier in Xpath format
+      # @param [Array] attrs is an array of attr, value pairs
+      #
+      # @visibility public
+      # @return
+      def delete_node(xpath, attrs)
+        @document.find(xpath).each do |node|
+          node.remove! if node_match?(node, attrs)
+        end
       end
     end
   end

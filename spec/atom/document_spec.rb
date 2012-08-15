@@ -65,4 +65,8 @@ describe "GoogleApps::Atom::Document" do
       ns[:apps].should == GoogleApps::Atom::NAMESPACES[:apps]
     end
   end
+
+  describe "#delete_node" do
+    it "Deletes the specified node from the document"
+  end
 end

@@ -46,7 +46,7 @@ module GoogleApps
 
       def remove_label(value)
         @labels.delete(value)
-        delete('//apps:label', labelName: [value])
+        delete_node('//apps:label', labelName: [value])
       end
 
       def to_s

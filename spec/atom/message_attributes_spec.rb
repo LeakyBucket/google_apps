@@ -39,6 +39,24 @@ describe "GoogleApps::Atom::MessageAttributes" do
     end
   end
 
+  describe "#remove_label" do
+    before(:each) do
+      attributes.add_label 'Migration'
+    end
+
+    it "Removes a label from the object" do
+      attributes.remove_label 'Migration'
+
+      attributes.labels.should == []
+    end
+
+    it "Removes a label from the document" do
+      attributes.remove_label 'Migration'
+
+      attributes.to_s.should_not include 'labelName="Migration"'
+    end
+  end
+
   describe "#find_labels" do
     before(:all) do
       @fetched = GoogleApps::Atom::MessageAttributes.new File.read('spec/xml/mes_attr.xml')
