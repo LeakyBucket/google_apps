@@ -3,7 +3,6 @@ module GoogleApps
     class Nickname < Document
       attr_reader :nickname, :user, :doc
 
-      ELEMENTS = { nick: ['apps:nickname', 'name'], user: ['apps:login', 'userName'] }
       MAP = {
         name: :nickname,
         userName: :user
