@@ -1,9 +1,6 @@
 module GoogleApps
   module Atom
     class Export
-      include Atom::Node
-      include Atom::Document
-
       HEADER = 'HEADER_ONLY'
       FULL = 'FULL_MESSAGE'
 

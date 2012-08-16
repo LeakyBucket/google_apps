@@ -2,19 +2,25 @@ module GoogleApps
 	module Atom
     # TODO: Move User attribute map to user class
     # TODO: Update attribute map to include @ for instance variables
-  	class User
-      include Atom::Node
-      include Atom::Document
+  	class User < Document
+      attr_reader :doc, :login, :suspended, :first_name, :last_name, :quota, :password
 
-      attr_reader :document, :login, :suspended, :first_name, :last_name, :quota, :password
+      MAP = {
+        userName: :login,
+        suspended: :suspended,
+        familyName: :last_name,
+        givenName: :first_name,
+        limit: :quota,
+        password: :password
+      }
 
   		def initialize(xml = nil)
         if xml
-          @document = parse(xml)
+          super(xml, MAP)
           find_values
         else
-          @document = new_empty_doc
-  			  @document.root = build_root
+          super(nil, MAP)
+  			  @doc.root = build_root :user
         end
   		end
 
@@ -34,15 +40,15 @@ module GoogleApps
       # add_node creates the specified node in the user document.  It
       # takes a type/name and an array of attribute, value pairs as
       # arguments.  It also parses the new document and saves the
-      # copy in @document
+      # copy in @doc
       #
       # add_node 'apps:login', [['userName', 'Zanzabar']]
       #
       # add_node returns a parsed copy of the new document.
-      def add_node(type, attrs) # TODO: Should take a target argument rather than only appending to @document.root
-        @document.root << create_node(type: type, attrs: attrs)
+      def add_node(type, attrs) # TODO: Should take a target argument rather than only appending to @doc.root
+        @doc.root << create_node(type: type, attrs: attrs)
 
-        @document = parse @document
+        @doc = parse @doc
       end
 
 
@@ -51,13 +57,13 @@ module GoogleApps
       #
       # update_node 'apps:login', :userName, true
       def update_node(type, attribute, value)
-        find_and_update @document, "//#{type}", { attribute => [instance_variable_get("@#{Atom::MAPS[:user][attribute]}").to_s, value.to_s]}
+        find_and_update "//#{type}", { attribute => [instance_variable_get("@#{MAP[attribute]}").to_s, value.to_s]}
       end
 
 
       # TODO: Move this method.
       def node(name)
-        @document.find_first("//#{name}")
+        @doc.find_first("//#{name}")
       end
 
 
@@ -152,9 +158,9 @@ module GoogleApps
       end
 
 
-      # to_s returns @document as a string
+      # to_s returns @doc as a string
       def to_s
-        @document.to_s
+        @doc.to_s
       end
 
 
@@ -162,7 +168,7 @@ module GoogleApps
 
       # new_doc re-initializes the XML document.
       def new_doc
-        @document = Atom::XML::Document.new
+        @doc = Atom::XML::Document.new
       end
   	end
   end

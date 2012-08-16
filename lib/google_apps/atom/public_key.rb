@@ -1,9 +1,6 @@
 module GoogleApps
   module Atom
     class PublicKey
-      include Atom::Node
-      include Atom::Document
-
       attr_reader :document
 
       def initialize

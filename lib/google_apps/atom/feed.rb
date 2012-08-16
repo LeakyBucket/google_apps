@@ -2,10 +2,6 @@ module GoogleApps
   module Atom
     class Feed
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.
-
-      include Atom::Node
-      include Atom::Document
-
       attr_reader :xml, :items, :next_page
 
       # TODO: Figure out how to handle Group Members.  The regex below

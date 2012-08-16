@@ -1,9 +1,6 @@
 module GoogleApps
   module Atom
     class MessageAttributes
-      include Document
-      include Node
-
       attr_reader :labels
       attr_accessor :property
 

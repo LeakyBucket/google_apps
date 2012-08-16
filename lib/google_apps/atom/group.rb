@@ -1,9 +1,6 @@
 module GoogleApps
   module Atom
     class Group
-      include Atom::Node
-      include Atom::Document
-
       attr_accessor :id, :name, :description, :permissions
 
       #ATTRIBUTES = %w(id name description perms).map(&:to_sym)

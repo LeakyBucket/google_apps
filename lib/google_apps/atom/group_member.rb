@@ -1,9 +1,6 @@
 module GoogleApps
   module Atom
     class GroupMember
-      include Atom::Node
-      include Atom::Document
-
       attr_accessor :member, :type
 
       def initialize(xml = nil)

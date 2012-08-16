@@ -1,6 +1,19 @@
 module GoogleApps
   module Atom
-    module Document
+    class Document
+      include Node
+
+      # 
+      # @param [String] doc
+      # @param [Hash] map
+      # 
+      # @visibility public
+      # @return 
+      def initialize(doc, map = {})
+        @doc = doc.nil? ? new_empty_doc : parse(doc)
+        @map = map
+      end
+
       # parse takes xml, either a document or a string
       # and returns a parsed document.  Since libxml-ruby
       # doesn't build a parse tree dynamically this
@@ -38,19 +51,39 @@ module GoogleApps
       end
 
 
-      # find_values searches @document and assigns any values
+      # find_values searches @doc and assigns any values
       # to their corresponding instance variables.  This is
       # useful when we've been given a string of XML and need
       # internal consistency in the object.
       #
       # find_values
       def find_values
-        map_key = self.class.to_s.split(':').last.downcase.to_sym
-        map = Atom::MAPS[map_key]
+        @doc.root.each do |entry|
+          intersect = @map.keys & entry.attributes.to_h.keys.map(&:to_sym)
+          set_instances(intersect, entry) unless intersect.empty?
+        end
+      end
 
-        @document.root.each do |entry|
-          intersect = map.keys & entry.attributes.to_h.keys.map(&:to_sym)
-          set_instances(intersect, entry, map) unless intersect.empty?
+
+      # find_and_update updates the values for the specified
+      # attributes on the node specified by the given xpath
+      # value.  It is ill behaved and will change any
+      # matching attributes in any node returned using the
+      # given xpath.
+      #
+      # find_and_update takes an xpath value and a hash of 
+      # attribute names with current and new value pairs.
+      #
+      # find_and_update '/apps:nickname', name: ['Bob', 'Tom']
+      def find_and_update(xpath, attributes)
+        @doc.find(xpath).each do |node|
+          binding.pry
+          if node_match?(node, attributes)
+            binding.pry
+            attributes.each_key do |attrib|
+              node.attributes[attrib.to_s] = attributes[attrib][1]
+            end
+          end
         end
       end
 
@@ -66,27 +99,23 @@ module GoogleApps
       #
       # @visibility public
       # @return
-      def set_instances(intersect, node, map)
+      def set_instances(intersect, node)
         intersect.each do |attribute|
-          instance_variable_set "@#{map[attribute]}", check_value(node.attributes[attribute])
+          instance_variable_set "@#{@map[attribute]}", check_value(node.attributes[attribute])
         end
       end
 
 
       #
-
       #  Sets instance variables for property list type documents.
       #
       # @visibility public
       # @return
       def attrs_from_props
-        map_key = self.class.to_s.split(':').last.downcase.to_sym
-        map = Atom::MAPS[map_key]
-
-        @document.find('//apps:property').each do |entry|
+        @doc.find('//apps:property').each do |entry|
           prop_name = entry.attributes['name'].to_sym
-          if map.keys.include?(prop_name)
-            instance_variable_set "@#{map[prop_name]}", check_value(entry.attributes['value'])
+          if @map.keys.include?(prop_name)
+            instance_variable_set "@#{@map[prop_name]}", check_value(entry.attributes['value'])
           end
         end
       end
@@ -100,11 +129,11 @@ module GoogleApps
       # build_root returns an atom:entry node with an
       # apps:category element appropriate for the document
       # type.
-      def build_root
+      def build_root(type)
         root = create_node(type: 'atom:entry')
 
         add_namespaces root, determine_namespaces
-        root << create_node(type: 'apps:category', attrs: Atom::CATEGORY[type_to_sym]) if Atom::CATEGORY[type_to_sym]
+        root << create_node(type: 'apps:category', attrs: Atom::CATEGORY[type.to_sym]) if Atom::CATEGORY[type.to_sym]
 
         root
       end
@@ -159,7 +188,7 @@ module GoogleApps
       # @visibility public
       # @return
       def delete_node(xpath, attrs)
-        @document.find(xpath).each do |node|
+        @doc.find(xpath).each do |node|
           node.remove! if node_match?(node, attrs)
         end
       end
