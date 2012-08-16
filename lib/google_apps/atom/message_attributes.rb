@@ -1,17 +1,17 @@
 module GoogleApps
   module Atom
-    class MessageAttributes
+    class MessageAttributes < Document
       attr_reader :labels
       attr_accessor :property
 
       def initialize(xml = nil)
+        super(xml)
+        
         if xml
-          @document = parse(xml)
           find_labels
           get_item_property
         else
           @labels = []
-          @document = Atom::XML::Document.new
           set_header
         end
       end
@@ -20,8 +20,8 @@ module GoogleApps
         property = Atom::XML::Node.new 'apps:mailItemProperty'
         property['value'] = prop
 
-        @document.root << property
-        @document = parse(@document)
+        @doc.root << property
+        @doc = parse(@doc)
       end
 
       def property=(value)
@@ -32,9 +32,9 @@ module GoogleApps
         label = Atom::XML::Node.new 'apps:label'
         label['labelName'] = name
 
-        @document.root << label
+        @doc.root << label
         @labels << name
-        @document = parse(@document)
+        @doc = parse(@doc)
       end
 
       def <<(value)
@@ -47,19 +47,19 @@ module GoogleApps
       end
 
       def to_s
-        @document.to_s
+        @doc.to_s
       end
 
       private
 
       def set_header
-        @document.root = Atom::XML::Node.new 'atom:entry' # API Docs show just entry here
+        @doc.root = Atom::XML::Node.new 'atom:entry' # API Docs show just entry here
 
-        Atom::XML::Namespace.new(@document.root, 'atom', 'http://www.w3.org/2005/Atom') # API Docs show this as just xmlns
-        Atom::XML::Namespace.new(@document.root, 'apps', 'http://schemas.google.com/apps/2006')
+        Atom::XML::Namespace.new(@doc.root, 'atom', 'http://www.w3.org/2005/Atom') # API Docs show this as just xmlns
+        Atom::XML::Namespace.new(@doc.root, 'apps', 'http://schemas.google.com/apps/2006')
 
-        @document.root << category
-        @document.root << content
+        @doc.root << category
+        @doc.root << content
       end
 
       def category
@@ -79,11 +79,11 @@ module GoogleApps
       end
 
       def find_labels
-        @labels = @document.find('//apps:label').inject([]) { |labels, entry| labels << entry.attributes['labelName']; labels }
+        @labels = @doc.find('//apps:label').inject([]) { |labels, entry| labels << entry.attributes['labelName']; labels }
       end
 
       def get_item_property
-        @property = @document.find('//apps:mailItemProperty').first.attributes['value']
+        @property = @doc.find('//apps:mailItemProperty').first.attributes['value']
       end
     end
   end
