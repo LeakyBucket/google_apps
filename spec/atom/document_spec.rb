@@ -1,8 +1,7 @@
 require 'spec_helper'
 
 describe "GoogleApps::Atom::Document" do
-  let (:doc_container) { class User; include GoogleApps::Atom::Document; include GoogleApps::Atom::Node; end }
-  let (:document) { doc_container.new }
+  let (:document) { GoogleApps::Atom::Document.new File.read('spec/xml/user.xml') }
   let (:doc_string) { File.read('spec/test_doc.xml') }
 
   describe "#parse" do
@@ -26,9 +25,18 @@ describe "GoogleApps::Atom::Document" do
     end
   end
 
+  describe "#find_and_update" do
+    it "Finds the specified node and updates the specified attributes" do
+      document.find_and_update('//apps:login', userName: ['lholcomb2', 'new'], suspended: ['false', 'senior'])
+
+      document.instance_eval { @doc }.find('//apps:login').first.attributes['userName'].should == 'new'
+      document.instance_eval { @doc }.find('//apps:login').first.attributes['suspended'].should == 'senior'
+    end
+  end
+
   describe "#build_root" do
     before(:all) do
-      @root = document.build_root
+      @root = document.build_root :user
     end
 
     it "Builds an atom:entry XML Node with the appropriate namespaces" do
@@ -45,21 +53,9 @@ describe "GoogleApps::Atom::Document" do
     end
   end
 
-  describe "#type_to_s" do
-    it "Returns the document type (class) as a string" do
-      document.type_to_s.should == 'user'
-    end
-  end
-
-  describe "#type_to_sym" do
-    it "Returns the document type (class) as a symbol" do
-      document.type_to_sym.should == :user
-    end
-  end
-
   describe "#determine_namespaces" do
     it "Builds a hash of the appropriate namespaces" do
-      ns = document.determine_namespaces
+      ns = document.determine_namespaces(:user)
 
       ns[:atom].should == GoogleApps::Atom::NAMESPACES[:atom]
       ns[:apps].should == GoogleApps::Atom::NAMESPACES[:apps]

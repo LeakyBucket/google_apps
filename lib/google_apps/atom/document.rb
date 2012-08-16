@@ -130,7 +130,7 @@ module GoogleApps
       def build_root(type)
         root = create_node(type: 'atom:entry')
 
-        add_namespaces root, determine_namespaces
+        add_namespaces root, determine_namespaces(type)
         root << create_node(type: 'apps:category', attrs: Atom::CATEGORY[type.to_sym]) if Atom::CATEGORY[type.to_sym]
 
         root
@@ -165,10 +165,10 @@ module GoogleApps
       # determine_namespaces
       #
       # determine_namespaces returns a hash
-      def determine_namespaces
+      def determine_namespaces(type)
         ns = { atom: Atom::NAMESPACES[:atom], apps: Atom::NAMESPACES[:apps] }
 
-        case type_to_s
+        case type.to_s
           when 'group', 'groupmember'
             ns[:gd] = Atom::NAMESPACES[:gd]
         end

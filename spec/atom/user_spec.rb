@@ -8,21 +8,21 @@ describe "GoogleApps::Atom::User" do
 
 	describe '#new' do
 		it "creates an empty XML document when given no arguments" do
-			gapp.document.should be_a LibXML::XML::Document
+			gapp.doc.should be_a LibXML::XML::Document
 		end
 
-    it "adds the root element to @document" do
-      gapp.document.to_s.should include '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006">'
+    it "adds the root element to @doc" do
+      gapp.doc.to_s.should include '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006">'
     end
 
-    it "adds the category element to @document" do
-      gapp.document.to_s.should include '<apps:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/apps/2006#user"/>'
+    it "adds the category element to @doc" do
+      gapp.doc.to_s.should include '<apps:category scheme="http://schemas.google.com/g/2005#kind" term="http://schemas.google.com/apps/2006#user"/>'
     end
 
     it "creates an xml document matching the given argument" do
       usr = GoogleApps::Atom.user xml
 
-      usr.document.to_s.should include xml
+      usr.doc.to_s.should include xml
     end
 	end
 
@@ -278,7 +278,7 @@ describe "GoogleApps::Atom::User" do
   end
 
   describe "#find_values" do
-    it "Populates instance variables with values from @document" do
+    it "Populates instance variables with values from @doc" do
       user = GoogleApps::Atom::User.new xml
 
       user.login.should == 'lholcomb2'

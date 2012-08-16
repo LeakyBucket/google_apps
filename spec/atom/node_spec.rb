@@ -32,15 +32,6 @@ describe "GoogleApps::Atom::Node" do
     end
   end
 
-  describe "#find_and_update" do
-    it "Finds the specified node and updates the specified attributes" do
-      node.find_and_update(document, '//apps:property', name: ['memberId', 'new'], value: ['lholcomb2@cnm.edu', 'senior'])
-
-      document.find('//apps:property').first.attributes['name'].should == 'new'
-      document.find('//apps:property').first.attributes['value'].should == 'senior'
-    end
-  end
-
   describe "#get_content" do
     it "Returns the content of the specified node" do
       node.get_content(document, '//title').should == 'Users'

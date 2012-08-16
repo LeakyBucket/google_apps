@@ -5,18 +5,18 @@ describe "GoogleApps::Atom::Nickname" do
 
   describe "#new" do
     it "Initializes the document header" do
-      nick.document.to_s.should include '<?xml version="1.0" encoding="UTF-8"?>'
+      nick.doc.to_s.should include '<?xml version="1.0" encoding="UTF-8"?>'
     end
 
     it "Initializes an XML document" do
-      nick.document.should be_a LibXML::XML::Document
+      nick.doc.should be_a LibXML::XML::Document
     end
   end
 
   describe "#to_s" do
     it "Returns @document as a string" do
       nick.to_s.should be_a String
-      nick.to_s.should == nick.document.to_s
+      nick.to_s.should == nick.doc.to_s
     end
   end
 

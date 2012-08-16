@@ -8,7 +8,7 @@ describe "GoogleApps::Atom::Feed" do
 
   describe "#new" do
     it "Parses the given xml" do
-      feed.xml.should be_a LibXML::XML::Document
+      feed.doc.should be_a LibXML::XML::Document
     end
 
     it "Populates @items with Atom objects of the proper type" do
@@ -24,7 +24,7 @@ describe "GoogleApps::Atom::Feed" do
 
   describe "#entries_from" do
     it "Builds an array of Atom objects" do # We have a bad regex somewhere, User doesn't work as an argument
-      results = feed.entries_from document: feed.xml, type: 'user', entry_tag: 'entry'
+      results = feed.entries_from document: feed.doc, type: 'user', entry_tag: 'entry'
 
       results.first.should be_a GoogleApps::Atom::User
     end

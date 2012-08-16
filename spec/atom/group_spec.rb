@@ -5,11 +5,11 @@ describe "GoogleApps::Atom::Group" do
 
   describe "#new" do
     it "should initialize @document" do
-      group.instance_eval { @document }.should be_a LibXML::XML::Document
+      group.instance_eval { @doc }.should be_a LibXML::XML::Document
     end
 
     it "should add the header to @document" do
-      group.instance_eval { @document.root }.should be_an LibXML::XML::Node
+      group.instance_eval { @doc.root }.should be_an LibXML::XML::Node
     end
   end
 

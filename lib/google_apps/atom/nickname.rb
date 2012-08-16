@@ -1,7 +1,7 @@
 module GoogleApps
   module Atom
     class Nickname < Document
-      attr_reader :nickname, :user, :document
+      attr_reader :nickname, :user, :doc
 
       ELEMENTS = { nick: ['apps:nickname', 'name'], user: ['apps:login', 'userName'] }
 

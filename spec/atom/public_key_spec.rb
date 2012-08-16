@@ -5,8 +5,8 @@ describe "GoogleApps::Atom::PublicKey" do
   let (:key) { 'not really a key' }
 
   describe "#new" do
-    it "Initializes @document to be a LibXML::XML::Document" do
-      pub_key.document.should be_a LibXML::XML::Document
+    it "Initializes @doc to be a LibXML::XML::Document" do
+      pub_key.doc.should be_a LibXML::XML::Document
     end
 
     it "Adds the root node to @document" do

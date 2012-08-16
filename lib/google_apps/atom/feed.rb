@@ -2,7 +2,7 @@ module GoogleApps
   module Atom
     class Feed < Document
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.
-      attr_reader :xml, :items, :next_page
+      attr_reader :doc, :items, :next_page
 
       # TODO: Figure out how to handle Group Members.  The regex below
       # doesn't work in that case as group members also have group in

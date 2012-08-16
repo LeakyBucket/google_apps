@@ -5,7 +5,7 @@ module GoogleApps
 
       def initialize(xml = nil)
         super(xml)
-        xml ? populate_self : @doc.root = build_root(:group_member)
+        xml ? populate_self : @doc.root = build_root(:groupmember)
       end
 
 
