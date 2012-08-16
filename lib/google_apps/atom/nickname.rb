@@ -4,9 +4,13 @@ module GoogleApps
       attr_reader :nickname, :user, :doc
 
       ELEMENTS = { nick: ['apps:nickname', 'name'], user: ['apps:login', 'userName'] }
+      MAP = {
+        name: :nickname,
+        userName: :user
+      }
 
       def initialize(xml = nil)
-        super(xml)
+        super(xml, MAP)
         @doc.root = build_root(:nickname) unless xml
       end
 
