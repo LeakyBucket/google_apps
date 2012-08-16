@@ -1,13 +1,13 @@
 module GoogleApps
   module Atom
-    class Nickname
+    class Nickname < Document
       attr_reader :nickname, :user, :document
 
       ELEMENTS = { nick: ['apps:nickname', 'name'], user: ['apps:login', 'userName'] }
 
       def initialize(xml = nil)
-        @document = Atom::XML::Document.new
-        @document.root = build_root
+        super(xml)
+        @doc.root = build_root(:nickname) unless xml
       end
 
       # nickname= sets the nickname value on the object and in the
@@ -17,7 +17,7 @@ module GoogleApps
       #
       # nickname= returns the new nickname value
       def nickname=(nick)
-        @nickname ? find_and_update(@document, '//apps:nickname', name: [@nickname, nick]) : create('nickname', nick)
+        @nickname ? find_and_update('//apps:nickname', name: [@nickname, nick]) : create('nickname', nick)
 
         @nickname = nick
       end
@@ -31,7 +31,7 @@ module GoogleApps
       #
       # user= returns the new username value
       def user=(username)
-        @user ? find_and_update(@document, '//apps:login', userName: [@user, username]) : create('login', username)
+        @user ? find_and_update('//apps:login', userName: [@user, username]) : create('login', username)
 
         @user = username
       end
@@ -39,7 +39,7 @@ module GoogleApps
 
       # to_s returns the underlying XML document as a string.
       def to_s
-        @document.to_s
+        @doc.to_s
       end
 
 
@@ -47,7 +47,7 @@ module GoogleApps
       private
 
 
-      # create adds the specified node to @document.  It takes
+      # create adds the specified node to @doc.  It takes
       # a type and a value as arguments.
       #
       # create 'nickname', 'Bob'
@@ -56,12 +56,12 @@ module GoogleApps
       def create(type, value)
         case type
         when 'nickname'
-          @document.root << create_node(type: 'apps:nickname', attrs: [['name', value]])
+          @doc.root << create_node(type: 'apps:nickname', attrs: [['name', value]])
         when 'login'
-          @document.root << create_node(type: 'apps:login', attrs: [['userName', value]])
+          @doc.root << create_node(type: 'apps:login', attrs: [['userName', value]])
         end
 
-        @document = parse @document
+        @doc = parse @doc
       end
     end
   end
