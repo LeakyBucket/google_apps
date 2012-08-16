@@ -1,6 +1,6 @@
 module GoogleApps
   module Atom
-    class Feed
+    class Feed < Document
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.
       attr_reader :xml, :items, :next_page
 
@@ -14,11 +14,12 @@ module GoogleApps
         type = xml.match(TYPE_MATCH).captures[0]
         type.sub!(/\//, '_')
 
-        @xml = parse(xml)
-        @items = entries_from document: @xml, type: type, entry_tag: 'entry'
+        super(xml)
+
+        @items = entries_from document: @doc, type: type, entry_tag: 'entry'
       end
 
-      # TODO: Need to make sure this works for feeds other than user.
+
       def entries_from(properties)
         type = properties[:type].to_sym
 
