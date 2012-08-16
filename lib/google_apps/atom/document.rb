@@ -77,9 +77,7 @@ module GoogleApps
       # find_and_update '/apps:nickname', name: ['Bob', 'Tom']
       def find_and_update(xpath, attributes)
         @doc.find(xpath).each do |node|
-          binding.pry
           if node_match?(node, attributes)
-            binding.pry
             attributes.each_key do |attrib|
               node.attributes[attrib.to_s] = attributes[attrib][1]
             end
