@@ -7,6 +7,13 @@ module GoogleApps
       attr_reader :labels
       attr_accessor :property
 
+      DRAFT = 'IS_DRAFT'
+      INBOX = 'IS_INBOX'
+      SENT = 'IS_SENT'
+      TRASH = 'IS_TRASH'
+      STARRED = 'IS_STARRED'
+      UNREAD = 'IS_UNREAD'
+
       def initialize(xml = nil)
         if xml
           @document = parse(xml)

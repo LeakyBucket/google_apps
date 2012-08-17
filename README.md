@@ -392,4 +392,17 @@ attributes.remove_label 'Migration'
 
 You can also specify the "Type" of message.  Basically this means you are identifying where it would reside aside from it's labels.  The options are IS_INBOX, IS_SENT, IS_DRAFTS, IS_TRASH, IS_STARRED, IS_UNREAD.
 
+~~~~
+attributes.add_property GoogleApps::Atom::MessageAttributes::INBOX
+attributes.add_property GoogleApps::Atom::MessageAttributes::SENT
+attributes.add_property GoogleApps::Atom::MessageAttributes::DRAFT
+attributes.add_property GoogleApps::Atom::MessageAttributes::STARRED
+attributes.add_property GoogleApps::Atom::MessageAttributes::UNREAD
+attributes.add_property GoogleApps::Atom::MessageAttributes::TRASH
+
+# or
+
+attributes.add_property 'IS_INBOX'
+~~~~
+
 Pretty self explainatory with the exception of IS_STARRED if you are not familiar with Google.  Starring is similar to flagging in Exchange.
