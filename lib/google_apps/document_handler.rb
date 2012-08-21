@@ -1,11 +1,12 @@
 module GoogleApps
   class DocumentHandler
+    # TODO: Should get type list from Document Parent class, not format namespace.
     attr_accessor :format
 
     def initialize(args)
       set_format args[:format]
     end
-    
+
 
     # create_doc creates a document of the specified format
     # from the given string.
