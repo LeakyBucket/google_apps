@@ -1,20 +1,17 @@
 module GoogleApps
   module Atom
-    class Export
-      include Atom::Node
-      include Atom::Document
-
+    class Export < Document
       HEADER = 'HEADER_ONLY'
       FULL = 'FULL_MESSAGE'
 
       def initialize(xml = nil)
-        @document = Atom::XML::Document.new
-        @document.root = build_root
+        super(xml)
+        @doc.root = build_root(:export) unless xml
       end
 
-      # to_s returns @document as a string.
+      # to_s returns @doc as a string.
       def to_s
-        @document.to_s
+        @doc.to_s
       end
       
       # start_date specifies a start date for the extract.  
@@ -29,7 +26,7 @@ module GoogleApps
       #
       # start_date '2012-01-01 00:00'
       #
-      # start_date returns @document.root
+      # start_date returns @doc.root
       def start_date(date)
         add_prop('beginDate', date)
       end
@@ -46,7 +43,7 @@ module GoogleApps
       #
       # end_date '2012-01-01 08:30'
       #
-      # end_date returns @document.root
+      # end_date returns @doc.root
       def end_date(date)
         add_prop('endDate', date)
       end
@@ -57,7 +54,7 @@ module GoogleApps
       #
       # include_deleted
       #
-      # include_deleted returns @document.root
+      # include_deleted returns @doc.root
       def include_deleted
         add_prop('includeDeleted', 'true')
       end
@@ -69,7 +66,7 @@ module GoogleApps
       #
       # query 'from: Bob'
       #
-      # query returns @document.root
+      # query returns @doc.root
       def query(query_string)
         add_prop('searchQuery', query_string)
       end
@@ -80,7 +77,7 @@ module GoogleApps
       #
       # content 'HEADER_ONLY'
       #
-      # content returns @document.root
+      # content returns @doc.root
       def content(type)
         add_prop('packageContent', type)
       end
@@ -92,10 +89,10 @@ module GoogleApps
       # a mailbox extract as specified by the GoogleApps
       # Email Audit API.
       def set_header
-        @document.root = Atom::XML::Node.new 'atom:entry'
+        @doc.root = Atom::XML::Node.new 'atom:entry'
 
-        Atom::XML::Namespace.new(@document.root, 'atom', 'http://www.w3.org/2005/Atom')
-        Atom::XML::Namespace.new(@document.root, 'apps', 'http://schemas.google.com/apps/2006')
+        Atom::XML::Namespace.new(@doc.root, 'atom', 'http://www.w3.org/2005/Atom')
+        Atom::XML::Namespace.new(@doc.root, 'apps', 'http://schemas.google.com/apps/2006')
       end
 
       # add_prop adds an element of the type: apps:property
@@ -105,7 +102,7 @@ module GoogleApps
         prop['name'] = name
         prop['value'] = value
 
-        @document.root << prop
+        @doc.root << prop
       end
     end
   end

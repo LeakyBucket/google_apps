@@ -5,11 +5,11 @@ describe "GoogleApps::Atom::GroupMember" do
 
   describe "#new" do
     it "initializes document as an empty Atom XML Document" do
-      member.instance_eval { @document }.should be_a LibXML::XML::Document
+      member.instance_eval { @doc }.should be_a LibXML::XML::Document
     end
 
-    it "sets the header for @document" do
-      member.instance_eval { @document.root.to_s }.should == basic_header
+    it "sets the header for @doc" do
+      member.instance_eval { @doc.root.to_s.strip }.should == basic_header
     end
   end
 
@@ -35,7 +35,7 @@ describe "GoogleApps::Atom::GroupMember" do
       member.member = 'Tom'
       member.member = 'Bill'
 
-      member.instance_eval { @document.root.child.attributes['value'] }.should == 'Bill'
+      member.instance_eval { @doc.root.child.attributes['value'] }.should == 'Bill'
     end
   end
 
@@ -43,7 +43,7 @@ describe "GoogleApps::Atom::GroupMember" do
     it "returns @document as a string" do
       member.member = 'Tom'
 
-      member.to_s.should == member.instance_eval { @document.to_s }
+      member.to_s.should == member.instance_eval { @doc.to_s }
     end
   end
 end

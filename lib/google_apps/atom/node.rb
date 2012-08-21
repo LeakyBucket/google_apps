@@ -52,33 +52,11 @@ module GoogleApps
       end
 
 
-      # update_node updates the values for the specified
-      # attributes on the node specified by the given xpath
-      # value.  It is ill behaved and will change any
-      # matching attributes in any node returned using the
-      # given xpath.
-      #
-      # update_node takes a document (must be parsed), an
-      # xpath value and a hash of attribute names with
-      # current and new value pairs.
-      #
-      # update_node document, '/apps:nickname', name: ['Bob', 'Tom']
-      def find_and_update(document, xpath, attributes)
-        document.find(xpath).each do |node|
-          if node_match?(node, attributes)
-            attributes.each_key do |attrib|
-              node.attributes[attrib.to_s] = attributes[attrib][1]
-            end
-          end
-        end
-      end
-
-
       # node_match? checks that each value for each specified
       # attribute matches the specified value.
       def node_match?(node, attributes)
         attributes.keys.inject(true) do |result, key|
-          result and node.attributes[key.to_s] == attributes[key][0]
+          result and node.attributes[key].to_s == attributes[key][0]
         end
       end
 

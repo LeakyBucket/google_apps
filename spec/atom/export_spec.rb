@@ -8,13 +8,13 @@ describe "GoogleApps::Atom::Export" do
   let (:content) { 'HEADER_ONLY' }
 
   describe "#new" do
-    it "should initialize @document to an XML::Document" do
-      export.instance_eval { @document }.should be_a LibXML::XML::Document
+    it "should initialize @doc to an XML::Document" do
+      export.instance_eval { @doc }.should be_a LibXML::XML::Document
     end
   end
 
   describe "#to_s" do
-    it "should return @document as a String" do
+    it "should return @doc as a String" do
       export.to_s.should be_a String
     end
   end

@@ -1,12 +1,8 @@
 module GoogleApps
   module Atom
-    class Feed
+    class Feed < Document
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.
-
-      include Atom::Node
-      include Atom::Document
-
-      attr_reader :xml, :items, :next_page
+      attr_reader :doc, :items, :next_page
 
       # TODO: Figure out how to handle Group Members.  The regex below
       # doesn't work in that case as group members also have group in
@@ -18,11 +14,12 @@ module GoogleApps
         type = xml.match(TYPE_MATCH).captures[0]
         type.sub!(/\//, '_')
 
-        @xml = parse(xml)
-        @items = entries_from document: @xml, type: type, entry_tag: 'entry'
+        super(xml)
+
+        @items = entries_from document: @doc, type: type, entry_tag: 'entry'
       end
 
-      # TODO: Need to make sure this works for feeds other than user.
+
       def entries_from(properties)
         type = properties[:type].to_sym
 

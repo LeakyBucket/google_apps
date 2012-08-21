@@ -4,8 +4,8 @@ describe "GoogleApps::Atom::MessageAttributes" do
   let (:attributes) { GoogleApps::Atom::MessageAttributes.new }
 
   describe "#new" do
-    it "should initialize @document to a LibXML::XML::Document" do
-      attributes.instance_eval { @document }.should be_a LibXML::XML::Document
+    it "should initialize @doc to a LibXML::XML::Document" do
+      attributes.instance_eval { @doc }.should be_a LibXML::XML::Document
     end
 
     it "should set the @document header" do

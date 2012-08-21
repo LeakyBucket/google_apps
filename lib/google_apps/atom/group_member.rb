@@ -1,19 +1,11 @@
 module GoogleApps
   module Atom
-    class GroupMember
-      include Atom::Node
-      include Atom::Document
-
+    class GroupMember < Document
       attr_accessor :member, :type
 
       def initialize(xml = nil)
-        if xml
-          @document = parse(xml)
-          populate_self
-        else
-          @document = Atom::XML::Document.new
-          @document.root = build_root
-        end
+        super(xml)
+        xml ? populate_self : @doc.root = build_root(:groupmember)
       end
 
 
@@ -27,7 +19,7 @@ module GoogleApps
       def member=(member)
         @member.nil? ? add_node('memberId', member) : change_node('memberId', member)
 
-        @document = parse(@document)
+        @doc = parse(@doc)
         @member = member
       end
 
@@ -35,14 +27,14 @@ module GoogleApps
       def type=(type)
         @type.nil? ? add_node('memberType', type) : change_node('memberType', type)
 
-        @document = parse(@document)
+        @doc = parse(@doc)
         @type = type
       end
       
 
-      # to_s returns @document as a string.
+      # to_s returns @doc as a string.
       def to_s
-        @document.to_s
+        @doc.to_s
       end
 
 
@@ -55,18 +47,18 @@ module GoogleApps
       # @visibility private
       # @return 
       def add_node(type, value)
-        @document.root << create_node(type: 'apps:property', attrs: [['name', type], ['value', value]])
+        @doc.root << create_node(type: 'apps:property', attrs: [['name', type], ['value', value]])
       end
 
 
       def change_node(type, value)
-        @document.find('//apps:property').each do |node|
+        @doc.find('//apps:property').each do |node|
           node.attributes['value'] = value if node.attributes['name'] == type
         end
       end
 
       # change_member changes the value attribute of the
-      # apps:property element in @document to the value
+      # apps:property element in @doc to the value
       # of the provided argument.  It also sets @member
       # to the provided argument.
       #
@@ -76,7 +68,7 @@ module GoogleApps
       def change_member(member)
         # This really should use find but I can't figure out how to
         # get the XPath to work with this document.
-        @document.root.each do |node|
+        @doc.root.each do |node|
           node.attributes['value'] = member if node.attributes['value'] == @member
         end
 
@@ -89,7 +81,7 @@ module GoogleApps
       # @visibility private
       # @return 
       def populate_self
-        @document.find('//apps:property').each do |node|
+        @doc.find('//apps:property').each do |node|
           @member = node.attributes['value'] if node.attributes['name'] == 'memberId'
           @type = node.attributes['value'] if node.attributes['name'] == 'memberType'
         end

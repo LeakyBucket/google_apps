@@ -21,27 +21,6 @@ module GoogleApps
       openSearch: 'http://a9.com/-/spec/opensearchrss/1.0/'
     }
 
-    MAPS = {
-      user: {
-        userName: :login,
-        suspended: :suspended,
-        familyName: :last_name,
-        givenName: :first_name,
-        limit: :quota,
-        password: :password
-      },
-      nickname: {
-        name: :nickname,
-        userName: :user
-      },
-      group: {
-        groupId: :id,
-        groupName: :name,
-        emailPermission: :permission,
-        description: :description
-      }
-    }
-
     CATEGORY = {
       user: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#user']],
       nickname: [['scheme', 'http://schemas.google.com/g/2005#kind'], ['term', 'http://schemas.google.com/apps/2006#nickname']]
