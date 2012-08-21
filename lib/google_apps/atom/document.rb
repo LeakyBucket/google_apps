@@ -3,16 +3,57 @@ module GoogleApps
     class Document
       include Node
 
-      # 
+      @types = []
+
+      #
       # @param [String] doc
       # @param [Hash] map
-      # 
+      #
       # @visibility public
-      # @return 
+      # @return
       def initialize(doc, map = {})
         @doc = doc.nil? ? new_empty_doc : parse(doc)
         @map = map
       end
+
+
+      #
+      # Document keeps track of all it's subclasses.  This makes
+      # it easy to look up the document types supported by the
+      # library.
+      #
+      # @param [Constant] subclass
+      #
+      # @visibility public
+      # @return
+      def self.inherited(subclass)
+        self.add_type subclass
+      end
+
+
+      #
+      # Accessor for the Document types array.  This array is a
+      # list of all subclasses of GoogleApps::Atom::Document
+      #
+      # @visibility public
+      # @return
+      def self.types
+        @types
+      end
+
+
+      #
+      # Adds a subclass to the @types array.
+      #
+      # @param [Constant] type
+      #
+      # @visibility public
+      # @return
+      def self.add_type(type)
+        # TODO:  Need to convert from const to symbol before adding
+        @types << type
+      end
+
 
       # parse takes xml, either a document or a string
       # and returns a parsed document.  Since libxml-ruby
@@ -71,7 +112,7 @@ module GoogleApps
       # matching attributes in any node returned using the
       # given xpath.
       #
-      # find_and_update takes an xpath value and a hash of 
+      # find_and_update takes an xpath value and a hash of
       # attribute names with current and new value pairs.
       #
       # find_and_update '/apps:nickname', name: ['Bob', 'Tom']

@@ -52,7 +52,7 @@ module GoogleApps
     def look_up_doc_types
       case @format
       when :atom, :xml
-        Atom::DOCUMENTS
+        Atom::Document.types
       end
     end
 
