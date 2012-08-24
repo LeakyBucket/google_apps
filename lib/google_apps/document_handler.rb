@@ -52,8 +52,13 @@ module GoogleApps
     def look_up_doc_types
       case @format
       when :atom, :xml
-        Atom::Document.types
+        Atom::Document.types.inject([]) { |types, subclass| types | [sub_to_meth(subclass)] }
       end
+    end
+
+
+    def sub_to_meth(subclass) # TODO: This shouldn't be both here and in GoogleApps::Atom::Document
+      subclass.to_s.split('::').last.scan(/[A-Z][a-z0-9]+/).map(&:downcase).join('_')
     end
 
 

@@ -44,7 +44,7 @@ describe "GoogleApps::DocumentHandler" do
     it "Rebuilds the @documents list" do
       handler.format = :xml
 
-      handler.instance_eval { @documents }.should == GoogleApps::Atom::DOCUMENTS
+      handler.instance_eval { @documents }.should == GoogleApps::Atom::Document.types
     end
   end
 
@@ -62,12 +62,12 @@ describe "GoogleApps::DocumentHandler" do
 
   describe "#look_up_doc_types" do
     it "Returns a list of all Atom documents when @format is :atom" do
-      handler.send(:look_up_doc_types).should == GoogleApps::Atom::DOCUMENTS
+      handler.send(:look_up_doc_types).should == GoogleApps::Atom::Document.types
     end
 
     it "Returns a list of all Atom documents when @format is :xml" do
       handler.format = :xml
-      handler.send(:look_up_doc_types).should == GoogleApps::Atom::DOCUMENTS
+      handler.send(:look_up_doc_types).should == GoogleApps::Atom::Document.types
     end
   end
 
@@ -81,7 +81,7 @@ describe "GoogleApps::DocumentHandler" do
     it "Sets the @document list" do
       handler.send(:set_format, :xml)
 
-      handler.instance_eval { @documents }.should == GoogleApps::Atom::DOCUMENTS
+      handler.instance_eval { @documents }.should == GoogleApps::Atom::Document.types
     end
   end
 end
