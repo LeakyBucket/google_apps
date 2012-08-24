@@ -12,6 +12,13 @@ def cred_file_absolute
   Dir.getwd + '/spec/credentials.yaml'
 end
 
+def to_meth(klasses)
+  klasses.inject([]) do |list, klass|
+    list << klass.to_s.split('::').last.scan(/[A-Z][a-z0-9]+/).map(&:downcase).join('_')
+    list
+  end
+end
+
 def basic_header
   '<atom:entry xmlns:atom="http://www.w3.org/2005/Atom" xmlns:apps="http://schemas.google.com/apps/2006" xmlns:gd="http://schemas.google.com/g/2005"/>'
 end
