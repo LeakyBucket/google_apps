@@ -17,7 +17,7 @@ module GoogleApps
       end
 
 
-      #
+      #
       # Document keeps track of all it's subclasses.  This makes
       # it easy to look up the document types supported by the
       # library.
@@ -28,10 +28,22 @@ module GoogleApps
       # @return
       def self.inherited(subclass)
         self.add_type subclass
+        Atom.add_doc_dispatcher self.sub_to_meth(subclass)
       end
 
 
-      #
+      # 
+      # Change subclass constant into a valid method name.
+      # 
+      # @param [Constant] subclass
+      # 
+      # @visibility public
+      # @return 
+      def self.sub_to_meth(subclass)
+        subclass.to_s.split('::').last.scan(/[A-Z][a-z0-9]+/).map(&:downcase).join('_')
+      end
+
+      #
       # Accessor for the Document types array.  This array is a
       # list of all subclasses of GoogleApps::Atom::Document
       #
@@ -42,7 +54,7 @@ module GoogleApps
       end
 
 
-      #
+      #
       # Adds a subclass to the @types array.
       #
       # @param [Constant] type
