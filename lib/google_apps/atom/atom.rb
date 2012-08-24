@@ -29,19 +29,20 @@ module GoogleApps
 
     ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
 
-    #DOCUMENTS = %w(user export group group_member message_attributes public_key feed nickname)
 
+
+    # 
+    # Adds a Module Function that creates a corresponding document.
+    # This allows for a centralized location for document creation.
+    # 
+    # @param [String] typeshould correspond to the class name
+    # 
+    # @visibility public
+    # @return 
     def add_doc_dispatcher(type)
       eval "def #{type}(*args)\n  #{type.camel_up}.new *args\nend" # Needs __file__ and __line__
-      module_function doc.to_sym
+      module_function type.to_sym
     end
-
-    # The idea is to make document distribution more dynamic.
-    # Might be pointless but it's here for now.
-    #DOCUMENTS.each do |doc|
-    #  eval "def #{doc}(*args)\n  #{doc.camel_up}.new *args\nend" # Needs __file__ and __line__
-    #  module_function doc.to_sym
-    #end
 
     module_function :add_doc_dispatcher
   end

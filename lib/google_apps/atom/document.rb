@@ -35,13 +35,14 @@ module GoogleApps
       # 
       # Change subclass constant into a valid method name.
       # 
-      # @param [Constant] subclass
+      # @param [Constant] subclassshould be a class name
       # 
       # @visibility public
       # @return 
       def self.sub_to_meth(subclass)
         subclass.to_s.split('::').last.scan(/[A-Z][a-z0-9]+/).map(&:downcase).join('_')
       end
+
 
       #
       # Accessor for the Document types array.  This array is a
