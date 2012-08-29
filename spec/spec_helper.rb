@@ -1,5 +1,8 @@
 require 'google_apps'
 require 'yaml'
+require 'simplecov'
+
+SimpleCov.start
 
 def get_credentials
   YAML.load_file(cred_file_absolute).inject({}) do |hsh, part|
