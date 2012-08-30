@@ -3,9 +3,9 @@
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/LeakyBucket/google_apps)
 
 ## Overview
- * [Status](#Status)
- * [Quick and Dirty](#Brief)
- * [Details](#Long)
+ * [Status](#currently-supported)
+ * [Quick and Dirty](#short-how)
+ * [Details](#long-how)
 
 ## What is this?
 
