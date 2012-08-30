@@ -2,13 +2,20 @@
 
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/LeakyBucket/google_apps)
 
+## Overview
+ * [Status](#Status)
+ * [Quick and Dirty](#Brief)
+ * [Details](#Long)
+
 ## What is this?
 
 This is another GoogleApps API Library.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
 
 The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.
 
-#### Currently Supported:
+## <a id="Status" /> API Coverage
+
+####Currently Supported:
 
 __Domain API__
 
@@ -67,7 +74,7 @@ __Application__
   * Spreadsheets Data
   * Tasks
 
-## Short How
+## <a id="Brief" /> Short How
 
 Getting and using the library.
 
@@ -201,7 +208,7 @@ attributes.add_label 'Migration'
 transporter.migrate 'username', attributes, File.read(<message>)
 ~~~~~
 
-## Long How
+## <a id="Long" /> Long How
 
 #### GoogleApps::Transport
 
