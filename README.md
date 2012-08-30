@@ -5,7 +5,7 @@
 
 ## What is this?
 
-This is another GoogleApps API Library.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
+This is another GoogleApps API Library.  It is written for Ruby 1.9.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
 
 The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.  
 
