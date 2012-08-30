@@ -4,8 +4,8 @@
 
 ## Overview
  * [Status](#currently-supported)
- * [Quick and Dirty](#short-how)
- * [Details](#long-how)
+ * [Quick and Dirty](#-short-how)
+ * [Details](#-long-how)
 
 ## What is this?
 
