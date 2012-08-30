@@ -450,3 +450,7 @@ pub_key.new_key File.read(key_file)
 
 transporter.new_pubkey pub_key
 ~~~~
+
+## License
+
+#### MIT (see LICENSE)
