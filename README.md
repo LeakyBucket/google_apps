@@ -453,4 +453,4 @@ transporter.new_pubkey pub_key
 
 ## License
 
-#### MIT (see LICENSE)
+#### MIT
