@@ -6,6 +6,7 @@
  * [Status](#currently-supported)
  * [Quick and Dirty](#-short-how)
  * [Details](#-long-how)
+ * [License](#-license)
 
 ## What is this?
 
@@ -451,6 +452,6 @@ pub_key.new_key File.read(key_file)
 transporter.new_pubkey pub_key
 ~~~~
 
-## License
+## <a id="License" /> License
 
 #### MIT
