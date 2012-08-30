@@ -2,17 +2,19 @@
 
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/LeakyBucket/google_apps)
 
-## Overview
- * [Status](#currently-supported)
- * [Quick and Dirty](#-short-how)
- * [Details](#-long-how)
- * [License](#-license)
 
 ## What is this?
 
 This is another GoogleApps API Library.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
 
-The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.
+The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.  
+
+
+## Overview
+ * [Status](#currently-supported)
+ * [Quick and Dirty](#-short-how)
+ * [Details](#-long-how)
+ * [License](#-license)
 
 ## <a id="Status" /> API Coverage
 
