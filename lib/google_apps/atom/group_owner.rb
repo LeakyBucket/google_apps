@@ -21,7 +21,7 @@ module GoogleApps
 
 
       def update_address(address)
-        find_and_update '//apps:property', value: [@address, address]
+        find_and_update '//apps:property', { name: ['email', 'email'], value: [@address, address] }
         @doc = parse @doc
       end
 

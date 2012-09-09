@@ -59,15 +59,16 @@ describe "GoogleApps::Transport" do
     end
   end
 
-  describe "#add_owner_to_group" do
+  describe "#add_owner_to" do
     before(:each) do
-      owner_doc = double(GoogleApps::Atom::GroupOwner)
+      @owner_doc = double(GoogleApps::Atom::GroupOwner)
     end
 
     it "adds the specified address as an owner of the specified group" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test Group/owner'), @headers[:other])
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/test_group@cnm.edu/owner'), @headers[:other])
+      mock_response.should_receive(:code).and_return(200)
 
-      transporter.add_owner_to_group 'Test Group', owner_doc
+      transporter.add_owner_to 'test_group@cnm.edu', @owner_doc
     end
   end
 

@@ -63,8 +63,8 @@ module GoogleApps
     # the HTTP response object on failure.
     def request_export(username, document)
       result = add(@export + "/#{username}", :export_response, document)
-      
-      result.find('//apps:property').inject(nil) do |request_id, node| 
+
+      result.find('//apps:property').inject(nil) do |request_id, node|
         node.attributes['name'] == 'requestId' ? node.attributes['value'].to_i : request_id
       end
     end
@@ -194,11 +194,11 @@ module GoogleApps
 
 
     # Retrieves the members of the requested group.
-    # 
+    #
     # @param [String] group_id the Group ID in the Google Apps Environment
-    # 
+    #
     # @visibility public
-    # @return 
+    # @return
     def get_members_of(group_id, options = {})
       options[:extra] = "/#{group_id}/member"
       get_all :groups, options
@@ -214,6 +214,17 @@ module GoogleApps
     # add_member_to returns the response received from Google.
     def add_member_to(group_id, document)
       add(@group + "/#{group_id}/member", nil, document)
+    end
+
+
+    #
+    # @param [String] group_idThe ID for the group being modified
+    # @param [GoogleApps::Atom::GroupOwner] documentThe XML document with the owner address
+    #
+    # @visibility public
+    # @return
+    def add_owner_to(group_id, document)
+      add(@group + "/#{group_id}/owner", nil, document)
     end
 
 
@@ -387,9 +398,10 @@ module GoogleApps
     end
 
 
-    # 
+    #
+
     # Takes all the items in each feed and puts them into one array.
-    # 
+    #
     # @visibility private
     # @return Array of Documents
     def return_all
