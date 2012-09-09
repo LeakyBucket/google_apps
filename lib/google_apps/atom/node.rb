@@ -20,6 +20,19 @@ module GoogleApps
       end
 
 
+      #
+      # @param [String] name the value for the name attribute
+      # @param [String] value the value for the value attribute
+      #
+      # @visibility public
+      # @return
+      def add_prop_node(name, value, node = nil)
+        node ||= @doc.root
+
+        node << create_node({type: 'apps:property', attrs: [['name', name], ['value', value]]})
+      end
+
+
       # add_namespaces adds the specified namespaces to the
       # specified node.  namespaces should be a hash of name,
       # value pairs.

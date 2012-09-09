@@ -32,13 +32,13 @@ module GoogleApps
       end
 
 
-      # 
+      #
       # Change subclass constant into a valid method name.
-      # 
-      # @param [Constant] subclassshould be a class name
-      # 
+      #
+      # @param [Constant] subclass should be a class name
+      #
       # @visibility public
-      # @return 
+      # @return
       def self.sub_to_meth(subclass)
         subclass.to_s.split('::').last.scan(/[A-Z][a-z0-9]+/).map(&:downcase).join('_')
       end
@@ -243,6 +243,15 @@ module GoogleApps
         @doc.find(xpath).each do |node|
           node.remove! if node_match?(node, attrs)
         end
+      end
+
+
+      # Prints the contents of @doc
+      #
+      # @visibility public
+      # @return
+      def to_s
+        @doc.to_s
       end
     end
   end

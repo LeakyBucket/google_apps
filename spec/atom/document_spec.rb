@@ -65,4 +65,10 @@ describe "GoogleApps::Atom::Document" do
   describe "#delete_node" do
     it "Deletes the specified node from the document"
   end
+
+  describe "#to_s" do
+    it "Outputs @doc as a string" do
+      document.to_s.should be_a String
+    end
+  end
 end

@@ -23,6 +23,14 @@ describe "GoogleApps::Atom::Node" do
     end
   end
 
+  describe "#add_prop_node" do
+    it "Adds an apps:property node to the document root" do
+      node.add_prop_node 'email', 'tom', document.root
+
+      document.to_s.should include 'value="tom"'
+    end
+  end
+
   describe "#add_attributes" do
     it "Adds the specified attributes to the given node" do
       test = LibXML::XML::Node.new 'apps:test'

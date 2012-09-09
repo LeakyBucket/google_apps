@@ -59,6 +59,18 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#add_owner_to_group" do
+    before(:each) do
+      owner_doc = double(GoogleApps::Atom::GroupOwner)
+    end
+
+    it "adds the specified address as an owner of the specified group" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test Group/owner'), @headers[:other])
+
+      transporter.add_owner_to_group 'Test Group', owner_doc
+    end
+  end
+
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), @headers[:other])
