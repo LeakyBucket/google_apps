@@ -7,7 +7,7 @@
 
 This is another GoogleApps API Library.  It is written for Ruby 1.9.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
 
-The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.  
+The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.
 
 
 ## Overview
@@ -38,6 +38,8 @@ __Domain API__
       * Delete Group Member
       * Modify Group Attributes
       * Member List
+      * Group Owner Management
+        * Create Owner
     * Nicknames
       * Creation
       * Deletion
@@ -420,9 +422,9 @@ Pretty self explainatory with the exception of IS_STARRED if you are not familia
 
 ### GoogleApps::Atom::Nickname
 
-This class represents a Nickname in the Google Apps Environment.  
+This class represents a Nickname in the Google Apps Environment.
 
-In the Google Apps Environment a Nickname consists of two pieces of information.  A username and the actual nickname.  
+In the Google Apps Environment a Nickname consists of two pieces of information.  A username and the actual nickname.
 
 ~~~~
 nick.nickname = 'Stretch'
@@ -435,7 +437,7 @@ Creating a new nickname is pretty simple.
 transporter.add_nickname nick
 ~~~~
 
-Nicknames are unique in the scope of your Google Apps Domain so deleting is pretty simple as well.  
+Nicknames are unique in the scope of your Google Apps Domain so deleting is pretty simple as well.
 
 ~~~~
 transporter.delete_nickname 'Stretch'
@@ -444,14 +446,27 @@ transporter.delete_nickname 'Stretch'
 
 ### GoogleApps::Atom::PublicKey
 
-As part of the auditing functionality in Google Apps you can request mailbox exports.  Those mailbox exports are encrypted before you can download them.  The PublicKey class facilitates the upload of the key used in that process.  
+As part of the auditing functionality in Google Apps you can request mailbox exports.  Those mailbox exports are encrypted before you can download them.  The PublicKey class facilitates the upload of the key used in that process.
 
-All you need to do is provide a gpg or other key and upload it.  
+All you need to do is provide a gpg or other key and upload it.
 
 ~~~~
 pub_key.new_key File.read(key_file)
 
 transporter.new_pubkey pub_key
+~~~~
+
+
+### GoogleApps::Atom::GroupOwner
+
+This is a very lightweight class for the manipulation of group owners in the Google Apps environment.
+
+The Group Owner document only has one value, address.
+
+~~~~
+owner.address = 'lholcomb2@root.tld'
+
+transporter.add_owner_to 'example_group@root.tld', owner
 ~~~~
 
 ## <a id="License" /> License

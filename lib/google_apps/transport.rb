@@ -205,6 +205,9 @@ module GoogleApps
     end
 
 
+    # TODO:  Refactor add tos.
+
+
     # add_member_to adds a member to a group in the domain.
     # It takes a group_id and a GoogleApps::Atom::GroupMember
     # document as arguments.
@@ -227,6 +230,7 @@ module GoogleApps
       add(@group + "/#{group_id}/owner", nil, document)
     end
 
+    # TODO: Refactor delete froms.
 
     # delete_member_from removes a member from a group in the
     # domain.  It takes a group_id and member_id as arguments.
@@ -236,6 +240,17 @@ module GoogleApps
     # delete_member_from returns the respnse received from Google.
     def delete_member_from(group_id, member_id)
       delete(@group + "/#{group_id}/member", member_id)
+    end
+
+
+    #
+    # @param [String] group_idEmail address of group
+    # @param [String] owner_idEmail address of owner to remove
+    #
+    # @visibility public
+    # @return
+    def delete_owner_from(group_id, owner_id)
+      delete(@group + "/#{group_id}/owner", owner_id)
     end
 
 

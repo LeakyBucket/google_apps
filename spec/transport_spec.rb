@@ -72,6 +72,14 @@ describe "GoogleApps::Transport" do
     end
   end
 
+  describe "#delete_owner_from" do
+    it "Deletes the owner from the group" do
+      GoogleApps::AppsRequest.should_receive(:new).with(:delete, URI(transporter.group + '/test_group@cnm.edu/owner/lholcomb2@cnm.edu'), @headers[:other])
+
+      transporter.delete_owner_from 'test_group@cnm.edu', 'lholcomb2@cnm.edu'
+    end
+  end
+
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), @headers[:other])
