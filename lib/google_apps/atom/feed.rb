@@ -20,6 +20,7 @@ module GoogleApps
       end
 
 
+      # TODO:  There is no reason not to document.  Especially with complicated methods.
       def entries_from(properties)
         type = properties[:type].to_sym
 
@@ -33,6 +34,7 @@ module GoogleApps
       end
 
 
+      # TODO:  Obvious but still needs documentation.
       def set_next_page(node)
         @next_page = node.attributes[:href]
       end
