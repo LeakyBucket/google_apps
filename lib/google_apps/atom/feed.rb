@@ -7,12 +7,13 @@ module GoogleApps
       # TODO: Figure out how to handle Group Members.  The regex below
       # doesn't work in that case as group members also have group in
       # the id url.
-      TYPE_MATCH = /<id.*(user|group.*member|nickname|group).*?<\/id/
+      TYPE_MATCH = /\/(user|nickname|group|member)/
 
 
       def initialize(xml)
-        type = xml.match(TYPE_MATCH).captures[0]
-        type.sub!(/\//, '_')
+        id_element = xml.scan(/<id.*?\/id/).first
+        matches = id_element.scan(TYPE_MATCH).flatten
+        type = matches.join '_'
 
         super(xml)
 

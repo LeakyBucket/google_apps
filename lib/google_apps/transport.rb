@@ -221,8 +221,8 @@ module GoogleApps
 
 
     #
-    # @param [String] group_idThe ID for the group being modified
-    # @param [GoogleApps::Atom::GroupOwner] documentThe XML document with the owner address
+    # @param [String] group_id The ID for the group being modified
+    # @param [GoogleApps::Atom::GroupOwner] document The XML document with the owner address
     #
     # @visibility public
     # @return
@@ -244,8 +244,8 @@ module GoogleApps
 
 
     #
-    # @param [String] group_idEmail address of group
-    # @param [String] owner_idEmail address of owner to remove
+    # @param [String] group_id Email address of group
+    # @param [String] owner_id Email address of owner to remove
     #
     # @visibility public
     # @return
