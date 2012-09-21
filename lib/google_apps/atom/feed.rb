@@ -4,16 +4,12 @@ module GoogleApps
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.
       attr_reader :doc, :items, :next_page
 
-      # TODO: Figure out how to handle Group Members.  The regex below
-      # doesn't work in that case as group members also have group in
-      # the id url.
+      # FIXED:  If we grab the first id element in the feed we cansimply scan it.
       TYPE_MATCH = /\/(user|nickname|group|member)/
 
 
       def initialize(xml)
-        id_element = xml.scan(/<id.*?\/id/).first
-        matches = id_element.scan(TYPE_MATCH).flatten
-        type = matches.join '_'
+        type = determine_type xml # This only works when xml is a string.
 
         super(xml)
 
@@ -108,6 +104,20 @@ module GoogleApps
       # tag appended to the end.
       def entry_wrap(content_array)
         content_array.unshift(Atom::ENTRY_TAG[0]).push(Atom::ENTRY_TAG[1])
+      end
+
+
+      #Determine the feed type from the feed id element.
+      #
+      # @param [String] xml
+      #
+      # @visibility public
+      # @return snake cased doc type
+      def determine_type(xml)
+        id_element = xml.scan(/<id.*?\/id/).first
+        matches = id_element.scan(TYPE_MATCH).flatten
+
+        matches.join '_'
       end
     end
   end

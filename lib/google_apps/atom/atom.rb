@@ -31,14 +31,15 @@ module GoogleApps
 
 
 
-    # 
+    #
+
     # Adds a Module Function that creates a corresponding document.
     # This allows for a centralized location for document creation.
-    # 
-    # @param [String] typeshould correspond to the class name
-    # 
+    #
+    # @param [String] type should correspond to the class name
+    #
     # @visibility public
-    # @return 
+    # @return
     def add_doc_dispatcher(type)
       eval "def #{type}(*args)\n  #{type.camel_up}.new *args\nend" # Needs __file__ and __line__
       module_function type.to_sym

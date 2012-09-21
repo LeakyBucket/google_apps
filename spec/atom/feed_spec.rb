@@ -84,4 +84,10 @@ describe "GoogleApps::Atom::Feed" do
       end
     end
   end
+
+  describe "#determine_type" do
+    it "Returns snake cased document type from feed id" do
+      feed.determine_type(xml).should == 'user'
+    end
+  end
 end
