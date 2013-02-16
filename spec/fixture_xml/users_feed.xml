@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns='http://www.w3.org/2005/Atom' xmlns:openSearch='http://a9.com/-/spec/opensearchrss/1.0/'
+      xmlns:apps='http://schemas.google.com/apps/2006' xmlns:gd='http://schemas.google.com/g/2005'>
+  <id>https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0</id>
+  <updated>1970-01-01T00:00:00.000Z</updated>
+  <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/apps/2006#user'/>
+  <title type='text'>Users</title>
+  <link rel='http://schemas.google.com/g/2005#feed' type='application/atom+xml'
+        href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0'/>
+  <link rel='http://schemas.google.com/g/2005#post' type='application/atom+xml'
+        href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0'/>
+  <link rel='self' type='application/atom+xml' href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0'/>
+  <link rel='next' type='application/atom+xml' href='https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0?startUsername=aadams37'/>
+  <openSearch:startIndex>1</openSearch:startIndex>
+  <entry>
+    <id>https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0/misterunfriendly</id>
+    <updated>1970-01-01T00:00:00.000Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/apps/2006#user'/>
+    <title type='text'>misterunfriendly</title>
+    <link rel='self' type='application/atom+xml'
+          href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0/misterunfriendly'/>
+    <link rel='edit' type='application/atom+xml'
+          href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0/misterunfriendly'/>
+    <apps:login userName='misterunfriendly' suspended='false' ipWhitelisted='false' admin='false'
+                changePasswordAtNextLogin='true' agreedToTerms='true'/>
+    <apps:quota limit='25600'/>
+    <apps:name familyName='Unfriendly' givenName='Mister'/>
+    <gd:feedLink rel='http://schemas.google.com/apps/2006#user.nicknames'
+                 href='https://apps-apis.google.com/a/feeds/loopb.ac/nickname/2.0?username=misterunfriendly'/>
+    <gd:feedLink rel='http://schemas.google.com/apps/2006#user.emailLists'
+                 href='https://apps-apis.google.com/a/feeds/loopb.ac/emailList/2.0?recipient=misterunfriendly%40loopb.ac'/>
+  </entry>
+  <entry>
+    <id>https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0/will</id>
+    <updated>1970-01-01T00:00:00.000Z</updated>
+    <category scheme='http://schemas.google.com/g/2005#kind' term='http://schemas.google.com/apps/2006#user'/>
+    <title type='text'>will</title>
+    <link rel='self' type='application/atom+xml' href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0/will'/>
+    <link rel='edit' type='application/atom+xml' href='https://apps-apis.google.com/a/feeds/loopb.ac/user/2.0/will'/>
+    <apps:login userName='will' suspended='false' ipWhitelisted='false' admin='true' changePasswordAtNextLogin='false'
+                agreedToTerms='true'/>
+    <apps:quota limit='25600'/>
+    <apps:name familyName='Read' givenName='Will'/>
+    <gd:feedLink rel='http://schemas.google.com/apps/2006#user.nicknames'
+                 href='https://apps-apis.google.com/a/feeds/loopb.ac/nickname/2.0?username=will'/>
+    <gd:feedLink rel='http://schemas.google.com/apps/2006#user.emailLists'
+                 href='https://apps-apis.google.com/a/feeds/loopb.ac/emailList/2.0?recipient=will%40loopb.ac'/>
+  </entry>
+</feed>

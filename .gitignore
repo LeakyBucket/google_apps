@@ -1,6 +1,6 @@
 file
 notes.md
 spec/credentials.yaml
-spec/feed.xml
 coverage/
 .DS_Store
+.rvmrc

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "GoogleApps::Atom::Node" do
   let (:node_class) { class TestNode < BasicObject; include ::GoogleApps::Atom::Node; end }
   let (:node) { node_class.new }
-  let (:document) { LibXML::XML::Document.file('spec/test_doc.xml') }
+  let (:document) { LibXML::XML::Document.file('spec/fixture_xml/test_doc.xml') }
 
   describe "#create_node" do
     it "Creates a LibXML::XML::Node with the given attributes" do
