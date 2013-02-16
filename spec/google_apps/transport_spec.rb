@@ -4,7 +4,7 @@ describe "GoogleApps::Transport" do
   let (:mock_request) { mock(GoogleApps::AppsRequest) }
   let (:mock_response) { mock(Net::HTTPResponse) }
   let (:transporter) { GoogleApps::Transport.new "cnm.edu" }
-  let (:user_doc) { GoogleApps::Atom::User.new File.read('spec/xml/user.xml') }
+  let (:user_doc) { GoogleApps::Atom::User.new File.read('spec/fixture_xml/user.xml') }
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
   let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
@@ -25,7 +25,6 @@ describe "GoogleApps::Transport" do
 
     mock_request.stub(:send_request).and_return(mock_response)
     mock_request.stub(:add_body)
-    #mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
   end
 
   describe '#new' do
@@ -168,7 +167,7 @@ describe "GoogleApps::Transport" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.user), @headers[:other])
       mock_request.should_receive(:add_body).with user_doc.to_s
       mock_response.should_receive(:code).and_return(200)
-      mock_response.should_receive(:body).and_return(File.read('spec/xml/user.xml'))
+      mock_response.should_receive(:body).and_return(File.read('spec/fixture_xml/user.xml'))
 
       transporter.add_user user_doc
     end
@@ -176,7 +175,7 @@ describe "GoogleApps::Transport" do
 
   describe "#get_users" do
     before(:each) do
-      mock_response.stub(:body).and_return(File.read('spec/feed.xml'))
+      mock_response.stub(:body).and_return(File.read('spec/fixture_xml/users_feed.xml'))
       mock_response.should_receive(:code).and_return(200)
     end
 
@@ -257,7 +256,7 @@ describe "GoogleApps::Transport" do
 
     xit "Return a Document Object if Google doesn't return an error" do
       mock_response.should_receive(:code).and_return(200)
-      mock_response.should_receive(:body).and_return(File.read('spec/xml/user.xml'))
+      mock_response.should_receive(:body).and_return(File.read('spec/fixture_xml/user.xml'))
       @mock_handler.should_receive(:doc_of_type).and_return(user_doc)
 
       transporter.update_user 'lholcomb2', user_doc

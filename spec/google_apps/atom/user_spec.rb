@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "GoogleApps::Atom::User" do
 	let (:gapp) { GoogleApps::Atom::User.new }
 	let (:user) { ["test_account", "Test", "Account", "db64e604690686663821888f20373a3941ed7e95", 2048] }
-  let (:xml) { File.read('spec/xml/user.xml') }
+  let (:xml) { File.read('spec/fixture_xml/user.xml') }
   let (:default_password) { 'default' }
 
 	describe '#new' do

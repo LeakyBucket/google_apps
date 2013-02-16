@@ -59,7 +59,7 @@ describe "GoogleApps::Atom::MessageAttributes" do
 
   describe "#find_labels" do
     before(:all) do
-      @fetched = GoogleApps::Atom::MessageAttributes.new File.read('spec/xml/mes_attr.xml')
+      @fetched = GoogleApps::Atom::MessageAttributes.new File.read('spec/fixture_xml/mes_attr.xml')
     end
 
     it "Populates @labels according to the provided xml" do
