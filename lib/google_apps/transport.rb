@@ -144,7 +144,6 @@ module GoogleApps
       @request = @requester.new :get, uri, headers(:other)
 
       @response = @request.send_request
-
       process_response(type)
     end
 

@@ -4,7 +4,7 @@ module GoogleApps
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.
       attr_reader :doc, :items, :next_page
 
-      # FIXED:  If we grab the first id element in the feed we cansimply scan it.
+      # FIXED:  If we grab the first id element in the feed we can simply scan it.
       TYPE_MATCH = /\/(user|nickname|group|member)/
 
 
@@ -107,7 +107,8 @@ module GoogleApps
       end
 
 
-      #Determine the feed type from the feed id element.
+      #
+      # Determine the feed type from the feed id element.
       #
       # @param [String] xml
       #

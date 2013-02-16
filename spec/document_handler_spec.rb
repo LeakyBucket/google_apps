@@ -20,7 +20,7 @@ describe "GoogleApps::DocumentHandler" do
       handler.create_doc(finished_export, :export).should be_a LibXML::XML::Document
     end
 
-    it "Returns a document of the given type if specified" do
+    xit "Returns a document of the given type if specified" do
       handler.create_doc(File.read('spec/xml/user.xml'), :user).should be_a GoogleApps::Atom::User
     end
   end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe "GoogleApps::Atom::Feed" do
   let (:xml) { File.read('spec/feed.xml') }
   let (:next_page) { 'https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0?startUsername=aadams37' }
-  let (:feed) { GoogleApps::Atom::Feed.new xml }
+  let (:feed) { GoogleApps::Atom::Feed.new(xml) }
   let (:content_array) { ['<apps:login userId="Mom"/>', '<apps:quota value="80"/>', '<id/>', '<atom:category/>'] }
 
   describe "#new" do
