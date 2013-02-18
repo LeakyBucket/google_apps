@@ -93,8 +93,7 @@ require 'google_apps'
 Setting up your GoogleApps::Transport object to send requests to Google.
 
 ~~~~~
-transporter = GoogleApps::Transport.new 'domain'
-transporter.authenticate 'username@domain', 'password'
+transporter = GoogleApps::Transport.new 'domain', 'TOKEN-FROM-OAUTH2-HANDSHAKE'
 ~~~~~
 
 
@@ -229,7 +228,6 @@ GoogleApps::Transport.new 'cnm.edu'
 
 This domain value is used to set many of the defaults, which are:
 
-  * @auth - The default base URI for auth requests (This will change once OAuth support is added).
   * @user - The default base URI for user related API requests.
   * @pubkey - The default base URI for public key related API requests.
   * @migration - The default base URI for email migration related API requests.
