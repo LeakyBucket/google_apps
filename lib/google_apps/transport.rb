@@ -5,7 +5,7 @@ require 'rexml/document'
 module GoogleApps
   class Transport
     attr_reader :request, :response, :domain, :feeds
-    attr_accessor :auth, :user, :group, :nickname, :export, :group, :requester, :migration
+    attr_accessor :user, :group, :nickname, :export, :pubkey, :requester, :migration
 
     SUCCESS_CODES = [200, 201, 202]
     BOUNDARY = "=AaB03xDFHT8xgg"
@@ -13,21 +13,37 @@ module GoogleApps
       user: 100,
       group: 200
     }
+    FEEDS_ROOT = 'https://apps-apis.google.com/a/feeds'
+    OAUTH2_PATH = 'https://accounts.google.com/o/oauth2/token'
 
-    def initialize(domain, token, targets = {})
-      @feeds_root = 'https://apps-apis.google.com/a/feeds'
-      @user = targets[:user] || "#{@feeds_root}/#{domain}/user/2.0"
-      @pubkey = targets[:pubkey] || "#{@feeds_root}/compliance/audit/publickey/#{domain}"
-      @migration = targets[:migration] || "#{@feeds_root}/migration/2.0/#{domain}"
-      @group = targets[:group] || "#{@feeds_root}/group/2.0/#{domain}"
-      @nickname = targets[:nickname] || "#{@feeds_root}/#{domain}/nickname/2.0"
-      @audit = "#{@feeds_root}/compliance/audit/mail"
-      @export = targets[:export] || "#{@audit}/export/#{domain}"
-      @monitor = targets[:monitor] || "#{@audit}/monitor/#{domain}"
-      @domain = domain
-      @requester = AppsRequest || targets[:requester]
-      @doc_handler = DocumentHandler.new format: (targets[:format] || :atom)
-      @token = token
+    #POST /o/oauth2/token HTTP/1.1
+    #Host : accounts.google.com
+    #Content-Type : application/x-www-form-urlencoded
+    #
+    #client_id=8819981768.apps.googleusercontent.com&
+    #client_secret={client_secret}&
+    #refresh_token=1/6 BMfW9j53gdGImsiyUH5kU5RsR4zwI9lUVX-tqf8JXQ&
+    #grant_type=refresh_token
+
+    def initialize(options)
+      @domain = options[:domain]
+      @token = options[:token]
+      @refresh_token = options[:refresh_token]
+      @token_changed_callback = options[:token_changed_callback]
+
+      @user       = "#{FEEDS_ROOT}/#{@domain}/user/2.0"
+      @pubkey     = "#{FEEDS_ROOT}/compliance/audit/publickey/#{@domain}"
+      @migration  = "#{FEEDS_ROOT}/migration/2.0/#{@domain}"
+      @group      = "#{FEEDS_ROOT}/group/2.0/#{@domain}"
+      @nickname   = "#{FEEDS_ROOT}/#{@domain}/nickname/2.0"
+
+      audit_root  = "#{FEEDS_ROOT}/compliance/audit/mail"
+      @export     = "#{audit_root}/export/#{@domain}"
+      @monitor    = "#{audit_root}/monitor/#{@domain}"
+
+      @requester = AppsRequest
+      @doc_handler = DocumentHandler.new format: :atom
+
       @response = nil
       @request = nil
       @feeds = []
@@ -351,7 +367,6 @@ module GoogleApps
         urls
       end
     end
-
 
     def download_export(filename)
       export_file_urls.each_with_index do |url, index|

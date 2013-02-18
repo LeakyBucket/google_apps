@@ -1,9 +1,8 @@
 require 'spec_helper'
 
-describe "GoogleApps::Transport" do
+describe GoogleApps::Transport do
   let (:mock_request) { mock(GoogleApps::AppsRequest) }
   let (:mock_response) { mock(Net::HTTPResponse) }
-  let (:transporter) { GoogleApps::Transport.new("cnm.edu", "s0meF4ket0ken") }
   let (:user_doc) { GoogleApps::Atom::User.new File.read('spec/fixture_xml/user.xml') }
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
@@ -23,11 +22,23 @@ describe "GoogleApps::Transport" do
     mock_request.stub(:add_body)
   end
 
+  let(:transporter) do
+    GoogleApps::Transport.new(
+        domain: 'cnm.edu',
+        token: 'some-token',
+        refresh_token: 'refresh_token',
+        token_changed_callback: 'callback-proc'
+    )
+  end
+
   describe '#new' do
-    it "assigns endpoints and sets @token" do
-      transport = GoogleApps::Transport.new 'cnm.edu', 'some-token'
-      transport.instance_eval { @token }.should == 'some-token'
-      transport.instance_eval { @user }.should == "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0"
+    it "assigns endpoints" do
+      transporter.user.should == "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0"
+      transporter.group.should == "https://apps-apis.google.com/a/feeds/group/2.0/cnm.edu"
+      transporter.nickname.should == "https://apps-apis.google.com/a/feeds/cnm.edu/nickname/2.0"
+      transporter.pubkey.should == "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/cnm.edu"
+      transporter.export.should == "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu"
+      transporter.migration.should == "https://apps-apis.google.com/a/feeds/migration/2.0/cnm.edu"
     end
   end
 
@@ -39,7 +50,7 @@ describe "GoogleApps::Transport" do
       mock_request.should_receive :add_body
 
       transporter.add_member_to 'Test', 'Bob'
-      base_path = get_path("group")
+      get_path("group")
     end
   end
 
@@ -226,7 +237,7 @@ describe "GoogleApps::Transport" do
 
       transporter.update_user 'lholcomb2', user_doc
 
-      transporter.send(:process_response, :user).class.should == GoogleApps::Atom::User
+      transporter.send(:process_response, mock_response, :user).class.should == GoogleApps::Atom::User
     end
 
     it "Raises an error if Google Responds in kind" do
