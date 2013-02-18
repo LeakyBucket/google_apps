@@ -3,21 +3,17 @@ require 'spec_helper'
 describe "GoogleApps::Transport" do
   let (:mock_request) { mock(GoogleApps::AppsRequest) }
   let (:mock_response) { mock(Net::HTTPResponse) }
-  let (:transporter) { GoogleApps::Transport.new "cnm.edu" }
+  let (:transporter) { GoogleApps::Transport.new("cnm.edu", "s0meF4ket0ken") }
   let (:user_doc) { GoogleApps::Atom::User.new File.read('spec/fixture_xml/user.xml') }
   let (:credentials) { get_credentials }
   let (:user_name) { generate_username }
   let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
 
-  before(:all) do
-    transporter.authenticate credentials['username'], credentials['password']
-  end
-
   before(:each) do
     @headers = {
       auth: [['content-type', 'application/x-www-form-urlencoded']],
-      migration: [['content-type', "multipart/related; boundary=\"#{GoogleApps::Transport::BOUNDARY}\""], ['authorization', "GoogleLogin auth=#{transporter.instance_eval { @token } }"]],
-      other: [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{transporter.instance_eval { @token } }"]]
+      migration: [['content-type', "multipart/related; boundary=\"#{GoogleApps::Transport::BOUNDARY}\""], ['Authorization', "OAuth #{transporter.instance_eval { @token } }"]],
+      other: [['content-type', 'application/atom+xml'], ['Authorization', "OAuth #{transporter.instance_eval { @token } }"]]
     }
 
     GoogleApps::AppsRequest.stub(:new).and_return(mock_request)
@@ -28,21 +24,10 @@ describe "GoogleApps::Transport" do
   end
 
   describe '#new' do
-    it "assigns endpoints and sets @token to nil" do
-      transport = GoogleApps::Transport.new 'cnm.edu'
-      transport.instance_eval { @token }.should be(nil)
-      transport.instance_eval { @auth }.should == "https://www.google.com/accounts/ClientLogin"
+    it "assigns endpoints and sets @token" do
+      transport = GoogleApps::Transport.new 'cnm.edu', 'some-token'
+      transport.instance_eval { @token }.should == 'some-token'
       transport.instance_eval { @user }.should == "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0"
-    end
-  end
-
-  describe '#authenticate' do
-    it "Makes an authentication request to the @auth endpoint" do
-      GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.auth), @headers[:auth])
-      mock_response.should_receive(:body).and_return('auth=fake_token')
-      mock_response.should_receive(:code).and_return(200)
-
-      transporter.authenticate credentials['username'], credentials['password']
     end
   end
 
@@ -86,8 +71,6 @@ describe "GoogleApps::Transport" do
       mock_response.should_receive(:body).and_return(fake_nickname)
 
       transporter.get_nicknames_for 'lholcomb2'
-
-      #transporter.response.body.should include '2006#nickname'
     end
   end
 
@@ -95,24 +78,6 @@ describe "GoogleApps::Transport" do
     it "crafts an HTTP DELETE request for a group member" do
       GoogleApps::AppsRequest.should_receive(:new).with(:delete, URI(transporter.group + '/next_group/member/lholcomb2@cnm.edu'), @headers[:other])
       transporter.delete_member_from 'next_group', 'lholcomb2@cnm.edu'
-    end
-  end
-
-  describe '#auth_body' do
-    it "builds the POST body for the authenticate request" do
-      transporter.send(:auth_body, "not real user", "not real password").should be_a(String)
-    end
-  end
-
-  describe "#set_auth_token" do
-    before(:each) do
-      mock_response.stub(:body).and_return('auth=fake_token')
-    end
-
-    it "should set @token to the value found in the response body" do
-      transporter.send(:set_auth_token)
-
-      transporter.instance_eval { @token }.should == 'fake_token'
     end
   end
 

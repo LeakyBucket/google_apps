@@ -14,9 +14,8 @@ module GoogleApps
       group: 200
     }
 
-    def initialize(domain, targets = {})
+    def initialize(domain, token, targets = {})
       @feeds_root = 'https://apps-apis.google.com/a/feeds'
-      @auth = targets[:auth] || "https://www.google.com/accounts/ClientLogin"
       @user = targets[:user] || "#{@feeds_root}/#{domain}/user/2.0"
       @pubkey = targets[:pubkey] || "#{@feeds_root}/compliance/audit/publickey/#{domain}"
       @migration = targets[:migration] || "#{@feeds_root}/migration/2.0/#{domain}"
@@ -28,29 +27,11 @@ module GoogleApps
       @domain = domain
       @requester = AppsRequest || targets[:requester]
       @doc_handler = DocumentHandler.new format: (targets[:format] || :atom)
-      @token = nil
+      @token = token
       @response = nil
       @request = nil
       @feeds = []
     end
-
-
-    # authenticate will take the provided account and
-    # password and attempt to authenticate them with
-    # Google
-    #
-    # authenticate 'username@domain', 'password'
-    #
-    # authenticate returns the HTTP response received
-    # from Google
-    def authenticate(account, pass)
-      add(@auth, nil, auth_body(account, pass), :auth)
-
-      set_auth_token
-
-      @response
-    end
-
 
     # request_export performs the GoogleApps API call to
     # generate a mailbox export.  It takes the username
@@ -187,7 +168,6 @@ module GoogleApps
 
       fetch_feed(page, limit, :feed)
 
-      #@response
       return_all
     end
 
@@ -351,21 +331,9 @@ module GoogleApps
       end
     end
 
+    attr_accessor :token
 
     private
-
-
-    # auth_body generates the body for the authentication
-    # request made by authenticate.
-    #
-    # auth_body 'username@domain', 'password'
-    #
-    # auth_body returns a string in the form of HTTP
-    # query parameters.
-    def auth_body(account, pass)
-      "&Email=#{CGI::escape(account)}&Passwd=#{CGI::escape(pass)}&accountType=HOSTED&service=apps"
-    end
-
 
     # build_id checks the id string.  If it is formatted
     # as a query string it is returned as is.  If not
@@ -411,9 +379,6 @@ module GoogleApps
       SUCCESS_CODES.include?(@response.code.to_i)
     end
 
-
-    #
-
     # Takes all the items in each feed and puts them into one array.
     #
     # @visibility private
@@ -423,15 +388,6 @@ module GoogleApps
         results | feed.items
       end
     end
-
-
-    # Grab the auth token from the response body
-    def set_auth_token
-      @response.body.split("\n").grep(/auth=(.*)/i)
-
-      @token = $1
-    end
-
 
     # get_next_page retrieves the next page in the response.
     def get_next_page(type)
@@ -482,9 +438,9 @@ module GoogleApps
       when :auth
         [['content-type', 'application/x-www-form-urlencoded']]
       when :migration
-        [['content-type', "multipart/related; boundary=\"#{BOUNDARY}\""], ['authorization', "GoogleLogin auth=#{@token}"]]
+        [['content-type', "multipart/related; boundary=\"#{BOUNDARY}\""], ['Authorization', "OAuth #{@token}"]]
       else
-        [['content-type', 'application/atom+xml'], ['authorization', "GoogleLogin auth=#{@token}"]]
+        [['content-type', 'application/atom+xml'], ['Authorization', "OAuth #{@token}"]]
       end
     end
 
