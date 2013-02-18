@@ -22,7 +22,6 @@ The goal here is a library that supports the entire GoogleApps Domain and Applic
 
 __Domain API__
 
-  * Authentication
   * Provisioning
     * Users
       * User Creation
