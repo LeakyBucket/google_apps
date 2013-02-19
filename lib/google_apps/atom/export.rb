@@ -13,8 +13,8 @@ module GoogleApps
       def to_s
         @doc.to_s
       end
-      
-      # start_date specifies a start date for the extract.  
+
+      # start_date specifies a start date for the extract.
       # Matching results that occurred before this date will
       # not be included in the result set.  start_date takes
       # a string as an argument, the format is as follows:
@@ -31,7 +31,7 @@ module GoogleApps
         add_prop('beginDate', date)
       end
 
-      # end_date specifies an end date for the extract.  
+      # end_date specifies an end date for the extract.
       # Matching results that occurred past this date will
       # not be included in the result set.  end_date takes
       # a string as an argument, the format is as follows:
@@ -49,7 +49,7 @@ module GoogleApps
       end
 
       # include_deleted will specify that matches which
-      # have been deleted should be returned as well.  
+      # have been deleted should be returned as well.
       # The default is to omit deleted matches.
       #
       # include_deleted
@@ -72,7 +72,7 @@ module GoogleApps
       end
 
       # content specifies the data to be returned in the
-      # mailbox export.  There are two valid arguments: 
+      # mailbox export.  There are two valid arguments:
       # 'FULL_MESSAGE' or 'HEADER_ONLY'
       #
       # content 'HEADER_ONLY'
@@ -82,7 +82,6 @@ module GoogleApps
         add_prop('packageContent', type)
       end
 
-      
       private
 
       # set_header adds the appropriate XML boilerplate for

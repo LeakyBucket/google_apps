@@ -10,6 +10,7 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/LeakyBucket/google_apps'
 
   spec.add_dependency('libxml-ruby', '>= 2.2.2')
+  spec.add_dependency('httparty')
 
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'webmock'

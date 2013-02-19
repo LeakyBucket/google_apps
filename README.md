@@ -225,19 +225,9 @@ The only required option is the name of your domain and a valid OAuth2 token:
 GoogleApps::Transport.new 'cnm.edu', 'USERS-OAUTH2-TOKEN'
 ```
 
-This domain value is used to set many of the defaults, which are:
-
-  * @user - The default base URI for user related API requests.
-  * @pubkey - The default base URI for public key related API requests.
-  * @migration - The default base URI for email migration related API requests.
-  * @group - The default base URI for group related API requests.
-  * @nickname - The default base URI for nickname related API requests.
-  * @export - The default base URI for mail export related API requests.
-  * @requester - The class to use for making API requests, the default is GoogleApps::AppsRequest
-  * @doc_handler - The doc_handler parses Google Apps responses and returns the proper document object.  The default format is :atom, you can specify a different format by passing format: <format> during Transport instantiation.
+This domain value is used to set up the URIs
 
 GoogleApps::Transport is your interface for any HTTP verb related action.  It handles GET, PUT, POST and DELETE requests.  Transport also provides methods for checking the status of long running requests and downloading content.
-
 
 ### GoogleApps::Atom::User
 

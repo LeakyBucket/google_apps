@@ -16,7 +16,6 @@ describe GoogleApps::Transport do
     }
 
     GoogleApps::AppsRequest.stub(:new).and_return(mock_request)
-    transporter.requester = GoogleApps::AppsRequest
 
     mock_request.stub(:send_request).and_return(mock_response)
     mock_request.stub(:add_body)
@@ -48,6 +47,8 @@ describe GoogleApps::Transport do
       transporter.should_receive(:success_response?).and_return(true)
 
       mock_request.should_receive :add_body
+      mock_response.should_receive(:body).and_return("document")
+      transporter.stub(:create_doc)
 
       transporter.add_member_to 'Test', 'Bob'
       get_path("group")
@@ -61,8 +62,6 @@ describe GoogleApps::Transport do
 
     it "adds the specified address as an owner of the specified group" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/test_group@cnm.edu/owner'), @headers[:other])
-      transporter.should_receive(:success_response?).and_return(true)
-
       transporter.add_owner_to 'test_group@cnm.edu', @owner_doc
     end
   end
@@ -204,20 +203,21 @@ describe GoogleApps::Transport do
       @id = 828456
     end
 
-    it "Returns true if there is a fileUrl property in @response.body" do
+    it "Returns true if there is a fileUrl property in an export status doc" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
-      mock_response.should_receive(:body).twice.and_return(finished_export)
+      mock_response.should_receive(:body).and_return(finished_export)
       transporter.should_receive(:success_response?).and_return(true)
-
-      transporter.export_ready?(user_name, @id).should == true
+      export_status_doc = transporter.export_status(user_name, @id)
+      transporter.export_ready?(export_status_doc).should == true
     end
 
-    it "Returns false if there is no fileUrl property in @response.body" do
+    it "Returns false if there is no fileUrl property in an export status doc" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
-      mock_response.should_receive(:body).twice.and_return(pending_export)
+      mock_response.should_receive(:body).and_return(pending_export)
       transporter.should_receive(:success_response?).and_return(true)
+      export_status_doc = transporter.export_status(user_name, @id)
 
-      transporter.export_ready?(user_name, @id).should == false
+      transporter.export_ready?(export_status_doc).should == false
     end
   end
 
@@ -225,16 +225,6 @@ describe GoogleApps::Transport do
     before(:each) do
       @mock_handler = double(GoogleApps::DocumentHandler)
       transporter.instance_eval { @handler = @mock_handler }
-    end
-
-    xit "Return a Document Object if Google doesn't return an error" do
-      transporter.should_receive(:success_response?).and_return(false)
-      mock_response.should_receive(:body).and_return(File.read('spec/fixture_xml/user.xml'))
-      @mock_handler.should_receive(:doc_of_type).and_return(user_doc)
-
-      transporter.update_user 'lholcomb2', user_doc
-
-      transporter.send(:process_response, mock_response, mock_response, :user).class.should == GoogleApps::Atom::User
     end
 
     it "Raises an error if Google Responds in kind" do

@@ -4,8 +4,8 @@ require 'rexml/document'
 
 module GoogleApps
   class Transport
-    attr_reader :request, :response, :domain, :feeds
-    attr_accessor :user, :group, :nickname, :export, :pubkey, :requester, :migration
+    attr_reader :domain, :token
+    attr_reader :user, :group, :nickname, :export, :pubkey, :requester, :migration
 
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
@@ -13,16 +13,6 @@ module GoogleApps
       group: 200
     }
     FEEDS_ROOT = 'https://apps-apis.google.com/a/feeds'
-    OAUTH2_PATH = 'https://accounts.google.com/o/oauth2/token'
-
-    #POST /o/oauth2/token HTTP/1.1
-    #Host : accounts.google.com
-    #Content-Type : application/x-www-form-urlencoded
-    #
-    #client_id=8819981768.apps.googleusercontent.com&
-    #client_secret={client_secret}&
-    #refresh_token=1/6 BMfW9j53gdGImsiyUH5kU5RsR4zwI9lUVX-tqf8JXQ&
-    #grant_type=refresh_token
 
     def initialize(options)
       @domain = options[:domain]
@@ -41,11 +31,7 @@ module GoogleApps
       @monitor    = "#{audit_root}/monitor/#{@domain}"
 
       @requester = AppsRequest
-      @doc_handler = DocumentHandler.new format: :atom
-
-      @response = nil
-      @request = nil
-      @feeds = []
+      @doc_handler = DocumentHandler.new(format: :atom)
     end
 
     # request_export performs the GoogleApps API call to
@@ -58,9 +44,11 @@ module GoogleApps
     # request_export returns the request ID on success or
     # the HTTP response object on failure.
     def request_export(username, document)
-      result = add(@export + "/#{username}", :export_response, document)
+      response = add(export + "/#{username}", document)
+      process_response(response)
+      export = create_doc(response.body, :export_response)
 
-      result.find('//apps:property').inject(nil) do |request_id, node|
+      export.find('//apps:property').inject(nil) do |request_id, node|
         node.attributes['name'] == 'requestId' ? node.attributes['value'].to_i : request_id
       end
     end
@@ -75,25 +63,27 @@ module GoogleApps
     # export_status will return the body of the HTTP response
     # from Google
     def export_status(username, req_id)
-      get(@export + "/#{username}", :export_status, req_id)
+      response = get(export + "/#{username}", req_id)
+      process_response(response)
+      create_doc(response.body, :export_status)
     end
 
+    def create_doc(response_body, type = nil)
+      @doc_handler.create_doc(response_body, type)
+    end
 
     # export_ready? checks the export_status response for the
     # presence of an apps:property element with a fileUrl name
     # attribute.
     #
-    # export_ready? 'lholcomb2', 82834
+    # export_ready?(export_status('username', 847576))
     #
     # export_ready? returns true if there is a fileUrl present
     # in the response and false if there is no fileUrl present
     # in the response.
-    def export_ready?(username, req_id)
-      export_status(username, req_id)
-
-      !(export_file_urls.empty?)
+    def export_ready?(export_status_doc)
+      export_file_urls(export_status_doc).any?
     end
-
 
     # fetch_export downloads the mailbox export from Google.
     # It takes a username, request id and a filename as
@@ -106,8 +96,9 @@ module GoogleApps
     # fetch_export reutrns nil in the event that the export is
     # not yet ready.
     def fetch_export(username, req_id, filename)
-      if export_ready?(username, req_id)
-        download_export(filename).each_with_index { |url, index| url.gsub!(/.*/, "#{filename}#{index}")}
+      export_status_doc = export_status(username, req_id)
+      if export_ready?(export_status_doc)
+        download_export(export_status_doc, filename).each_with_index { |url, index| url.gsub!(/.*/, "#{filename}#{index}")}
       else
         nil
       end
@@ -119,10 +110,10 @@ module GoogleApps
     #
     # download 'url', 'save_file'
     def download(url, filename)
-      @request = @requester.new :get, URI(url), headers(:other)
+      request = requester.new :get, URI(url), headers(:other)
 
       File.open(filename, "w") do |file|
-        file.puts @request.send_request.body
+        file.puts request.send_request.body
       end
     end
 
@@ -135,12 +126,11 @@ module GoogleApps
     # get 'endpoint', 'username'
     #
     # get returns the HTTP response received from Google.
-    def get(endpoint, type, id = nil)
+    def get(endpoint, id = nil)
       id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
-      @request = @requester.new :get, uri, headers(:other)
+      request = requester.new :get, uri, headers(:other)
 
-      @response = @request.send_request
-      process_response(@response, type)
+      request.send_request
     end
 
 
@@ -153,7 +143,13 @@ module GoogleApps
     #
     # get_users returns the final response from google.
     def get_users(options = {})
-      get_all :users, options
+      limit = options[:limit] || 1000000
+      response = get(user + "?startUsername=#{options[:start]}")
+      process_response(response)
+
+      pages = fetch_pages(response, limit, :feed)
+
+      return_all(pages)
     end
 
 
@@ -163,29 +159,13 @@ module GoogleApps
     #
     # get_groups returns the final response from Google.
     def get_groups(options = {})
-      get_all :groups, options
+      limit = options[:limit] || 1000000
+      response = get(group + "#{options[:extra]}" + "?startGroup=#{options[:start]}")
+      process_response(response, :feed)
+      pages = fetch_pages(response, limit, :feed)
+
+      return_all(pages)
     end
-
-
-    # get_all retrieves a batch of records of the specified type
-    # from google.  You must specify the type of object you want
-    # to retreive.  You can also specify a start point and a limit.
-    #
-    # get_all 'users', start: 'lholcomb2', limit: 300
-    #
-    # get_all returns the HTTP response received from Google.
-    def get_all(type, options = {})
-      @feeds, page = [], 0
-      type = normalize_type type
-
-      options[:limit] ? limit = options[:limit] : limit = 1000000
-      options[:start] ? get(instance_variable_get("@#{type}") + "#{options[:extra]}" + "?#{start_query(type)}=#{options[:start]}", :feed) : get(instance_variable_get("@#{type}") + "#{options[:extra]}", :feed)
-
-      fetch_feed(page, limit, :feed)
-
-      return_all
-    end
-
 
     # Retrieves the members of the requested group.
     #
@@ -195,7 +175,7 @@ module GoogleApps
     # @return
     def get_members_of(group_id, options = {})
       options[:extra] = "/#{group_id}/member"
-      get_all :groups, options
+      get_groups options
     end
 
 
@@ -210,7 +190,9 @@ module GoogleApps
     #
     # add_member_to returns the response received from Google.
     def add_member_to(group_id, document)
-      add(@group + "/#{group_id}/member", nil, document)
+      response = add(group + "/#{group_id}/member", document)
+      process_response(response)
+      create_doc(response.body)
     end
 
 
@@ -221,7 +203,7 @@ module GoogleApps
     # @visibility public
     # @return
     def add_owner_to(group_id, document)
-      add(@group + "/#{group_id}/owner", nil, document)
+      add(group + "/#{group_id}/owner", nil, document)
     end
 
     # TODO: Refactor delete froms.
@@ -233,7 +215,7 @@ module GoogleApps
     #
     # delete_member_from returns the respnse received from Google.
     def delete_member_from(group_id, member_id)
-      delete(@group + "/#{group_id}/member", member_id)
+      delete(group + "/#{group_id}/member", member_id)
     end
 
     # @param [String] group_id Email address of group
@@ -242,7 +224,7 @@ module GoogleApps
     # @visibility public
     # @return
     def delete_owner_from(group_id, owner_id)
-      delete(@group + "/#{group_id}/owner", owner_id)
+      delete(group + "/#{group_id}/owner", owner_id)
     end
 
 
@@ -265,15 +247,13 @@ module GoogleApps
     # add 'endpoint', document
     #
     # add returns the HTTP response received from Google.
-    def add(endpoint, type, document, header_type = nil)
+    def add(endpoint, document, header_type = nil)
       header_type = :others unless header_type
       uri = URI(endpoint)
-      @request = @requester.new :post, uri, headers(header_type)
-      @request.add_body document.to_s
+      request = requester.new :post, uri, headers(header_type)
+      request.add_body document.to_s
 
-      @response = @request.send_request
-
-      process_response(@response, type)
+      request.send_request
     end
 
     # update is a generic target for method_missing.  It is
@@ -282,17 +262,15 @@ module GoogleApps
     # It takes an API endpoint and a GoogleApps::Atom document
     # as arguments.
     #
-    # update 'endpoint', document
+    # update 'endpoint', target, document
     #
     # update returns the HTTP response received from Google
-    def update(endpoint, type, target, document)
+    def update(endpoint, target, document)
       uri = URI(endpoint + "/#{target}")
-      @request = @requester.new :put, uri, headers(:other)
-      @request.add_body document.to_s
+      request = requester.new :put, uri, headers(:other)
+      request.add_body document.to_s
 
-      @response = @request.send_request
-
-      process_response(@response, type)
+      request.send_request
     end
 
     # delete is a generic target for method_missing.  It is
@@ -305,9 +283,9 @@ module GoogleApps
     # delete returns the HTTP response received from Google.
     def delete(endpoint, id)
       uri = URI(endpoint + "/#{id}")
-      @request = @requester.new :delete, uri, headers(:other)
+      request = requester.new :delete, uri, headers(:other)
 
-      @response = @request.send_request
+      request.send_request
     end
 
     # migration performs mail migration from a local
@@ -319,32 +297,36 @@ module GoogleApps
     #
     # migrate returns the HTTP response received from Google.
     def migrate(username, properties, message)
-      @request = @requester.new(:post, URI(@migration + "/#{username}/mail"), headers(:migration))
-      @request.add_body multi_part(properties.to_s, message)
+      request = requester.new(:post, URI(migration + "/#{username}/mail"), headers(:migration))
+      request.add_body multi_part(properties.to_s, message)
 
-      @request.send_request
+      request.send_request
     end
-
-
 
     def method_missing(name, *args)
       super unless name.match /([a-z]*)_([a-z]*)/
 
       case $1
       when "new", "add"
-        self.send(:add, instance_variable_get("@#{$2}"), $2, *args)
+        response = self.send(:add, send($2), *args)
+        process_response(response)
+        create_doc(response.body, $2)
       when "delete"
-        self.send(:delete, instance_variable_get("@#{$2}"), *args)
+        response = self.send(:delete, send($2), *args)
+        process_response(response)
+        create_doc(response.body, $2)
       when "update"
-        self.send(:update, instance_variable_get("@#{$2}"), $2, *args)
+        response = self.send(:update, send($2), *args)
+        process_response(response)
+        create_doc(response.body, $2)
       when "get"
-        self.send(:get, instance_variable_get("@#{$2}"), $2, *args)
+        response = self.send(:get, send($2), *args)
+        process_response(response)
+        create_doc(response.body, $2)
       else
         super
       end
     end
-
-    attr_accessor :token
 
     private
 
@@ -355,18 +337,16 @@ module GoogleApps
       id =~ /^\?/ ? id : "/#{id}"
     end
 
-
-    # export_file_urls searches @response for any apps:property elements with a
+    # export_file_urls searches an export status doc for any apps:property elements with a
     # fileUrl name attribute and returns an array of the values.
-    def export_file_urls
-      Atom::XML::Document.string(@response.body).find('//apps:property').inject([]) do |urls, prop|
-        urls << prop.attributes['value'] if prop.attributes['name'].match 'fileUrl'
-        urls
+    def export_file_urls(export_status_doc)
+      export_status_doc.find("//apps:property[contains(@name, 'fileUrl')]").collect do |prop|
+        prop.attributes['value']
       end
     end
 
-    def download_export(filename)
-      export_file_urls.each_with_index do |url, index|
+    def download_export(export, filename)
+      export_file_urls(export).each_with_index do |url, index|
         download(url, filename + "#{index}")
       end
     end
@@ -375,19 +355,10 @@ module GoogleApps
     # process_response takes the HTTPResponse and either returns a
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
-    def process_response(response, doc_type = nil)
+    def process_response(response)
       raise("Error: #{response.code}, #{response.message}") unless success_response?(response)
-
-      if doc_type
-        @doc_handler.create_doc(response.body, doc_type)
-      else
-        true
-      end
     end
 
-
-    # error_response? checks to see if Google Responded with a success
-    # code.
     def success_response?(response)
       response.kind_of?(Net::HTTPSuccess)
     end
@@ -396,55 +367,34 @@ module GoogleApps
     #
     # @visibility private
     # @return Array of Documents
-    def return_all
-      @feeds.inject([]) do |results, feed|
+    def return_all(pages)
+      pages.inject([]) do |results, feed|
         results | feed.items
       end
     end
 
     # get_next_page retrieves the next page in the response.
-    def get_next_page(type)
-      get @feeds.last.next_page, type
-      add_feed
+    def get_next_page(next_page_url, type)
+      response = get(next_page_url)
+      process_response(response)
+      GoogleApps::Atom.feed(response.body)
     end
 
 
     # fetch_feed retrieves the remaining pages in the request.
     # It takes a page and a limit as arguments.
-    def fetch_feed(page, limit, type)
-      add_feed
-      page += 1
+    def fetch_pages(response, limit, type)
+      pages = [GoogleApps::Atom.feed(response.body)]
 
-      while (@feeds.last.next_page) and (page * PAGE_SIZE[:user] < limit)
-        get_next_page type
-        page += 1
+      while (pages.last.next_page) and (pages.count * PAGE_SIZE[:user] < limit)
+        pages << get_next_page(pages.last.next_page, type)
       end
+      pages
     end
 
-
-    # start_query builds the value for the starting point
-    # query string used for retrieving batches of objects
-    # from Google.
-    def start_query(type)
-      case type
-      when 'user'
-        "startUsername"
-      when 'group'
-        "startGroup"
-      end
+    def singularize(type)
+      type.to_s.gsub(/s$/, '')
     end
-
-
-    def normalize_type(type)
-      type.to_s.gsub!(/\w*s$/) { |match| match[0..-2] }
-    end
-
-
-    # add_feed adds a feed to the @feeds array.
-    def add_feed
-      @feeds << GoogleApps::Atom.feed(@response.body)
-    end
-
 
     def headers(category)
       case category
@@ -456,7 +406,6 @@ module GoogleApps
         [['content-type', 'application/atom+xml'], ['Authorization', "OAuth #{@token}"]]
       end
     end
-
 
     def multi_part(properties, message)
       post_body = []
