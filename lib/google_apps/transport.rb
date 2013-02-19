@@ -31,7 +31,7 @@ module GoogleApps
       @monitor    = "#{audit_root}/monitor/#{@domain}"
 
       @requester = AppsRequest
-      @doc_handler = DocumentHandler.new(format: :atom)
+      @doc_handler = DocumentHandler.new
     end
 
     # request_export performs the GoogleApps API call to
@@ -151,7 +151,6 @@ module GoogleApps
 
       return_all(pages)
     end
-
 
     # get_groups retrieves all the groups from the domain
     #
