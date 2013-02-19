@@ -7,7 +7,6 @@ module GoogleApps
     attr_reader :request, :response, :domain, :feeds
     attr_accessor :user, :group, :nickname, :export, :pubkey, :requester, :migration
 
-    SUCCESS_CODES = [200, 201, 202]
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
       user: 100,
@@ -237,8 +236,6 @@ module GoogleApps
       delete(@group + "/#{group_id}/member", member_id)
     end
 
-
-    #
     # @param [String] group_id Email address of group
     # @param [String] owner_id Email address of owner to remove
     #
@@ -379,19 +376,20 @@ module GoogleApps
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
     def process_response(response, doc_type = nil)
-      case doc_type
-      when nil
-        success_response? ? true : raise("Error: #{response.code}, #{response.message}")
+      raise("Error: #{response.code}, #{response.message}") unless success_response?(response)
+
+      if doc_type
+        @doc_handler.create_doc(response.body, doc_type)
       else
-        success_response? ? @doc_handler.create_doc(response.body, doc_type) : raise("Error: #{response.code}, #{response.message}")
+        true
       end
     end
 
 
     # error_response? checks to see if Google Responded with a success
     # code.
-    def success_response?
-      SUCCESS_CODES.include?(@response.code.to_i)
+    def success_response?(response)
+      response.kind_of?(Net::HTTPSuccess)
     end
 
     # Takes all the items in each feed and puts them into one array.

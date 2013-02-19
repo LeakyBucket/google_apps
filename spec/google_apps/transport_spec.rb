@@ -45,7 +45,7 @@ describe GoogleApps::Transport do
   describe "#add_member_to" do
     it "creates an HTTP POST request to add a member to a group" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/Test/member'), @headers[:other])
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(true)
 
       mock_request.should_receive :add_body
 
@@ -61,7 +61,7 @@ describe GoogleApps::Transport do
 
     it "adds the specified address as an owner of the specified group" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.group + '/test_group@cnm.edu/owner'), @headers[:other])
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(true)
 
       transporter.add_owner_to 'test_group@cnm.edu', @owner_doc
     end
@@ -78,7 +78,7 @@ describe GoogleApps::Transport do
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.nickname + '?username=lholcomb2'), @headers[:other])
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(true)
       mock_response.should_receive(:body).and_return(fake_nickname)
 
       transporter.get_nicknames_for 'lholcomb2'
@@ -99,24 +99,21 @@ describe GoogleApps::Transport do
 
     it "crafts a HTTP POST request for a mailbox export" do
       mock_response.should_receive(:body).and_return(pending_export)
-      mock_response.should_receive(:code).and_return(200)
-
+      transporter.should_receive(:success_response?).and_return(true)
       transporter.request_export('lholcomb2', document).should == 75133001
     end
 
     it "Crafts a HTTP POST request and raises an error if Google returns an error" do
-      mock_response.should_receive(:code).twice.and_return(404)
-      mock_response.should_receive(:message).and_return('Ooops')
-
-      lambda { transporter.request_export('lholcomb2', document) }.should raise_error
+      transporter.should_receive(:success_response?).and_return(false)
+      expect { transporter.request_export('lholcomb2', document) }.to raise_error
     end
   end
 
   describe "#export_status" do
     before(:each) do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + '/lholcomb2/83838'), @headers[:other])
-      mock_response.should_receive(:body).and_return(pending_export)
-      mock_response.should_receive(:code).and_return(200)
+      mock_response.stub(:body).and_return(pending_export)
+      transporter.stub(:success_response?).and_return(true)
     end
 
     it "crafts a HTTP GET request for a mailbox export status" do
@@ -142,7 +139,7 @@ describe GoogleApps::Transport do
     it "sends a POST request to the User endpoint" do
       GoogleApps::AppsRequest.should_receive(:new).with(:post, URI(transporter.user), @headers[:other])
       mock_request.should_receive(:add_body).with user_doc.to_s
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(true)
       mock_response.should_receive(:body).and_return(File.read('spec/fixture_xml/user.xml'))
 
       transporter.add_user user_doc
@@ -152,7 +149,7 @@ describe GoogleApps::Transport do
   describe "#get_users" do
     before(:each) do
       mock_response.stub(:body).and_return(File.read('spec/fixture_xml/users_feed.xml'))
-      mock_response.should_receive(:code).and_return(200)
+      transporter.stub(:success_response?).and_return(true)
     end
 
     it "Builds a GET request for the user endpoint" do
@@ -210,7 +207,7 @@ describe GoogleApps::Transport do
     it "Returns true if there is a fileUrl property in @response.body" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
       mock_response.should_receive(:body).twice.and_return(finished_export)
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(true)
 
       transporter.export_ready?(user_name, @id).should == true
     end
@@ -218,7 +215,7 @@ describe GoogleApps::Transport do
     it "Returns false if there is no fileUrl property in @response.body" do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.export + "/#{user_name}/#{@id}"), @headers[:other])
       mock_response.should_receive(:body).twice.and_return(pending_export)
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(true)
 
       transporter.export_ready?(user_name, @id).should == false
     end
@@ -231,7 +228,7 @@ describe GoogleApps::Transport do
     end
 
     xit "Return a Document Object if Google doesn't return an error" do
-      mock_response.should_receive(:code).and_return(200)
+      transporter.should_receive(:success_response?).and_return(false)
       mock_response.should_receive(:body).and_return(File.read('spec/fixture_xml/user.xml'))
       @mock_handler.should_receive(:doc_of_type).and_return(user_doc)
 
@@ -241,10 +238,8 @@ describe GoogleApps::Transport do
     end
 
     it "Raises an error if Google Responds in kind" do
-      mock_response.should_receive(:code).twice.and_return(400)
-      mock_response.should_receive(:message).and_return("Ooops")
-
-      lambda { transporter.get_user 'lholcomb2' }.should raise_error
+      transporter.should_receive(:success_response?).and_return(false)
+      expect { transporter.get_user 'lholcomb2' }.to raise_error
     end
   end
 end
