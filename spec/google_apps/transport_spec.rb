@@ -237,7 +237,7 @@ describe GoogleApps::Transport do
 
       transporter.update_user 'lholcomb2', user_doc
 
-      transporter.send(:process_response, mock_response, :user).class.should == GoogleApps::Atom::User
+      transporter.send(:process_response, mock_response, mock_response, :user).class.should == GoogleApps::Atom::User
     end
 
     it "Raises an error if Google Responds in kind" do

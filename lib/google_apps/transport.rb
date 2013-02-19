@@ -141,7 +141,7 @@ module GoogleApps
       @request = @requester.new :get, uri, headers(:other)
 
       @response = @request.send_request
-      process_response(type)
+      process_response(@response, type)
     end
 
 
@@ -276,7 +276,7 @@ module GoogleApps
 
       @response = @request.send_request
 
-      process_response type
+      process_response(@response, type)
     end
 
     # update is a generic target for method_missing.  It is
@@ -295,7 +295,7 @@ module GoogleApps
 
       @response = @request.send_request
 
-      process_response type
+      process_response(@response, type)
     end
 
     # delete is a generic target for method_missing.  It is
@@ -378,12 +378,12 @@ module GoogleApps
     # process_response takes the HTTPResponse and either returns a
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
-    def process_response(doc_type = nil)
+    def process_response(response, doc_type = nil)
       case doc_type
       when nil
         success_response? ? true : raise("Error: #{response.code}, #{response.message}")
       else
-        success_response? ? @doc_handler.create_doc(@response.body, doc_type) : raise("Error: #{response.code}, #{response.message}")
+        success_response? ? @doc_handler.create_doc(response.body, doc_type) : raise("Error: #{response.code}, #{response.message}")
       end
     end
 
