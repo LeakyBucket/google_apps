@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 describe "GoogleApps::Atom::Document" do
-  let (:document) { GoogleApps::Atom::Document.new File.read('spec/xml/user.xml') }
-  let (:doc_string) { File.read('spec/test_doc.xml') }
+  let (:document) { GoogleApps::Atom::Document.new File.read('spec/fixture_xml/user.xml') }
+  let (:doc_string) { File.read('spec/fixture_xml/test_doc.xml') }
 
   describe "#parse" do
     it "parses the given XML document" do
