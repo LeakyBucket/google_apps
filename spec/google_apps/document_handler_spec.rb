@@ -1,14 +1,8 @@
 require 'spec_helper'
 
 describe "GoogleApps::DocumentHandler" do
-  let (:handler) { GoogleApps::DocumentHandler.new format: :atom }
+  let (:handler) { GoogleApps::DocumentHandler.new }
   let (:documents) { to_meth GoogleApps::Atom::Document.types }
-
-  describe "#new" do
-    it "Sets @format to the format of the document to be processed" do
-      handler.format.should == :atom
-    end
-  end
 
   describe "#create_doc" do
     it "Returns a XML document when given xml and @format is :atom" do
@@ -16,12 +10,7 @@ describe "GoogleApps::DocumentHandler" do
     end
 
     it "Returns a XML document when given xml and @format is :xml" do
-      handler.format = :xml
       handler.create_doc(finished_export, :export).should be_a LibXML::XML::Document
-    end
-
-    xit "Returns a document of the given type if specified" do
-      handler.create_doc(File.read('spec/fixture_xml/user.xml'), :user).should be_a GoogleApps::Atom::User
     end
   end
 
@@ -32,20 +21,6 @@ describe "GoogleApps::DocumentHandler" do
 
     it "Returns an XML Document when given a string and @format is :xml" do
       handler.unknown_type(finished_export).should be_a LibXML::XML::Document
-    end
-  end
-
-  describe "#format=" do
-    it "Changes the format" do
-      handler.format = :xml
-
-      handler.format.should == :xml
-    end
-
-    it "Rebuilds the @documents list" do
-      handler.format = :xml
-
-      handler.instance_eval { @documents }.should == documents
     end
   end
 
@@ -67,22 +42,7 @@ describe "GoogleApps::DocumentHandler" do
     end
 
     it "Returns a list of all Atom documents when @format is :xml" do
-      handler.format = :xml
       handler.send(:look_up_doc_types).should == documents
-    end
-  end
-
-  describe "#set_format" do
-    it "Sets @format to the given value" do
-      handler.send(:set_format, :xml)
-
-      handler.format.should == :xml
-    end
-
-    it "Sets the @document list" do
-      handler.send(:set_format, :xml)
-
-      handler.instance_eval { @documents }.should == documents
     end
   end
 end

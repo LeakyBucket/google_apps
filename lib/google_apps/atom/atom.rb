@@ -29,10 +29,6 @@ module GoogleApps
 
     ENTRY_TAG = ["<atom:entry xmlns:atom=\"#{NAMESPACES[:atom]}\" xmlns:apps=\"#{NAMESPACES[:apps]}\" xmlns:gd=\"#{NAMESPACES[:gd]}\">", '</atom:entry>']
 
-
-
-    #
-
     # Adds a Module Function that creates a corresponding document.
     # This allows for a centralized location for document creation.
     #
