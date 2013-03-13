@@ -10,22 +10,6 @@ describe GoogleApps::AppsRequest do
           to_return(:status => 200)
       request.send_request.should be_a Net::HTTPResponse
     end
-
-    context "when the token is expired" do
-      xit "gets a new token and re-issues the request" do
-        stub_request(:get, "http://www.google.com/").
-            to_return(:status => 401)
-        transporter.get_user
-        body = <<-TEXT.strip!
-        client_id=#{transporter.client_id}&
-        client_secret=#{transporter.client_secret}&
-        refresh_token=#{transporter.refresh_token}&
-        grant_type=refresh_token
-        TEXT
-        a_request(:post, "https://accounts.google.com/o/oauth2/token").
-            with(body: body).should have_been_made
-      end
-    end
   end
 
   describe "#add_body" do

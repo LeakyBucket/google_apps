@@ -155,8 +155,6 @@ describe GoogleApps::Transport do
       GoogleApps::AppsRequest.should_receive(:new).with(:get, URI(transporter.user + '?startUsername=znelson1'), @headers[:other])
       transporter.get_users start: 'znelson1', limit: 2
     end
-
-    it "Makes another request if the response has a <link rel=\"next\" node"
   end
 
   describe "#download" do
