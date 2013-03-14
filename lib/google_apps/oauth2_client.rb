@@ -3,8 +3,7 @@ require 'openssl'
 require 'rexml/document'
 
 module GoogleApps
-  class Transport
-    attr_reader :domain, :token
+  class Oauth2Client
     attr_reader :user, :group, :nickname, :export, :pubkey, :requester, :migration
 
     BOUNDARY = "=AaB03xDFHT8xgg"
@@ -25,7 +24,6 @@ module GoogleApps
       @migration  = "#{FEEDS_ROOT}/migration/2.0/#{@domain}"
       @group      = "#{FEEDS_ROOT}/group/2.0/#{@domain}"
       @nickname   = "#{FEEDS_ROOT}/#{@domain}/nickname/2.0"
-
       audit_root  = "#{FEEDS_ROOT}/compliance/audit/mail"
       @export     = "#{audit_root}/export/#{@domain}"
       @monitor    = "#{audit_root}/monitor/#{@domain}"
@@ -391,14 +389,8 @@ module GoogleApps
       pages
     end
 
-    def singularize(type)
-      type.to_s.gsub(/s$/, '')
-    end
-
     def headers(category)
       case category
-      when :auth
-        [['content-type', 'application/x-www-form-urlencoded']]
       when :migration
         [['content-type', "multipart/related; boundary=\"#{BOUNDARY}\""], ['Authorization', "OAuth #{@token}"]]
       else

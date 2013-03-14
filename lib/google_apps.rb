@@ -1,5 +1,5 @@
 require 'google_apps/apps_request'
-require 'google_apps/transport'
+require 'google_apps/oauth2_client'
 require 'google_apps/atom/atom'
 require 'google_apps/atom/node'
 require 'google_apps/atom/document'
