@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    google_apps (0.5)
+    google_apps (0.9)
       httparty
       libxml-ruby (>= 2.2.2)
 
