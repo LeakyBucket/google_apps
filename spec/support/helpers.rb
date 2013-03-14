@@ -14,7 +14,7 @@ def get_path(category)
 end
 
 def build_request(verb)
-  GoogleApps::AppsRequest.new verb, 'http://www.google.com', test: 'bob'
+  GoogleApps::Oauth2Client::AppsRequest.new verb, 'http://www.google.com', test: 'bob'
 end
 
 def entry_node
