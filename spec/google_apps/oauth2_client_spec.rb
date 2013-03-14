@@ -222,7 +222,7 @@ describe GoogleApps::Oauth2Client do
     end
   end
 
-  describe "#process_response" do
+  describe "#check_response" do
     before(:each) do
       @mock_handler = double(GoogleApps::DocumentHandler)
       client.instance_eval { @handler = @mock_handler }

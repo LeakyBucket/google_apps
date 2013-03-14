@@ -43,7 +43,7 @@ module GoogleApps
     # the HTTP response object on failure.
     def request_export(username, document)
       response = add(export + "/#{username}", document)
-      process_response(response)
+      check_response(response)
       export = create_doc(response.body, :export_response)
 
       export.find('//apps:property').inject(nil) do |request_id, node|
@@ -62,7 +62,7 @@ module GoogleApps
     # from Google
     def export_status(username, req_id)
       response = get(export + "/#{username}", req_id)
-      process_response(response)
+      check_response(response)
       create_doc(response.body, :export_status)
     end
 
@@ -143,7 +143,7 @@ module GoogleApps
     def get_users(options = {})
       limit = options[:limit] || 1000000
       response = get(user + "?startUsername=#{options[:start]}")
-      process_response(response)
+      check_response(response)
 
       pages = fetch_pages(response, limit, :feed)
 
@@ -158,7 +158,7 @@ module GoogleApps
     def get_groups(options = {})
       limit = options[:limit] || 1000000
       response = get(group + "#{options[:extra]}" + "?startGroup=#{options[:start]}")
-      process_response(response, :feed)
+      check_response(response, :feed)
       pages = fetch_pages(response, limit, :feed)
 
       return_all(pages)
@@ -188,7 +188,7 @@ module GoogleApps
     # add_member_to returns the response received from Google.
     def add_member_to(group_id, document)
       response = add(group + "/#{group_id}/member", document)
-      process_response(response)
+      check_response(response)
       create_doc(response.body)
     end
 
@@ -306,19 +306,19 @@ module GoogleApps
       case $1
       when "new", "add"
         response = self.send(:add, send($2), *args)
-        process_response(response)
+        check_response(response)
         create_doc(response.body, $2)
       when "delete"
         response = self.send(:delete, send($2), *args)
-        process_response(response)
+        check_response(response)
         create_doc(response.body, $2)
       when "update"
         response = self.send(:update, send($2), *args)
-        process_response(response)
+        check_response(response)
         create_doc(response.body, $2)
       when "get"
         response = self.send(:get, send($2), *args)
-        process_response(response)
+        check_response(response)
         create_doc(response.body, $2)
       else
         super
@@ -349,10 +349,10 @@ module GoogleApps
     end
 
 
-    # process_response takes the HTTPResponse and either returns a
+    # check_response takes the HTTPResponse and either returns a
     # document of the specified type or in the event of an error it
     # returns the HTTPResponse.
-    def process_response(response)
+    def check_response(response)
       raise("Error: #{response.code}, #{response.message}") unless success_response?(response)
     end
 
@@ -373,7 +373,7 @@ module GoogleApps
     # get_next_page retrieves the next page in the response.
     def get_next_page(next_page_url, type)
       response = get(next_page_url)
-      process_response(response)
+      check_response(response)
       GoogleApps::Atom.feed(response.body)
     end
 
