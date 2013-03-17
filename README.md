@@ -89,10 +89,10 @@ require 'google_apps'
 ```
 
 
-Setting up your GoogleApps::Transport object to send requests to Google.
+Setting up your GoogleApps::Oauth2Client object to send requests to Google.
 
 ```ruby
-transporter = GoogleApps::Transport.new 'domain', 'TOKEN-FROM-OAUTH2-HANDSHAKE'
+client = GoogleApps::Oauth2Client.new 'domain', 'TOKEN-FROM-OAUTH2-HANDSHAKE'
 ```
 
 
@@ -118,7 +118,7 @@ user.password = 'uncle J'
 user.first_name = 'Johnsen'
 user.last_name = 'Wilkens'
 
-transporter.new_user user
+client.new_user user
 ```
 
 
@@ -129,14 +129,14 @@ Modifying an entity is also a simple process.
 user.last_name = 'Johnson'
 user.suspended = true
 
-transporter.update_user 'bob', user
+client.update_user 'bob', user
 ```
 
 
 Deleting is extremely light weight.
 
 ```ruby
-transporter.delete_user 'bob'
+client.delete_user 'bob'
 ```
 
 
@@ -144,7 +144,7 @@ Getting an entity record from Google.
 
 ```ruby
 # Retrieving a User
-transporter.get_user 'bob'
+client.get_user 'bob'
 ```
 
 
@@ -152,11 +152,11 @@ Retrieving a batch of entities from Google.
 
 ```ruby
 # Retrieving all Users
-users = transporter.get_users
+users = client.get_users
 
 
 # Retrieving a range of Users
-users = transporter.get_users start: 'lholcomb2', limit: 320
+users = client.get_users start: 'lholcomb2', limit: 320
 # Google actually returns records in batches so you will recieve the lowest multiple of 100 that covers your request.
 ```
 
@@ -168,7 +168,7 @@ Google Apps uses public key encryption for mailbox exports and other audit funct
 pub_key = GoogleApps::Atom::PublicKey.new
 pub_key.new_key File.read('key_file')
 
-transporter.add_pubkey pub_key
+client.add_pubkey pub_key
 ```
 
 
@@ -180,7 +180,7 @@ export_req = GoogleApps::Atom::Export.new
 export_req.query 'from:Bob'
 export_req.content 'HEADER_ONLY'
 
-transporter.request_export 'username', export_req
+client.request_export 'username', export_req
 ```
 
 
@@ -188,8 +188,8 @@ Your export request will be placed in a queue and processed eventually.  Luckily
 
 ```ruby
 # Check Export Status
-transporter.export_status 'username', <request_id>
-transporter.export_ready? 'username', <request_id>
+client.export_status 'username', <request_id>
+client.export_ready? 'username', <request_id>
 ```
 
 
@@ -197,7 +197,7 @@ Downloading the requested export is simple.
 
 ```ruby
 # Download Export
-transporter.fetch_export 'username', 'req_id', 'filename'
+client.fetch_export 'username', 'req_id', 'filename'
 ```
 
 
@@ -208,26 +208,24 @@ The Google Apps API provides a direct migration option if you happen to have ema
 attributes = GoogleApps::Atom::MessageAttributes.new
 attributes.add_label 'Migration'
 
-transporter.migrate 'username', attributes, File.read(<message>)
+client.migrate 'username', attributes, File.read(<message>)
 ```
 
 ## <a id="Long" /> Long How
 
-#### GoogleApps::Transport
+#### GoogleApps::Oauth2Client
 
-This is the main piece of the library.  The Transport class does all the heavy lifting and communication between your code and the Google Apps Envrionment.
-
-Transport will accept a plethora of configuration options.  However most have currently sane defaults.  In particular the endpoint values should default to currently valid URIs.
+This is the main piece of the library.  The client class does all the heavy lifting and communication between your code and the Google Apps environment.
 
 The only required option is the name of your domain and a valid OAuth2 token:
 
 ```ruby
-GoogleApps::Transport.new 'cnm.edu', 'USERS-OAUTH2-TOKEN'
+GoogleApps::Oauth2Client.new 'cnm.edu', 'USERS-OAUTH2-TOKEN'
 ```
 
 This domain value is used to set up the URIs
 
-GoogleApps::Transport is your interface for any HTTP verb related action.  It handles GET, PUT, POST and DELETE requests.  Transport also provides methods for checking the status of long running requests and downloading content.
+GoogleApps::Oauth2Client is your interface for any HTTP verb related action.  It handles GET, PUT, POST and DELETE requests. The client also provides methods for checking the status of long running requests and downloading content.
 
 ### GoogleApps::Atom::User
 
@@ -345,10 +343,10 @@ member.member
 # => 'bogus_account@cme.edu'
 ```
 
-To add a group member you need to make an add_member_to request of your GoogleApps::Transport object.  The method requires the id of the group the member is being added to as well as the member doucument.
+To add a group member you need to make an add_member_to request of your GoogleApps::Oauth2Client object.  The method requires the id of the group the member is being added to as well as the member doucument.
 
 ```ruby
-transporter.add_member_to 'Group ID', member
+client.add_member_to 'Group ID', member
 ```
 
 Id's are unique within the Google Apps environment so it is possible to add a group to another group.  You just need to supply the group id as the member value for the GoogleApps::Atom::GroupMember object.
@@ -421,13 +419,13 @@ nick.user = 'sarmstrong'
 Creating a new nickname is pretty simple.
 
 ```ruby
-transporter.add_nickname nick
+client.add_nickname nick
 ```
 
 Nicknames are unique in the scope of your Google Apps Domain so deleting is pretty simple as well.
 
 ```ruby
-transporter.delete_nickname 'Stretch'
+client.delete_nickname 'Stretch'
 ```
 
 
@@ -440,7 +438,7 @@ All you need to do is provide a gpg or other key and upload it.
 ```ruby
 pub_key.new_key File.read(key_file)
 
-transporter.new_pubkey pub_key
+client.new_pubkey pub_key
 ```
 
 
@@ -453,7 +451,7 @@ The Group Owner document only has one value, address.
 ```ruby
 owner.address = 'lholcomb2@root.tld'
 
-transporter.add_owner_to 'example_group@root.tld', owner
+client.add_owner_to 'example_group@root.tld', owner
 ```
 
 ## <a id="License" /> License
