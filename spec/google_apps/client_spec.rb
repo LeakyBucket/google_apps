@@ -1,65 +1,31 @@
 require 'spec_helper'
-
+require 'rest_client'
 
 describe GoogleApps::Client do
   ClientClass = Class.new do
-    include HTTParty
     include GoogleApps::Client
     def initialize(domain)
-      set_initial_values(domain)
+      @domain = domain
     end
 
-    def get(endpoint, id = nil)
-      id ? uri = URI(endpoint + build_id(id)) : uri = URI(endpoint)
-      self.class.get(uri.to_s)
-    end
-
-    def post(url, document, migration_headers = nil)
-      self.class.post(url, body: document.to_s, headers: migration_headers)
-    end
-
-    def delete(endpoint, id = nil)
-      uri = URI(endpoint + "/#{id}")
-      self.class.delete(uri.to_s)
+    def make_request(method, url, options = {})
+      if [:get, :delete].include?(method)
+        RestClient.send(method, url, options[:headers])
+      else
+        RestClient.send(method, url, options[:body], options[:headers])
+      end
     end
   end
 
-  let (:mock_response) { mock(Net::HTTPResponse, :body => "Some body") }
-  let (:user_doc) { GoogleApps::Atom::User.new File.read('spec/fixture_xml/user.xml') }
   let (:user_name) { 'some7user' }
-  let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
   let(:client) { ClientClass.new('cnm.edu') }
-
-  before(:each) do
-    @headers = {
-        migration:
-            {'content-type' => "multipart/related; boundary=\"#{ClientClass::BOUNDARY}\"",
-             'Authorization' => "OAuth #{client.instance_eval { @token } }"
-            },
-        other: {
-            'content-type' => 'application/atom+xml',
-            'Authorization' => "OAuth #{client.instance_eval { @token } }"
-        }
-    }
-  end
-
-
-  describe '#new' do
-    it "assigns endpoints" do
-      client.user.should == "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0"
-      client.group.should == "https://apps-apis.google.com/a/feeds/group/2.0/cnm.edu"
-      client.nickname.should == "https://apps-apis.google.com/a/feeds/cnm.edu/nickname/2.0"
-      client.pubkey.should == "https://apps-apis.google.com/a/feeds/compliance/audit/publickey/cnm.edu"
-      client.export.should == "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu"
-      client.migration.should == "https://apps-apis.google.com/a/feeds/migration/2.0/cnm.edu"
-    end
-  end
 
   describe "#add_member_to" do
     it "creates an HTTP POST request to add a member to a group" do
       client.stub(:create_doc)
       stub_request(:post, "https://apps-apis.google.com/a/feeds/group/2.0/cnm.edu/Test/member").
-          with(:body => "Bob").to_return(:status => 200)
+          with(:body => "Bob", headers: {'content-type' => 'application/atom+xml'}).
+          to_return(:status => 200)
 
       client.add_member_to 'Test', 'Bob'
     end
@@ -68,7 +34,8 @@ describe GoogleApps::Client do
   describe "#add_owner_to" do
     it "adds the specified address as an owner of the specified group" do
       stub_request(:post, "https://apps-apis.google.com/a/feeds/group/2.0/cnm.edu/test_group@cnm.edu/owner").
-          with(:body => "group owner doc").to_return(:status => 200)
+          with(:body => "group owner doc", headers: {'content-type' => 'application/atom+xml'}).
+          to_return(:status => 200)
 
       client.add_owner_to 'test_group@cnm.edu', "group owner doc"
     end
@@ -77,6 +44,7 @@ describe GoogleApps::Client do
   describe "#delete_owner_from" do
     it "Deletes the owner from the group" do
       stub_request(:delete, "https://apps-apis.google.com/a/feeds/group/2.0/cnm.edu/test_group@cnm.edu/owner/lholcomb2@cnm.edu").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200)
       client.delete_owner_from 'test_group@cnm.edu', 'lholcomb2@cnm.edu'
     end
@@ -85,6 +53,7 @@ describe GoogleApps::Client do
   describe "#get_nicknames_for" do
     it "Gets a feed of the nicknames for the requested user" do
       stub_request(:get, "https://apps-apis.google.com/a/feeds/cnm.edu/nickname/2.0?username=lholcomb2").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200, body: fake_nickname)
 
       client.get_nicknames_for('lholcomb2')
@@ -94,25 +63,27 @@ describe GoogleApps::Client do
   describe "#delete_member_from" do
     it "crafts an HTTP DELETE request for a group member" do
       stub_request(:delete, "https://apps-apis.google.com/a/feeds/group/2.0/cnm.edu/next_group/member/lholcomb2@cnm.edu").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200)
       client.delete_member_from 'next_group', 'lholcomb2@cnm.edu'
     end
   end
 
   describe "#request_export" do
-    before(:each) do
-      stub_request(:post, "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu/lholcomb2").
-          to_return(:status => 200, :body => pending_export)
-    end
+    let (:document) { mock(GoogleApps::Atom::User).stub!(:to_s).and_return("stub xml") }
 
     it "crafts a HTTP POST request for a mailbox export" do
-      client.request_export('lholcomb2', document).should == 75133001
+      stub_request(:post, "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu/lholcomb2").
+          with(headers: {'content-type' => 'application/atom+xml'}).
+          to_return(:status => 200, :body => pending_export)
+      client.request_export('lholcomb2', document.to_s).should == 75133001
     end
   end
 
   describe "#export_status" do
     before(:each) do
       stub_request(:get, "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu/lholcomb2/83838").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200, :body => pending_export)
     end
 
@@ -126,19 +97,22 @@ describe GoogleApps::Client do
   end
 
   describe '#add_user' do
+    let (:user_doc) { GoogleApps::Atom::User.new(File.read('spec/fixture_xml/user.xml')).to_s }
+
     it "sends a POST request to the User endpoint" do
       stub_request(:post, "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0").
-          with(:body => user_doc.to_s).
-          to_return(:status => 200, :body => File.read('spec/fixture_xml/user.xml'))
-      client.add_user user_doc
+          with(body: user_doc, headers: {'content-type' => 'application/atom+xml'}).
+          to_return(status: 200, body: File.read('spec/fixture_xml/user.xml'))
+      client.add_user(body: user_doc.to_s)
     end
   end
 
   describe "#get_users" do
     it "Builds a GET request for the user endpoint" do
       stub_request(:get, "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0?startUsername=znelson1").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200, body: File.read('spec/fixture_xml/users_feed.xml'))
-      client.get_users start: 'znelson1', limit: 2
+      client.get_users(start: 'znelson1', limit: 2)
     end
   end
 
@@ -149,6 +123,7 @@ describe GoogleApps::Client do
 
     it "Saves the response body to the specified filename" do
       stub_request(:get, "http://www.google.com/").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200, :body => "Test body")
       client.download 'http://www.google.com', 'spec/download_test'
 
@@ -173,6 +148,7 @@ describe GoogleApps::Client do
 
     it "Returns true if there is a fileUrl property in an export status doc" do
       stub_request(:get, "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu/some7user/828456").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200, :body => finished_export)
 
       export_status_doc = client.export_status(user_name, @id)
@@ -181,6 +157,7 @@ describe GoogleApps::Client do
 
     it "Returns false if there is no fileUrl property in an export status doc" do
       stub_request(:get, "https://apps-apis.google.com/a/feeds/compliance/audit/mail/export/cnm.edu/some7user/828456").
+          with(headers: {'content-type' => 'application/atom+xml'}).
           to_return(:status => 200, :body => pending_export)
 
       export_status_doc = client.export_status(user_name, @id)

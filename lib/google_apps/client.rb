@@ -1,6 +1,9 @@
+require 'cgi'
+require 'openssl'
+
 module GoogleApps
   module Client
-    attr_reader :user, :group, :nickname, :export, :pubkey, :migration
+    attr_reader :domain
 
     BOUNDARY = "=AaB03xDFHT8xgg"
     PAGE_SIZE = {
@@ -8,6 +11,7 @@ module GoogleApps
         group: 200
     }
     FEEDS_ROOT = 'https://apps-apis.google.com/a/feeds'
+    AUDIT_ROOT = "#{FEEDS_ROOT}/compliance/audit/mail"
 
     # request_export performs the GoogleApps API call to
     # generate a mailbox export.  It takes the username
@@ -19,8 +23,7 @@ module GoogleApps
     # request_export returns the request ID on success or
     # the HTTP response object on failure.
     def request_export(username, document)
-      response = post(export + "/#{username}", document)
-      check_response(response)
+      response = make_request(:post, export + "/#{username}", body: document, headers: {'content-type' => 'application/atom+xml'})
       export = create_doc(response.body, :export_response)
 
       export.find('//apps:property').inject(nil) do |request_id, node|
@@ -36,14 +39,13 @@ module GoogleApps
     #
     # export_status will return the body of the HTTP response
     # from Google
-    def export_status(username, req_id)
-      response = get(URI(export + "/#{username}").to_s, req_id)
-      check_response(response)
+    def export_status(username, id)
+      response = make_request(:get, URI(export + "/#{username}" + build_id(id)).to_s, headers: {'content-type' => 'application/atom+xml'})
       create_doc(response.body, :export_status)
     end
 
     def create_doc(response_body, type = nil)
-      @doc_handler.create_doc(response_body, type)
+      doc_handler.create_doc(response_body, type)
     end
 
     # export_ready? checks the export_status response for the
@@ -84,7 +86,7 @@ module GoogleApps
     # download 'url', 'save_file'
     def download(url, filename)
       File.open(filename, "w") do |file|
-        file.puts(get(url).body)
+        file.puts(make_request(:get, url, headers: {'content-type' => 'application/atom+xml'}).body)
       end
     end
 
@@ -98,9 +100,7 @@ module GoogleApps
     # get_users returns the final response from google.
     def get_users(options = {})
       limit = options[:limit] || 1000000
-      response = get(user + "?startUsername=#{options[:start]}")
-      check_response(response)
-
+      response = make_request(:get, user + "?startUsername=#{options[:start]}", headers: {'content-type' => 'application/atom+xml'})
       pages = fetch_pages(response, limit, :feed)
 
       return_all(pages)
@@ -113,8 +113,7 @@ module GoogleApps
     # get_groups returns the final response from Google.
     def get_groups(options = {})
       limit = options[:limit] || 1000000
-      response = get(group + "#{options[:extra]}" + "?startGroup=#{options[:start]}")
-      check_response(response, :feed)
+      response = make_request(:get, group + "#{options[:extra]}" + "?startGroup=#{options[:start]}", headers: {'content-type' => 'application/atom+xml'})
       pages = fetch_pages(response, limit, :feed)
 
       return_all(pages)
@@ -139,8 +138,7 @@ module GoogleApps
     #
     # add_member_to returns the response received from Google.
     def add_member_to(group_id, document)
-      response = post(group + "/#{group_id}/member", document)
-      check_response(response)
+      response = make_request(:post, group + "/#{group_id}/member", body: document, headers: {'content-type' => 'application/atom+xml'})
       create_doc(response.body)
     end
 
@@ -150,10 +148,8 @@ module GoogleApps
     # @visibility public
     # @return
     def add_owner_to(group_id, document)
-      post(group + "/#{group_id}/owner", document)
+      make_request(:post, group + "/#{group_id}/owner", body: document, headers: {'content-type' => 'application/atom+xml'})
     end
-
-    # TODO: Refactor delete froms.
 
     # delete_member_from removes a member from a group in the
     # domain.  It takes a group_id and member_id as arguments.
@@ -162,7 +158,7 @@ module GoogleApps
     #
     # delete_member_from returns the respnse received from Google.
     def delete_member_from(group_id, member_id)
-      delete(group + "/#{group_id}/member", member_id)
+      make_request(:delete, group + "/#{group_id}/member/#{member_id}", headers: {'content-type' => 'application/atom+xml'})
     end
 
     # @param [String] group_id Email address of group
@@ -171,7 +167,7 @@ module GoogleApps
     # @visibility public
     # @return
     def delete_owner_from(group_id, owner_id)
-      delete(group + "/#{group_id}/owner", owner_id)
+      make_request(:delete, group + "/#{group_id}/owner/#{owner_id}", headers: {'content-type' => 'application/atom+xml'})
     end
 
     # get_nicknames_for retrieves all the nicknames associated
@@ -181,7 +177,7 @@ module GoogleApps
     #
     # get_nickname_for returns the HTTP response from Google
     def get_nicknames_for(login)
-      get_nickname("?username=#{login}")
+      create_doc(make_request(:get, nickname + "?username=#{login}", headers: {'content-type' => 'application/atom+xml'}).body)
     end
 
     # migration performs mail migration from a local
@@ -193,32 +189,26 @@ module GoogleApps
     #
     # migrate returns the HTTP response received from Google.
     def migrate(username, properties, message)
-      headers = {
-          'content-type' => "multipart/related; boundary=\"#{BOUNDARY}\"",
-          'Authorization' => "OAuth #{@token}"
-      }
-      post(URI(migration + "/#{username}/mail").to_s, multi_part(properties.to_s, message), headers)
+      headers = { 'content-type' => "multipart/related; boundary=\"#{BOUNDARY}\"" }
+      make_request(:post, migration + "/#{username}/mail", body: multi_part(properties.to_s, message), headers: headers)
     end
 
-    def method_missing(name, *args)
+    def method_missing(name, options = {})
       super unless name.match /([a-z]*)_([a-z]*)/
-
+      options[:headers] ||= {}
+      options[:headers].merge!({'content-type' => 'application/atom+xml'})
       case $1
         when "new", "add"
-          response = post(send($2), *args)
-          check_response(response)
+          response = make_request(:post, send($2), options)
           create_doc(response.body, $2)
         when "delete"
-          response = delete(send($2), *args)
-          check_response(response)
+          response = make_request(:delete, send($2), options)
           create_doc(response.body, $2)
         when "update"
-          response = put(send($2), *args)
-          check_response(response)
+          response = make_request(:put, send($2), options)
           create_doc(response.body, $2)
         when "get"
-          response = get(send($2), *args)
-          check_response(response)
+          response = make_request(:get, send($2), options)
           create_doc(response.body, $2)
         else
           super
@@ -227,19 +217,38 @@ module GoogleApps
 
     private
 
-    def set_initial_values(domain)
-      @domain = domain
-      @user = "#{FEEDS_ROOT}/#{@domain}/user/2.0"
-      @pubkey = "#{FEEDS_ROOT}/compliance/audit/publickey/#{@domain}"
-      @migration = "#{FEEDS_ROOT}/migration/2.0/#{@domain}"
-      @group = "#{FEEDS_ROOT}/group/2.0/#{@domain}"
-      @nickname = "#{FEEDS_ROOT}/#{@domain}/nickname/2.0"
-      audit_root = "#{FEEDS_ROOT}/compliance/audit/mail"
-      @export = "#{audit_root}/export/#{@domain}"
-      @monitor = "#{audit_root}/monitor/#{@domain}"
-
-      @doc_handler = DocumentHandler.new
+    def user
+      "#{FEEDS_ROOT}/#{domain}/user/2.0"
     end
+
+    def pubkey
+      "#{FEEDS_ROOT}/compliance/audit/publickey/#{domain}"
+    end
+
+    def migration
+      "#{FEEDS_ROOT}/migration/2.0/#{domain}"
+    end
+
+    def group
+      "#{FEEDS_ROOT}/group/2.0/#{domain}"
+    end
+
+    def nickname
+      "#{FEEDS_ROOT}/#{domain}/nickname/2.0"
+    end
+
+    def export
+      "#{AUDIT_ROOT}/export/#{domain}"
+    end
+
+    def monitor
+      "#{AUDIT_ROOT}/monitor/#{domain}"
+    end
+
+    def doc_handler
+      @doc_handler ||= DocumentHandler.new
+    end
+
 
     # build_id checks the id string.  If it is formatted
     # as a query string it is returned as is.  If not
@@ -262,17 +271,6 @@ module GoogleApps
       end
     end
 
-    # check_response takes the HTTPResponse and either returns a
-    # document of the specified type or in the event of an error it
-    # returns the HTTPResponse.
-    def check_response(response)
-      raise("Error: #{response.code}, #{response.message}") unless success_response?(response)
-    end
-
-    def success_response?(response)
-      response.kind_of?(Net::HTTPSuccess) || [200,201].include?(response.code)
-    end
-
     # Takes all the items in each feed and puts them into one array.
     #
     # @visibility private
@@ -285,8 +283,7 @@ module GoogleApps
 
     # get_next_page retrieves the next page in the response.
     def get_next_page(next_page_url, type)
-      response = get(next_page_url)
-      check_response(response)
+      response = make_request(:get, next_page_url, headers: {'content-type' => 'application/atom+xml'})
       GoogleApps::Atom.feed(response.body)
     end
 
