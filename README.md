@@ -5,18 +5,23 @@
 
 ## What is this?
 
-This is another GoogleApps API Library.  It is written for Ruby 1.9.  I know there is one floating around out there but it is 2 years old and doesn't claim to do more than: users, groups, and calendar.
+This is another GoogleApps API Library.  
+* It is written for Ruby 1.9. 
+* It supports the following auth schemes:
+  * Hybrid (OAuth1/OpenID)
+  * OAuth2
+  * ClientLogin (deprecated by Google, handy for command line work)
 
 The goal here is a library that supports the entire GoogleApps Domain and Applications APIs.
 
-
 ## Overview
  * [Status](#currently-supported)
+ * [Clients](#clients)
  * [Quick and Dirty](#-short-how)
  * [Details](#-long-how)
  * [License](#-license)
 
-## <a id="Status" /> API Coverage
+## <a id="currently-supported" /> API Coverage
 
 ####Currently Supported:
 
@@ -88,28 +93,53 @@ gem install google_apps
 require 'google_apps'
 ```
 
+## <a id="clients" />Clients
+You have your choice of three clients depending on the auth scheme you intend to use. Once you've instantiated them, 
+they all share a common interface for API tasks. 
 
-Setting up your GoogleApps::Oauth2Client object to send requests to Google.
-
+### HybridAuthClient
+This scheme expects that you're acting on behalf of someone else's domain. This is probably the case if you're 
+building a website and want to have people install your app to their Google App account. In this case you'll want
+to login your user using OAuth, omniauth-google-apps is a find gem for doing this. The great part about using 
+this scheme is that you don't need the individual user's permission to the schemes you need to use, just the one-time
+domain administrator's approval and it offers a really smooth end-user experience.
+NOTE: The app id and app secret values should come from the page where your app is listed in the Google Apps Marketplace.
 ```ruby
-client = GoogleApps::Oauth2Client.new 'domain', 'TOKEN-FROM-OAUTH2-HANDSHAKE'
+client = GoogleApps::HybridAuthClient.new(domain: 'example.com', google_app_id: 'SOME-APP-ID', google_app_secret: 'SOME-APP-SECRET')
 ```
 
+### Oauth2Client
+This scheme is perfect for acting on behalf of an end-user when you don't have an app that gets installed & approved
+by a domain admin. The end-user experience is a little more bumy because he'll have to go through the extra step of 
+granting your app access to the data you need. 
+```ruby
+client = GoogleApps::Oauth2Client.new(domain: 'example.com', token: 'SOME-OAUTH2-TOKEN')
+```
+
+### ClientLogin
+This is the auth scheme you'll want to use if you can reasonably expect the end-user to trust you with his username
+and password. This means really it's for developing tools that someone would use at the command line for importing
+and exporting data from Google. This auth scheme is currently deprecated by Google.
+```ruby
+client = GoogleApps::ClientLogin.new(domain: 'example.com')
+client.authenticate!('joe@example.com', 'p4ssw0rd')
+```
+
+## Jumping In
 
 Creating an entity is a matter of creating a matching object and sending it to Google.
 
 ```ruby
 # Creating a User
 user = GoogleApps::Atom::User.new
-user = GoogleApps::Atom::User.new <xml string>
+user = GoogleApps::Atom::User.new(<xml string>)
 
 # or
 
 user = GoogleApps::Atom.user
-user = GoogleApps::Atom.user <xml string>
+user = GoogleApps::Atom.user(<xml string>)
 
-
-user.set login: 'JWilkens', password: 'uncle J', first_name: 'Johnsen', last_name: 'Wilkens'
+user.set(login: 'JWilkens', password: 'uncle J', first_name: 'Johnsen', last_name: 'Wilkens')
 
 # or
 
@@ -118,9 +148,8 @@ user.password = 'uncle J'
 user.first_name = 'Johnsen'
 user.last_name = 'Wilkens'
 
-client.new_user user
+client.new_user(user)
 ```
-
 
 Modifying an entity is also a simple process.
 
@@ -129,24 +158,21 @@ Modifying an entity is also a simple process.
 user.last_name = 'Johnson'
 user.suspended = true
 
-client.update_user 'bob', user
+client.update_user('bob', user)
 ```
-
 
 Deleting is extremely light weight.
 
 ```ruby
-client.delete_user 'bob'
+client.delete_user('bob')
 ```
-
 
 Getting an entity record from Google.
 
 ```ruby
 # Retrieving a User
-client.get_user 'bob'
+client.get_user('bob')
 ```
-
 
 Retrieving a batch of entities from Google.
 
@@ -154,78 +180,59 @@ Retrieving a batch of entities from Google.
 # Retrieving all Users
 users = client.get_users
 
-
 # Retrieving a range of Users
-users = client.get_users start: 'lholcomb2', limit: 320
+users = client.get_users(start: 'lholcomb2', limit: 320)
 # Google actually returns records in batches so you will recieve the lowest multiple of 100 that covers your request.
 ```
 
-
-Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is fairly simple.
+Google Apps uses public key encryption for mailbox exports and other audit functionality.  Adding a key is 
+fairly simple.
 
 ```ruby
 # Uploading Public Key
 pub_key = GoogleApps::Atom::PublicKey.new
-pub_key.new_key File.read('key_file')
+pub_key.new_key(File.read('key_file'))
 
-client.add_pubkey pub_key
+client.add_pubkey(pub_key)
 ```
-
 
 Google Apps provides a few mail auditing functions.  One of those is grabbing a mailbox export.  Below is an example.
 
 ```ruby
 # Request Mailbox Export
 export_req = GoogleApps::Atom::Export.new
-export_req.query 'from:Bob'
-export_req.content 'HEADER_ONLY'
+export_req.query('from:Bob')
+export_req.content('HEADER_ONLY')
 
-client.request_export 'username', export_req
+client.request_export('username', export_req)
 ```
-
 
 Your export request will be placed in a queue and processed eventually.  Luckily you can check on the status while you wait.
 
 ```ruby
 # Check Export Status
-client.export_status 'username', <request_id>
-client.export_ready? 'username', <request_id>
+client.export_status('username', <request_id>)
+client.export_ready?('username', <request_id>)
 ```
-
 
 Downloading the requested export is simple.
 
 ```ruby
 # Download Export
-client.fetch_export 'username', 'req_id', 'filename'
+client.fetch_export('username', 'req_id', 'filename')
 ```
-
 
 The Google Apps API provides a direct migration option if you happen to have email in msg (RFC 822) format.
 
 ```ruby
 # Migrate Email
 attributes = GoogleApps::Atom::MessageAttributes.new
-attributes.add_label 'Migration'
+attributes.add_label('Migration')
 
-client.migrate 'username', attributes, File.read(<message>)
+client.migrate('username', attributes, File.read(<message>))
 ```
 
 ## <a id="Long" /> Long How
-
-#### GoogleApps::Oauth2Client
-
-This is the main piece of the library.  The client class does all the heavy lifting and communication between your code and the Google Apps environment.
-
-The only required option is the name of your domain and a valid OAuth2 token:
-
-```ruby
-GoogleApps::Oauth2Client.new 'cnm.edu', 'USERS-OAUTH2-TOKEN'
-```
-
-This domain value is used to set up the URIs
-
-GoogleApps::Oauth2Client is your interface for any HTTP verb related action.  It handles GET, PUT, POST and DELETE requests. The client also provides methods for checking the status of long running requests and downloading content.
 
 ### GoogleApps::Atom::User
 
@@ -337,16 +344,16 @@ member = GoogleApps::Atom.gorup_member <xml string>
 A GroupMember really only has one attribute.  The id of the member.
 
 ```ruby
-member.member = 'bogus_account@cnme.edu'
+member.member = 'bogus_account@example.com'
 
 member.member
-# => 'bogus_account@cme.edu'
+# => 'bogus_account@example.com'
 ```
 
-To add a group member you need to make an add_member_to request of your GoogleApps::Oauth2Client object.  The method requires the id of the group the member is being added to as well as the member doucument.
+To add a group member you need to make an add_member_to request of your ```client```.  The method requires the id of the group the member is being added to as well as the member doucument.
 
 ```ruby
-client.add_member_to 'Group ID', member
+client.add_member_to('Group ID', member)
 ```
 
 Id's are unique within the Google Apps environment so it is possible to add a group to another group.  You just need to supply the group id as the member value for the GoogleApps::Atom::GroupMember object.
@@ -456,4 +463,4 @@ client.add_owner_to 'example_group@root.tld', owner
 
 ## <a id="License" /> License
 
-#### MIT
+__MIT__ because that's what you do
