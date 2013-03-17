@@ -45,10 +45,7 @@ module GoogleApps
         @doc.to_s
       end
 
-
-
       private
-
 
       # create adds the specified node to @doc.  It takes
       # a type and a value as arguments.
@@ -64,7 +61,7 @@ module GoogleApps
           @doc.root << create_node(type: 'apps:login', attrs: [['userName', value]])
         end
 
-        @doc = parse @doc
+        @doc = parse(@doc)
       end
     end
   end
