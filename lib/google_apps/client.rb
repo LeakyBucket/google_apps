@@ -1,7 +1,3 @@
-require 'cgi'
-require 'openssl'
-require 'google_apps/provisioning_api/users'
-
 module GoogleApps
   module Client
     include GoogleApps::ProvisioningApi::Users

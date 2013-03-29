@@ -1,6 +1,4 @@
-require 'libxml'
-require 'openssl'
-require 'base64'
+
 
 class String
   def camel_up

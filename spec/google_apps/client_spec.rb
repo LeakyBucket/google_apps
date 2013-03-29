@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'rest_client'
 
 describe GoogleApps::Client do
   let (:user_name) { 'some7user' }

@@ -1,5 +1,3 @@
-require 'rest_client'
-
 module GoogleApps
   class Oauth2Client
     include GoogleApps::Client

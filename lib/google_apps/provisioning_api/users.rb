@@ -1,5 +1,3 @@
-require 'rexml/document'
-
 module GoogleApps
   module ProvisioningApi
     module Users

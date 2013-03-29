@@ -1,5 +1,3 @@
-require 'oauth'
-
 module GoogleApps
   class HybridAuthClient
     include GoogleApps::Client
