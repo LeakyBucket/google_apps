@@ -10,7 +10,7 @@ class GoogleApps
         self.attributes = attrs
       end
 
-      def self.all_users
+      def self.all
         begin
           response = GoogleApps.client.make_request(:get, user_url, headers: {'content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
@@ -20,7 +20,7 @@ class GoogleApps
         end
       end
 
-      def self.find_user(login)
+      def self.find(login)
         begin
           response = GoogleApps.client.make_request(:get, user_url + "/#{login}")
           atom_feed = REXML::Document.new(response.body)

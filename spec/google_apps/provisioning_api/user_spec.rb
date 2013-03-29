@@ -3,7 +3,7 @@ require 'spec_helper'
 describe GoogleApps::ProvisioningApi::User do
   before { GoogleApps.client = Klient.new('example.com') }
 
-  describe "#find_user" do
+  describe ".find" do
     context 'when the user is found' do
       before do
         stub_request(:get, "https://apps-apis.google.com/a/feeds/example.com/user/2.0/mmcfly").
@@ -11,7 +11,7 @@ describe GoogleApps::ProvisioningApi::User do
       end
 
       it 'returns the user' do
-        user = GoogleApps::ProvisioningApi::User.find_user('mmcfly')
+        user = GoogleApps::ProvisioningApi::User.find('mmcfly')
         user.should be_a(GoogleApps::ProvisioningApi::User)
         user.login.should == 'mmcfly'
         user.first_name.should == "Marty"
@@ -28,13 +28,13 @@ describe GoogleApps::ProvisioningApi::User do
       end
 
       it 'returns nil' do
-        user = GoogleApps::ProvisioningApi::User.find_user('not-found-user')
+        user = GoogleApps::ProvisioningApi::User.find('not-found-user')
         user.should be_nil
       end
     end
   end
 
-  describe "#all_users" do
+  describe ".all" do
     context 'when there are users' do
       before do
         stub_request(:get, "https://apps-apis.google.com/a/feeds/example.com/user/2.0").
@@ -42,7 +42,7 @@ describe GoogleApps::ProvisioningApi::User do
       end
 
       it 'returns an array of users' do
-        users = GoogleApps::ProvisioningApi::User.all_users
+        users = GoogleApps::ProvisioningApi::User.all
         users.count.should == 2
         users.first.should be_a(GoogleApps::ProvisioningApi::User)
       end
