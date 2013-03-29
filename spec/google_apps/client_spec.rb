@@ -2,23 +2,8 @@ require 'spec_helper'
 require 'rest_client'
 
 describe GoogleApps::Client do
-  ClientClass = Class.new do
-    include GoogleApps::Client
-    def initialize(domain)
-      @domain = domain
-    end
-
-    def make_request(method, url, options = {})
-      if [:get, :delete].include?(method)
-        RestClient.send(method, url, options[:headers])
-      else
-        RestClient.send(method, url, options[:body], options[:headers])
-      end
-    end
-  end
-
   let (:user_name) { 'some7user' }
-  let(:client) { ClientClass.new('cnm.edu') }
+  let(:client) { Klient.new('cnm.edu') }
 
   describe "#add_member_to" do
     it "creates an HTTP POST request to add a member to a group" do
@@ -111,7 +96,7 @@ describe GoogleApps::Client do
     it "Builds a GET request for the user endpoint" do
       stub_request(:get, "https://apps-apis.google.com/a/feeds/cnm.edu/user/2.0?startUsername=znelson1").
           with(headers: {'content-type' => 'application/atom+xml'}).
-          to_return(:status => 200, body: File.read('spec/fixture_xml/users_feed.xml'))
+          to_return(:status => 200, body: File.read('spec/fixture_xml/users_response.xml'))
       client.get_users(start: 'znelson1', limit: 2)
     end
   end

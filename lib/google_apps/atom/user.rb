@@ -1,7 +1,5 @@
 module GoogleApps
 	module Atom
-    # TODO: Move User attribute map to user class
-    # TODO: Update attribute map to include @ for instance variables
   	class User < Document
       attr_reader :doc, :login, :suspended, :first_name, :last_name, :quota, :password
 

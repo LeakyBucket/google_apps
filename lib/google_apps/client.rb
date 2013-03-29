@@ -1,8 +1,11 @@
 require 'cgi'
 require 'openssl'
+require 'google_apps/provisioning_api/users'
 
 module GoogleApps
   module Client
+    include GoogleApps::ProvisioningApi::Users
+
     attr_reader :domain
 
     BOUNDARY = "=AaB03xDFHT8xgg"
