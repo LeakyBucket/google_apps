@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class GroupMember < Document
       attr_accessor :member, :type
@@ -30,7 +30,7 @@ module GoogleApps
         @doc = parse(@doc)
         @type = type
       end
-      
+
 
       # to_s returns @doc as a string.
       def to_s
@@ -40,12 +40,12 @@ module GoogleApps
 
       private
 
-      # 
+      #
       # @param [] type
       # @param [] value
-      # 
+      #
       # @visibility private
-      # @return 
+      # @return
       def add_node(type, value)
         @doc.root << create_node(type: 'apps:property', attrs: [['name', type], ['value', value]])
       end
@@ -76,10 +76,10 @@ module GoogleApps
       end
 
 
-      # 
-      # 
+      #
+      #
       # @visibility private
-      # @return 
+      # @return
       def populate_self
         @doc.find('//apps:property').each do |node|
           @member = node.attributes['value'] if node.attributes['name'] == 'memberId'

@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
 	module Atom
   	class User < Document
       attr_reader :doc, :login, :suspended, :first_name, :last_name, :quota, :password

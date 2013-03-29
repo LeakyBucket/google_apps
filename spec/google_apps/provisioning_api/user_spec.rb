@@ -1,7 +1,8 @@
 require 'spec_helper'
 
-describe GoogleApps::ProvisioningApi::Users do
-  let(:client) {Klient.new('example.com')}
+describe GoogleApps::ProvisioningApi::User do
+  before { GoogleApps.client = Klient.new('example.com') }
+
   describe "#find_user" do
     context 'when the user is found' do
       before do
@@ -10,8 +11,8 @@ describe GoogleApps::ProvisioningApi::Users do
       end
 
       it 'returns the user' do
-        user = client.find_user('mmcfly')
-        user.should be_a(GoogleApps::User)
+        user = GoogleApps::ProvisioningApi::User.find_user('mmcfly')
+        user.should be_a(GoogleApps::ProvisioningApi::User)
         user.login.should == 'mmcfly'
         user.first_name.should == "Marty"
         user.last_name.should == "McFly"
@@ -27,7 +28,7 @@ describe GoogleApps::ProvisioningApi::Users do
       end
 
       it 'returns nil' do
-        user = client.find_user('not-found-user')
+        user = GoogleApps::ProvisioningApi::User.find_user('not-found-user')
         user.should be_nil
       end
     end
@@ -41,9 +42,9 @@ describe GoogleApps::ProvisioningApi::Users do
       end
 
       it 'returns an array of users' do
-        users = client.all_users
+        users = GoogleApps::ProvisioningApi::User.all_users
         users.count.should == 2
-        users.first.should be_a(GoogleApps::User)
+        users.first.should be_a(GoogleApps::ProvisioningApi::User)
       end
     end
   end

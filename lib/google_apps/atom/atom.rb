@@ -6,7 +6,7 @@ class String
   end
 end
 
-module GoogleApps
+class GoogleApps
   module Atom
     include LibXML
 

@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class Feed < Document
       # TODO: Google's feed responses are inconsistent.  Will need special fun time, assholes.

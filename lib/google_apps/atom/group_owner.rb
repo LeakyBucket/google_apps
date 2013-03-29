@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class GroupOwner < Document
       attr_reader :address

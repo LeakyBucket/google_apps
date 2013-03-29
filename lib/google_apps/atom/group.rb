@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class Group < Document
       attr_accessor :id, :name, :description, :permissions

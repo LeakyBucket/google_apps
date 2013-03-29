@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   class Oauth2Client
     include GoogleApps::Client
 

@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   class DocumentHandler
     def initialize
       @documents = look_up_doc_types

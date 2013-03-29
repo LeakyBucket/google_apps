@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class Nickname < Document
       attr_reader :nickname, :user, :doc

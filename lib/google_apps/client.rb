@@ -1,7 +1,5 @@
-module GoogleApps
+class GoogleApps
   module Client
-    include GoogleApps::ProvisioningApi::Users
-
     attr_reader :domain
 
     BOUNDARY = "=AaB03xDFHT8xgg"

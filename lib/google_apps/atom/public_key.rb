@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class PublicKey < Document
       attr_reader :doc
@@ -7,7 +7,7 @@ module GoogleApps
         super(nil)
         @doc.root = build_root :publickey
       end
-      
+
       # new_key adds the actual key to the PublicKey
       # XML document.
       #

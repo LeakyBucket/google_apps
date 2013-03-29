@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class MessageAttributes < Document
       attr_reader :labels
@@ -13,7 +13,7 @@ module GoogleApps
 
       def initialize(xml = nil)
         super(xml)
-        
+
         if xml
           find_labels
           get_item_property

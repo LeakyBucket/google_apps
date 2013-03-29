@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   module Atom
     class Export < Document
       HEADER = 'HEADER_ONLY'

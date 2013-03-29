@@ -1,4 +1,4 @@
-module GoogleApps
+class GoogleApps
   class HybridAuthClient
     include GoogleApps::Client
 

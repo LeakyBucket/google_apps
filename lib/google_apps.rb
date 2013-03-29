@@ -19,10 +19,19 @@ require 'google_apps/atom/message_attributes'
 require 'google_apps/atom/group_member'
 require 'google_apps/atom/nickname'
 require 'google_apps/atom/group_owner'
-require 'google_apps/provisioning_api/users'
-require 'google_apps/user'
+require 'google_apps/provisioning_api/user'
 
 require 'google_apps/client'
 require 'google_apps/hybrid_auth_client'
 require 'google_apps/oauth2_client'
 require 'google_apps/client_login'
+
+class GoogleApps
+  def self.client=(val)
+    @@client = val
+  end
+
+  def self.client
+    @@client
+  end
+end
