@@ -62,8 +62,15 @@ class GoogleApps
           it "returns a user on successful POST" do
 
             stub_request(:post, "https://apps-apis.google.com/a/feeds/example.com/user/2.0").
-                with(:body => user_doc, headers: {'Content-type' => 'application/atom+xml'}).
-                to_return(status: 200, body: File.read('spec/fixture_xml/user_response.xml'))
+                with(headers: {'Content-type' => 'application/atom+xml'}) { |request|
+                  doc = REXML::Document.new(request.body)
+                  doc.elements['//apps:login'].attribute('userName').value == 'sjones' &&
+                  doc.elements['//apps:login'].attribute('password').value == Digest::SHA1.hexdigest('foo') &&
+                  doc.elements['//apps:login'].attribute('suspended').value == 'false' &&
+                  doc.elements['//apps:name'].attribute('givenName').value == 'Susan' &&
+                  doc.elements['//apps:name'].attribute('familyName').value == 'Jones'
+                }.to_return(status: 200, body: File.read('spec/fixture_xml/user_response.xml'))
+
             user = User.create(login: 'sjones',
                         password: 'foo',
                         first_name: 'Susan',
