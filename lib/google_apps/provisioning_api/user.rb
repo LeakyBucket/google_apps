@@ -27,22 +27,27 @@ class GoogleApps
 
       def self.create(attrs = {})
         document = <<-XML
-<atom:entry xmlns:atom='http://www.w3.org/2005/Atom'
-            xmlns:apps='http://schemas.google.com/apps/2006'>
-  <apps:property name="password" value="#{attrs[:password]}"/>
-  <apps:property name="hashFunction" value="SHA-1"/>
-  <apps:property name="userEmail" value="#{attrs[:email]}"/>
-  <apps:property name="firstName" value="#{attrs[:first_name]}"/>
-  <apps:property name="lastName" value="#{attrs[:last_name]}"/>
-  <apps:property name="isAdmin" value="#{attrs[:admin]}"/>
-  <apps:property name="isSuspended" value="#{attrs[:suspended]}"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<atom:entry
+        xmlns:atom="http://www.w3.org/2005/Atom"
+        xmlns:apps="http://schemas.google.com/apps/2006">
+  <atom:category
+          scheme="http://schemas.google.com/g/2005#kind"
+          term="http://schemas.google.com/apps/2006#user"/>
+  <apps:login
+          userName="#{attrs[:login]}"
+          password="#{Digest::SHA1.hexdigest(attrs[:password] || '')}"
+          hashFunctionName="SHA-1" suspended="#{attrs[:suspended]}"/>
+  <apps:quota limit="25600"/>
+  <apps:name familyName="#{attrs[:last_name]}"
+             givenName="#{attrs[:first_name]}"/>
 </atom:entry>
         XML
         begin
           response = GoogleApps.client.make_request(:post, user_url, body: document, headers: {'Content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
           from_entry(atom_feed.elements['//entry'])
-        rescue
+        rescue RestClient::RequestFailed
           nil
         end
       end
