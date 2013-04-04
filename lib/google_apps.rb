@@ -1,5 +1,6 @@
 require 'base64'
 require 'cgi'
+require 'haml'
 require 'libxml'
 require 'oauth'
 require 'openssl'
@@ -35,3 +36,5 @@ class GoogleApps
     @@client
   end
 end
+
+#Haml::Template.options[:format] = :xhtml

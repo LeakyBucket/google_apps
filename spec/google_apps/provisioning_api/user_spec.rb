@@ -64,11 +64,15 @@ class GoogleApps
             stub_request(:post, "https://apps-apis.google.com/a/feeds/example.com/user/2.0").
                 with(headers: {'Content-type' => 'application/atom+xml'}) { |request|
                   doc = REXML::Document.new(request.body)
-                  doc.elements['//apps:login'].attribute('userName').value == 'sjones' &&
-                  doc.elements['//apps:login'].attribute('password').value == Digest::SHA1.hexdigest('foo') &&
-                  doc.elements['//apps:login'].attribute('suspended').value == 'false' &&
-                  doc.elements['//apps:name'].attribute('givenName').value == 'Susan' &&
-                  doc.elements['//apps:name'].attribute('familyName').value == 'Jones'
+                  begin
+                    doc.elements['//apps:login'].attribute('userName').value == 'sjones' &&
+                    doc.elements['//apps:login'].attribute('password').value == Digest::SHA1.hexdigest('foo') &&
+                    doc.elements['//apps:login'].attribute('suspended').value == 'false' &&
+                    doc.elements['//apps:name'].attribute('givenName').value == 'Susan' &&
+                    doc.elements['//apps:name'].attribute('familyName').value == 'Jones'
+                  #rescue
+                  #  false
+                  end
                 }.to_return(status: 200, body: File.read('spec/fixture_xml/user_response.xml'))
 
             user = User.create(login: 'sjones',

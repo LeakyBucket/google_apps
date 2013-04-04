@@ -1,11 +1,13 @@
 class GoogleApps
   module ProvisioningApi
     class User
-      attr_accessor :login, :first_name, :last_name, :storage_quota, :suspended, :admin
+      attr_accessor :login, :first_name, :last_name, :storage_quota, :suspended, :admin, :password, :password_hash
       alias_method :suspended?, :suspended
       alias_method :admin?, :admin
 
       def initialize(attrs = {})
+        @suspended = false
+        @admin = false
         attrs.each_pair { |name, value| self.send("#{name}=", value) }
       end
 
@@ -26,23 +28,9 @@ class GoogleApps
       end
 
       def self.create(attrs = {})
-        document = <<-XML
-<?xml version="1.0" encoding="UTF-8"?>
-<atom:entry
-        xmlns:atom="http://www.w3.org/2005/Atom"
-        xmlns:apps="http://schemas.google.com/apps/2006">
-  <atom:category
-          scheme="http://schemas.google.com/g/2005#kind"
-          term="http://schemas.google.com/apps/2006#user"/>
-  <apps:login
-          userName="#{attrs[:login]}"
-          password="#{Digest::SHA1.hexdigest(attrs[:password] || '')}"
-          hashFunctionName="SHA-1" suspended="#{attrs[:suspended]}"/>
-  <apps:quota limit="25600"/>
-  <apps:name familyName="#{attrs[:last_name]}"
-             givenName="#{attrs[:first_name]}"/>
-</atom:entry>
-        XML
+        user = User.new(attrs)
+        template = File.open(File.join(File.dirname(__FILE__), '../templates/users/create.xml.haml')).read
+        document = Haml::Engine.new(template, format: :xhtml).render(user)
         begin
           response = GoogleApps.client.make_request(:post, user_url, body: document, headers: {'Content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
@@ -54,6 +42,10 @@ class GoogleApps
 
       def update(attrs = {})
 
+      end
+
+      def password_hash
+        Digest::SHA1.hexdigest(password || '')
       end
 
       private

@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
   spec.files = Dir.glob(File.join('**', 'lib', '**', '*.rb'))
   spec.homepage = 'https://github.com/LeakyBucket/google_apps'
 
+  spec.add_dependency('haml')
   spec.add_dependency('libxml-ruby', '>= 2.2.2')
   spec.add_dependency('oauth')
   spec.add_dependency('rest-client')

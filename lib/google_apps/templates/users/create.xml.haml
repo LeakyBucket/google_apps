@@ -1,0 +1,7 @@
+!!! XML
+
+%atom:entry{"xmlns:apps" => "http://schemas.google.com/apps/2006", "xmlns:atom" => "http://www.w3.org/2005/Atom"}
+  %atom:category{:scheme => "http://schemas.google.com/g/2005#kind", :term => "http://schemas.google.com/apps/2006#user"}
+  %apps:login{:hashFunctionName => "SHA-1", :password => password_hash, :suspended => suspended.to_s, :userName => login}
+  %apps:quota{:limit => "25600"}
+  %apps:name{:familyName => last_name, :givenName => first_name}
