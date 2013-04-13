@@ -43,11 +43,13 @@ class GoogleApps
           before do
             stub_request(:get, "https://apps-apis.google.com/a/feeds/example.com/user/2.0").
                 to_return(:status => 200, :body => File.read('spec/fixture_xml/users_response.xml'))
+            stub_request(:get, "https://apps-apis.google.com/a/feeds/example.com/user/2.0?startUsername=stevieb").
+                to_return(:status => 200, :body => File.read('spec/fixture_xml/users_response_page_2.xml'))
           end
 
-          it 'returns an array of users' do
+          it 'returns an array of users across pages' do
             users = User.all
-            users.count.should == 2
+            users.count.should == 4
             users.first.should be_a(User)
           end
         end

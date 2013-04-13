@@ -14,7 +14,13 @@ class GoogleApps
       def self.all
         response = GoogleApps.client.make_request(:get, user_url, headers: {'content-type' => 'application/atom+xml'})
         atom_feed = REXML::Document.new(response.body)
-        atom_feed.elements.collect('//entry') { |e| from_entry(e) }
+        users = atom_feed.elements.collect('//entry') { |e| from_entry(e) }
+        while(atom_feed.elements["//link[@rel='next']"]) do
+          response = GoogleApps.client.make_request(:get, atom_feed.elements["//link[@rel='next']"].attribute("href").value, headers: {'content-type' => 'application/atom+xml'})
+          atom_feed = REXML::Document.new(response.body)
+          users += atom_feed.elements.collect('//entry') { |e| from_entry(e) }
+        end
+        users
       end
 
       def self.find(login)
