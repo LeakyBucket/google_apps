@@ -38,6 +38,22 @@ class GoogleApps
         end
       end
 
+      describe ".delete" do
+        it 'returns true when the request is successful' do
+          delete_request = stub_request(:delete, "https://apps-apis.google.com/a/feeds/example.com/user/2.0/sjones").
+            to_return(:status => 200)
+          User.delete('sjones').should be_true
+          delete_request.should have_been_requested
+        end
+
+        it 'returns false when the request fails' do
+          delete_request = stub_request(:delete, "https://apps-apis.google.com/a/feeds/example.com/user/2.0/sjones").
+            to_return(:status => 400)
+          User.delete('sjones').should be_false
+          delete_request.should have_been_requested
+        end
+      end
+
       describe ".all" do
         context 'when there are users' do
           before do

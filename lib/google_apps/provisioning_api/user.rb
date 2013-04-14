@@ -10,24 +10,37 @@ class GoogleApps
       end
 
       def self.all
-        response = GoogleApps.client.make_request(:get, user_url, headers: {'content-type' => 'application/atom+xml'})
-        atom_feed = REXML::Document.new(response.body)
-        users = atom_feed.elements.collect('//entry') { |e| from_entry(e) }
-        while(atom_feed.elements["//link[@rel='next']"]) do
-          response = GoogleApps.client.make_request(:get, atom_feed.elements["//link[@rel='next']"].attribute("href").value, headers: {'content-type' => 'application/atom+xml'})
+        begin
+          response = GoogleApps.client.make_request(:get, user_url, headers: {'content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
-          users += atom_feed.elements.collect('//entry') { |e| from_entry(e) }
+          users = atom_feed.elements.collect('//entry') { |e| from_entry(e) }
+          while (atom_feed.elements["//link[@rel='next']"]) do
+            response = GoogleApps.client.make_request(:get, atom_feed.elements["//link[@rel='next']"].attribute("href").value, headers: {'content-type' => 'application/atom+xml'})
+            atom_feed = REXML::Document.new(response.body)
+            users += atom_feed.elements.collect('//entry') { |e| from_entry(e) }
+          end
+          users
+        rescue RestClient::ExceptionWithResponse
+          []
         end
-        users
       end
 
       def self.find(login)
         begin
-          response = GoogleApps.client.make_request(:get, user_url + "/#{login}")
+          response = GoogleApps.client.make_request(:get, File.join(user_url, login))
           atom_feed = REXML::Document.new(response.body)
           from_entry(atom_feed.elements['//entry'])
-        rescue RestClient::ResourceNotFound
+        rescue RestClient::ExceptionWithResponse
           nil
+        end
+      end
+
+      def self.delete(login)
+        begin
+          GoogleApps.client.make_request(:delete, File.join(user_url, login))
+          return true
+        rescue RestClient::ExceptionWithResponse
+          return false
         end
       end
 
@@ -38,7 +51,7 @@ class GoogleApps
           response = GoogleApps.client.make_request(:post, user_url, body: document, headers: {'Content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
           from_entry(atom_feed.elements['//entry'])
-        rescue RestClient::RequestFailed
+        rescue RestClient::ExceptionWithResponse
           nil
         end
       end
@@ -50,7 +63,7 @@ class GoogleApps
           response = GoogleApps.client.make_request(:put, File.join(user_url, login), body: document, headers: {'Content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
           from_entry(atom_feed.elements['//entry'])
-        rescue RestClient::RequestFailed
+        rescue RestClient::ExceptionWithResponse
           nil
         end
       end
