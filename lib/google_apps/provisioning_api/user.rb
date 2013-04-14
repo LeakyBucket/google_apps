@@ -6,8 +6,6 @@ class GoogleApps
       alias_method :admin?, :admin
 
       def initialize(attrs = {})
-        @suspended = false
-        @admin = false
         attrs.each_pair { |name, value| self.send("#{name}=", value) }
       end
 
@@ -35,8 +33,7 @@ class GoogleApps
 
       def self.create(attrs = {})
         user = User.new(attrs)
-        template = File.open(File.join(File.dirname(__FILE__), '../templates/users/create.xml.haml')).read
-        document = Haml::Engine.new(template, format: :xhtml).render(user)
+        document = Template.render('user.xml.haml', user)
         begin
           response = GoogleApps.client.make_request(:post, user_url, body: document, headers: {'Content-type' => 'application/atom+xml'})
           atom_feed = REXML::Document.new(response.body)
@@ -46,12 +43,25 @@ class GoogleApps
         end
       end
 
-      def update(attrs = {})
-
+      def self.update(login, attrs = {})
+        user = User.new(attrs)
+        document = Template.render('user.xml.haml', user)
+        begin
+          response = GoogleApps.client.make_request(:put, File.join(user_url, login), body: document, headers: {'Content-type' => 'application/atom+xml'})
+          atom_feed = REXML::Document.new(response.body)
+          from_entry(atom_feed.elements['//entry'])
+        rescue RestClient::RequestFailed
+          nil
+        end
       end
 
       def password_hash
-        Digest::SHA1.hexdigest(password || '')
+        return nil unless password
+        Digest::SHA1.hexdigest(password)
+      end
+
+      def hash_function_name
+        password ? 'SHA-1' : nil
       end
 
       private

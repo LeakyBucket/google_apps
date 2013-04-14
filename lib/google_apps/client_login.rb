@@ -23,6 +23,7 @@ class GoogleApps
 
       response.body.split("\n").grep(/auth=(.*)/i)
       @token = $1
+      self
     end
   end
 end

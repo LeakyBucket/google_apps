@@ -22,6 +22,7 @@ require 'google_apps/atom/nickname'
 require 'google_apps/atom/group_owner'
 require 'google_apps/provisioning_api/user'
 
+require 'google_apps/template'
 require 'google_apps/client'
 require 'google_apps/hybrid_auth_client'
 require 'google_apps/oauth2_client'
@@ -35,6 +36,8 @@ class GoogleApps
   def self.client
     @@client
   end
-end
 
-#Haml::Template.options[:format] = :xhtml
+  def self.auth
+    GoogleApps.client = GoogleApps::ClientLogin.new(domain: 'loopb.ac').authenticate!('will@loopb.ac', 'hats4HEADS')
+  end
+end
