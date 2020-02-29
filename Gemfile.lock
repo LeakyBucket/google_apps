@@ -15,7 +15,7 @@ GEM
     libxml-ruby (2.6.0)
     mime-types (1.21)
     oauth (0.4.7)
-    rake (10.0.3)
+    rake (12.3.3)
     rest-client (1.6.7)
       mime-types (>= 1.16)
     rspec (2.12.0)
